@@ -1,0 +1,395 @@
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+h1
+h1
+2
+he2
+gamma
+3
+0
+A 4.36e-18 
+nu 0.3 
+Ea 161.3 
+
+user_supplied_fit
+carbon photoinverse rate
+Clayton et al. (2001)
+2
+he2
+gamma
+2
+h1
+h1
+4
+0
+BondEnergy 6.30
+A 4.36e-18 
+nu 0.3 
+Ea 161.3 
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+h1
+he2
+2
+li3
+gamma
+3
+0
+A 1.e-17 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+carbon photoinverse rate
+Clayton et al. (2001)
+2
+li3
+gamma
+2
+h1
+he2
+4
+0
+BondEnergy 7.21
+A 1.e-17 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+h1
+li3
+2
+be4
+gamma
+3
+0
+A 1.e-10 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+carbon photoinverse rate
+Clayton et al. (2001)
+2
+be4
+gamma
+2
+h1
+li3
+4
+0
+BondEnergy 5.06 
+A 1.e-10 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+h1
+be4
+2
+b5
+gamma
+3
+0
+A 1.e-13 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+carbon photoinverse rate
+Clayton et al. (2001)
+2
+b5
+gamma
+2
+h1
+be4
+4
+0
+BondEnergy 7.06 
+A 1.e-13 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+h1
+b5
+2
+c6
+gamma
+3
+0
+A 1.e-10 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+carbon photoinverse rate
+Clayton et al. (2001)
+2
+c6
+gamma
+2
+h1
+b5
+4
+0
+BondEnergy 4.96 
+A 1.e-10 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+h1
+c6
+2
+n7
+gamma
+3
+0
+A 1.e-13 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+carbon photoinverse rate
+Clayton et al. (2001)
+2
+n7
+gamma
+2
+h1
+c6
+4
+0
+BondEnergy 7.22 
+A 1.e-13 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+h1
+n7
+2
+o8C
+gamma
+3
+0
+A 1.e-10 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+carbon photoinverse rate
+Clayton et al. (2001)
+2
+o8C
+gamma
+2
+h1
+n7
+4
+0
+BondEnergy 5.68
+A 1.e-10 
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+n
+h1
+2
+h2
+gamma
+3
+0
+A 1.58e-17
+nu 0.3 
+Ea 1297.4
+
+user_supplied_fit
+carbon photoinverse rate
+Clayton et al. (2001)
+2
+h2
+gamma
+2
+n
+h1
+4
+0
+BondEnergy 11.1
+A 1.58e-17
+nu 0.3 
+Ea 1297.4
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+n
+he2
+2
+h2
+h1
+3
+0
+A 5.99e-10
+nu 0. 
+Ea 0.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+n
+li3
+2
+h2
+he2
+3
+0
+A 1.e-11 
+nu 0.3 
+Ea 1130. 
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+n
+be4
+2
+h2
+li3
+3
+0
+A 3.e-10 
+nu 0. 
+Ea 1420.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+n
+b5
+2
+h2
+be4
+3
+0
+A 1.e-11 
+nu -0.3 
+Ea 1130. 
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+n
+c6
+2
+h2
+b5
+3
+0
+A 3.e-10 
+nu 0. 
+Ea 1420.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+n
+n7
+2
+h2
+c6
+3
+0
+A 1.e-11 
+nu -0.3 
+Ea 1130. 
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+n
+o8C
+2
+h2
+n7
+3
+0
+A 3.e-10 
+nu 0. 
+Ea 1420.
+
+user_supplied_fit
+arrhenius rate
+Cherchneff et al. (2009)
+2
+h1
+h2
+2
+he2
+n
+3
+0
+A 5.43e-7
+nu -1.5 
+Ea 57200.0 
+
+user_supplied_fit
+compton electron rate
+Cherchneff et al. (2009)
+2
+h2
+electron
+3
+h1
+n
+electron
+1
+0
+tau 9.59e6
+
+user_supplied_fit
+arrhenius rate
+Clayton PNews5 (2012)
+1
+o8C
+1
+o8R
+3
+0
+A 0.1
+nu 0. 
+Ea 0.
+

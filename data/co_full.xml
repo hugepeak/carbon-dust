@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<libnucnet_input>
+  <nuclear_network>
+    <nuclear_data>
+      <!--n-->
+      <nuclide>
+        <z>0</z>
+        <a>1</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--nn-->
+      <nuclide>
+        <z>0</z>
+        <a>2</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--h1-->
+      <nuclide>
+        <z>1</z>
+        <a>1</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--h2-->
+      <nuclide>
+        <z>1</z>
+        <a>2</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--he2-->
+      <nuclide>
+        <z>2</z>
+        <a>2</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--li3-->
+      <nuclide>
+        <z>3</z>
+        <a>3</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--be4-->
+      <nuclide>
+        <z>4</z>
+        <a>4</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--b5-->
+      <nuclide>
+        <z>5</z>
+        <a>5</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--c6-->
+      <nuclide>
+        <z>6</z>
+        <a>6</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--n7-->
+      <nuclide>
+        <z>7</z>
+        <a>7</a>
+        <source>example</source>
+        <mass_excess>0</mass_excess>
+        <spin>0</spin>
+        <partf_table>
+          <point>
+            <t9>1</t9>
+            <log10_partf>0</log10_partf>
+          </point>
+        </partf_table>
+      </nuclide>
+      <!--o8-->
+      <nuclide>
+        <z>8</z>
+        <a>8</a>
+        <states>
+          <state id="C">
+            <source>example</source>
+            <mass_excess>0</mass_excess>
+            <spin>0</spin>
+            <partf_table>
+              <point>
+                <t9>1</t9>
+                <log10_partf>0</log10_partf>
+              </point>
+            </partf_table>
+          </state>
+          <state id="R">
+            <source>example</source>
+            <mass_excess>0</mass_excess>
+            <spin>0</spin>
+            <partf_table>
+              <point>
+                <t9>1</t9>
+                <log10_partf>0</log10_partf>
+              </point>
+            </partf_table>
+          </state>
+        </states>
+      </nuclide>
+    </nuclear_data>
+    <reaction_data>
+      <!--li3 + gamma -> h1 + he2-->
+      <reaction>
+        <source>Clayton et al. (2001)</source>
+        <reactant>li3</reactant>
+        <reactant>gamma</reactant>
+        <product>h1</product>
+        <product>he2</product>
+        <user_rate key="carbon photoinverse rate">
+          <properties>
+            <property name="A"> 1.e-17 </property>
+            <property name="BondEnergy"> 7.21</property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--c6 + gamma -> h1 + b5-->
+      <reaction>
+        <source>Clayton et al. (2001)</source>
+        <reactant>c6</reactant>
+        <reactant>gamma</reactant>
+        <product>h1</product>
+        <product>b5</product>
+        <user_rate key="carbon photoinverse rate">
+          <properties>
+            <property name="A"> 1.e-10 </property>
+            <property name="BondEnergy"> 4.96 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h1 + n7 -> o8C + gamma-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>h1</reactant>
+        <reactant>n7</reactant>
+        <product>o8C</product>
+        <product>gamma</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.e-10 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h1 + b5 -> c6 + gamma-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>h1</reactant>
+        <reactant>b5</reactant>
+        <product>c6</product>
+        <product>gamma</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.e-10 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--o8C + gamma -> h1 + n7-->
+      <reaction>
+        <source>Clayton et al. (2001)</source>
+        <reactant>o8C</reactant>
+        <reactant>gamma</reactant>
+        <product>h1</product>
+        <product>n7</product>
+        <user_rate key="carbon photoinverse rate">
+          <properties>
+            <property name="A"> 1.e-10 </property>
+            <property name="BondEnergy"> 5.68</property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--he2 + gamma -> h1 + h1-->
+      <reaction>
+        <source>Clayton et al. (2001)</source>
+        <reactant>he2</reactant>
+        <reactant>gamma</reactant>
+        <product>h1</product>
+        <product>h1</product>
+        <user_rate key="carbon photoinverse rate">
+          <properties>
+            <property name="A"> 4.36e-18 </property>
+            <property name="BondEnergy"> 6.30</property>
+            <property name="Ea"> 161.3 </property>
+            <property name="nu"> 0.3 </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h1 + be4 -> b5 + gamma-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>h1</reactant>
+        <reactant>be4</reactant>
+        <product>b5</product>
+        <product>gamma</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.e-13 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--n + be4 -> h2 + li3-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>n</reactant>
+        <reactant>be4</reactant>
+        <product>h2</product>
+        <product>li3</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 3.e-10 </property>
+            <property name="Ea"> 1420.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--n7 + gamma -> h1 + c6-->
+      <reaction>
+        <source>Clayton et al. (2001)</source>
+        <reactant>n7</reactant>
+        <reactant>gamma</reactant>
+        <product>h1</product>
+        <product>c6</product>
+        <user_rate key="carbon photoinverse rate">
+          <properties>
+            <property name="A"> 1.e-13 </property>
+            <property name="BondEnergy"> 7.22 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--o8C -> o8R-->
+      <reaction>
+        <source>Clayton PNews5 (2012)</source>
+        <reactant>o8C</reactant>
+        <product>o8R</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 0.1</property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h1 + he2 -> li3 + gamma-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>h1</reactant>
+        <reactant>he2</reactant>
+        <product>li3</product>
+        <product>gamma</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.e-17 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--be4 + gamma -> h1 + li3-->
+      <reaction>
+        <source>Clayton et al. (2001)</source>
+        <reactant>be4</reactant>
+        <reactant>gamma</reactant>
+        <product>h1</product>
+        <product>li3</product>
+        <user_rate key="carbon photoinverse rate">
+          <properties>
+            <property name="A"> 1.e-10 </property>
+            <property name="BondEnergy"> 5.06 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--n + b5 -> h2 + be4-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>n</reactant>
+        <reactant>b5</reactant>
+        <product>h2</product>
+        <product>be4</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.e-11 </property>
+            <property name="Ea"> 1130. </property>
+            <property name="nu"> -0.3 </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h2 + gamma -> n + h1-->
+      <reaction>
+        <source>Clayton et al. (2001)</source>
+        <reactant>h2</reactant>
+        <reactant>gamma</reactant>
+        <product>n</product>
+        <product>h1</product>
+        <user_rate key="carbon photoinverse rate">
+          <properties>
+            <property name="A"> 1.58e-17</property>
+            <property name="BondEnergy"> 11.1</property>
+            <property name="Ea"> 1297.4</property>
+            <property name="nu"> 0.3 </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h1 + h2 -> he2 + n-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>h1</reactant>
+        <reactant>h2</reactant>
+        <product>he2</product>
+        <product>n</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 5.43e-7</property>
+            <property name="Ea"> 57200.0 </property>
+            <property name="nu"> -1.5 </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h2 + electron -> h1 + n + electron-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>h2</reactant>
+        <reactant>electron</reactant>
+        <product>h1</product>
+        <product>n</product>
+        <product>electron</product>
+        <user_rate key="compton electron rate">
+          <properties>
+            <property name="tau"> 9.59e6</property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--n + he2 -> h2 + h1-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>n</reactant>
+        <reactant>he2</reactant>
+        <product>h2</product>
+        <product>h1</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 5.99e-10</property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--n + h1 -> h2 + gamma-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>n</reactant>
+        <reactant>h1</reactant>
+        <product>h2</product>
+        <product>gamma</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.58e-17</property>
+            <property name="Ea"> 1297.4</property>
+            <property name="nu"> 0.3 </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--b5 + gamma -> h1 + be4-->
+      <reaction>
+        <source>Clayton et al. (2001)</source>
+        <reactant>b5</reactant>
+        <reactant>gamma</reactant>
+        <product>h1</product>
+        <product>be4</product>
+        <user_rate key="carbon photoinverse rate">
+          <properties>
+            <property name="A"> 1.e-13 </property>
+            <property name="BondEnergy"> 7.06 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h1 + li3 -> be4 + gamma-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>h1</reactant>
+        <reactant>li3</reactant>
+        <product>be4</product>
+        <product>gamma</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.e-10 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h1 + h1 -> he2 + gamma-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>h1</reactant>
+        <reactant>h1</reactant>
+        <product>he2</product>
+        <product>gamma</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 4.36e-18 </property>
+            <property name="Ea"> 161.3 </property>
+            <property name="nu"> 0.3 </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--h1 + c6 -> n7 + gamma-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>h1</reactant>
+        <reactant>c6</reactant>
+        <product>n7</product>
+        <product>gamma</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.e-13 </property>
+            <property name="Ea"> 0.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--n + n7 -> h2 + c6-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>n</reactant>
+        <reactant>n7</reactant>
+        <product>h2</product>
+        <product>c6</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.e-11 </property>
+            <property name="Ea"> 1130. </property>
+            <property name="nu"> -0.3 </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--n + o8C -> h2 + n7-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>n</reactant>
+        <reactant>o8C</reactant>
+        <product>h2</product>
+        <product>n7</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 3.e-10 </property>
+            <property name="Ea"> 1420.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--n + li3 -> h2 + he2-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>n</reactant>
+        <reactant>li3</reactant>
+        <product>h2</product>
+        <product>he2</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 1.e-11 </property>
+            <property name="Ea"> 1130. </property>
+            <property name="nu"> 0.3 </property>
+          </properties>
+        </user_rate>
+      </reaction>
+      <!--n + c6 -> h2 + b5-->
+      <reaction>
+        <source>Cherchneff et al. (2009)</source>
+        <reactant>n</reactant>
+        <reactant>c6</reactant>
+        <product>h2</product>
+        <product>b5</product>
+        <user_rate key="arrhenius rate">
+          <properties>
+            <property name="A"> 3.e-10 </property>
+            <property name="Ea"> 1420.</property>
+            <property name="nu"> 0. </property>
+          </properties>
+        </user_rate>
+      </reaction>
+    </reaction_data>
+  </nuclear_network>
+  <zone_data>
+    <zone>
+      <optional_properties>
+        <property name="steps">5</property>
+        <property name="tend">3.15e8</property>
+        <property name="dt">1.e-2</property>
+        <property name="time">2.e7</property>
+        <property name="t9_0">6.e-6</property>
+        <property name="tau">2.e7</property>
+        <property name="munuekT">-inf</property>
+        <property name="rho_0">2.857e-13</property>
+      </optional_properties>
+      <mass_fractions>
+        <nuclide name="n">
+          <z>0</z>
+          <a>1</a>
+          <x>0.9091</x>
+        </nuclide>
+        <nuclide name="h1">
+          <z>1</z>
+          <a>1</a>
+          <x>0.0909</x>
+        </nuclide>
+      </mass_fractions>
+    </zone>
+  </zone_data>
+</libnucnet_input>
