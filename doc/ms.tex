@@ -53,6 +53,9 @@
 \newcommand{\twoctoctwo}{${\rm C} + {\rm C} \to \ctwo + \gamma$}
 \newcommand{\coctoctwo}{${\rm CO} + {\rm C} \to \ctwo + {\rm O}$}
 \newcommand{\ctowotococ}{$\ctwo + {\rm O} \to {\rm CO} + {\rm C}$}
+\newcommand{\cfivectocsix}{$\cfive + {\rm C} \to \csix$}
+\newcommand{\csixotococfive}{${\rm C}_6 + {\rm O} \to {\rm CO} + {\rm C_5}$}
+\newcommand{\ncogeq}{n_{CO}^{\gamma eq}}
 \newcommand{\nar}{New Astron. Rev.}
 
 %% You can insert a short comment on the title page using the command below.
@@ -88,7 +91,7 @@ Supernovae}
 %% anywhere in the paper, not just in the front matter.
 %% As in the title, use \\ to force line breaks.
 
-\author{Tianhong Yu, Donald D. Clayton, and Bradley S. Meyer}
+\author{Tianhong Yu, Bradley S. Meyer, and Donald D. Clayton}
 \affil{Department of Physics and Astronomy, Clemson Universit, Clemson, SC 29634-0978}
 
 %% Notice that each of these authors has alternate affiliations, which
@@ -124,8 +127,7 @@ is not nearly as effective as its proponents calculated it to be.
 %% for the journal to which you are submitting your paper to determine
 %% what keyword punctuation is appropriate.
 
-\keywords{globular clusters: general --- globular clusters: individual(NGC 6397,
-NGC 6624, NGC 7078, Terzan 8}
+\keywords{atomic processes, ISM: abundances, ISM: general, meteorites, meteors, meteoroids, supernovae: general, supernovae: individual: SN 1987A}
 
 \section{Introduction}
 
@@ -153,7 +155,7 @@ questions about the most effective way of producing $\ctwo$\ molecules,
 which is the
 first step to linear carbon chains. Using a large network of chemical
 reactions, \citet{2009ApJ...703..642C} discovered that the neutral-neutral
-reaction \coctoctwo
+reaction \coctoctwo\
 has a reasonably large cross section at temperatures near
 5000K despite being endothermic by 4.8eV. Although the CO target abundance for
 production of $\ctwo$\ in this manner must be calculated, they stated that at
@@ -188,20 +190,22 @@ meteorites. Each of these topics depends sensitively on how much carbon,
 both numbers and sizes, is able to condense in cooling SNII interiors.
 Therefore we study this competition carefully.
 
-Crucial to this task is the lifetime τCO of CO molecules. Their thermal
-dissociation lifetime τγ is calculated from detailed balance with the
+Crucial to this task is the lifetime $\tau_{CO}$ of CO molecules. Their thermal
+dissociation lifetime $\tau_\gamma$
+is calculated from detailed balance with the
 radiative association reaction, as in Section 2.1 of
 \citet{2001ApJ...562..480C}.
 Because of the large 11.1eV binding energy of the CO molecule,
 $\tau_\gamma$ is very
-temperature sensitive.  For readers numerical ease we will tabulate
+temperature sensitive.  For readers' numerical ease we will tabulate
 $\tau_\gamma$ at
 selected key temperatures in Table \ref{tab:quantities} to follow.
 The flux and spectrum of newly
 injected Compton electrons \citep{1991ApJ...375..221C} yields the lifetime
 $\tau_e$ of CO
 molecules against inelastic scattering dissociation by Compton electrons
-caused by the 56Co radioactivity. In a gas of pure CO the mean energy per ion
+caused by the $^{56}$Co
+radioactivity. In a gas of pure CO the mean energy per ion
 pair is defined as the energy of primary electrons divided by the number of
 pairs produced. \citet{1994ApJ...435..909L}
 calculated the mean energy per ion pair
@@ -223,12 +227,17 @@ $n_C = 10^9$ cm$^{-3}$
 at the starting time t=t(6000K) for our chemical network at
 T=6000K. From our model choice for T(t) we get
 $t(6000K) = 5.47 \times 10^6$s. At
-subsequent times nO(t)=1010cm-3(t/t(6000))-3 owing to homologous expansion.
-Let N be the number in a comoving, expanding, initially 1cm3 volume at 6000K
-that held initially nO=1010cm-3 and nC=109cm-3. The only change of N during
-expansion occurs through chemical reactions. N may be expressed as atom
-fraction Y of the initial total number NO+NC= 1.10x1010 atoms. We
-intentionally choose an O-rich interior having NO/NC=10, so that no carbon at
+subsequent times $n_O(t) = 10^{10}{\rm cm}^{-3}(t/t(6000 {\rm K}))^{-3}$
+owing to homologous expansion.
+Let $N$ be the number in a comoving, expanding, initially 1 cm$^3$
+volume at 6000 K
+that held initially $n_O=10^{10}$ cm$^{-3}$ and $n_C = 10^9$ cm$^{-3}$.
+The only change of $N$ during
+expansion occurs through chemical reactions. $N$ may be expressed as atom
+fraction $Y$ of the initial total number
+$N_O + N_C = 1.10 \times 10^{10}$ atoms. We
+intentionally choose an O-rich interior having $N_O/N_C = 10$,
+so that no carbon at
 all would be able to condense if that interior were governed by chemical
 equilibrium. 
 
@@ -260,7 +269,7 @@ See Table 1 below for sample thermal dissociation rates for CO molecules.
 We also include in our network dissociation of CO by Compton electrons.
 CO is the only molecule for which thermal photodissociation is the dominant
 destruction mechanism. For that rate we use
-$\tau_e = 10^5$s $\exp( (t-10^6{\rm s}) / 111 {\rm d} )$,
+$\tau_e (s) = 10^5 \exp( (t-10^6{\rm s}) / 111 {\rm d} )$,
 not fit to any specific model but with plausibility for SN1987A.
 It lengthens to $\tau_e = 10^6$ s near eight months.
 Because of their helpful cataloging of reaction rate tables,
@@ -271,8 +280,10 @@ As one example, we take the rate for \twoctoctwo\
 as the rate given by RA4 in Table 5 in \citet{2009ApJ...703..642C}, p. 649.
 
 Our computational reaction network is {\em libnucnet}
-\citep{2007M&PSA..42.5215M} modified to carry the chemical
-rather than nuclear network.  This network code has been thoroughly tested
+(\citealp{2007M&PSA..42.5215M}--see also
+\url{http://sourceforge.net/projects/libnucnet/}) modified to follow
+the chemical rather than nuclear reactions.
+This network code has been thoroughly tested
 on a wide variety of reaction networks and problems.
 We scrupulously tested our network answers by hand calculations capable of
 exposing coding errors.
@@ -292,9 +303,9 @@ until it is reversed by radioactive dissociation.
 
 Evidently the abundance of CO within that zone during expansion attempts to
 balance these creation and destruction effects, doing so exactly at the
-time of maximum nCO. \citet{2013ApJ...762....5C}
+time of maximum $n_{CO}$. \citet{2013ApJ...762....5C}
 has discussed the shape of the function
-nCO(t). His Eq.(1) approximates the growth of nCO by its leading terms:
+$n_{CO}$(t). His Eq.(1) approximates the growth of $n_{CO}$ by its leading terms:
 \begin{equation}
 \frac{dn_{CO}}{dt} = n_{C(g)} n_O k_{CO} - \frac{n_{CO}}{\tau_{CO}} = 0
 \label{eq:dncodt}
@@ -302,7 +313,7 @@ nCO(t). His Eq.(1) approximates the growth of nCO by its leading terms:
 at $t = t_{max}$.
 The maximum abundance reached by CO is in cgs units
 \begin{equation}
-n_{CO}(t_max) = n_C n_O k_{CO} \tau_{CO} 
+n_{CO}(t_{max}) = n_C n_O k_{CO} \tau_{CO} 
 \label{eq:comax}
 \end{equation}
 
@@ -370,28 +381,29 @@ Figure \ref{fig:nco}
 compares our network calculation of the abundance of CO molecules
 with the expectation of Eq. (\ref{eq:comax}) when $\tau_\gamma$
 dominates the destruction of CO.
-Solid points display the equilibrium product nCOγeq calculated from the
+Solid points display the equilibrium product $\ncogeq$ calculated from the
 factors shown in Table \ref{tab:quantities}
 and from the number densities $n_C$ and $n_O$ after
 their initial values at T=6000K have been reduced by the expansion factor
 (t/t(6000K))-3. Tight agreement for $T > 3500$ K is immediately evident,
 demonstrating that for $T > 3500$ K the abundance of CO is almost exactly in
 thermal equilibrium. Below 3500K the abundance of CO becomes much less than
-the expectation nCOγeq  of thermal equilibrium because the dissociation of CO
+the expectation $\ncogeq$ of thermal equilibrium because the dissociation of CO
 comes to be dominated by Compton electrons. The dashed vertical line at
 T=3500K marks the approximate boundary between these two mechanisms for CO
 dissociation. Notice carefully in Fig. \ref{fig:nco}
-that nCO grows slowly, not reaching
+that $n_{CO}$ grows slowly, not reaching
 its maximum until expansion has cooled to T=3500K.
-At maximum nCO= 1.5x106cm-3, corresponding to YCO=0.7x10-3. The growth of nCO
+At maximum $n_{CO} = 1.5 \times 10^6$ cm$^{-3}$,
+corresponding to $Y(CO) = 0.7 \times 10^{-3}$. The growth of $n_{CO}$
 shown in Fig. \ref{fig:nco} differs markedly from the results of
 \citet{2009ApJ...703..642C}.
-Their results (e.g. Fig. 11) show nCO climbing quickly near 6000K to a large
+Their results (e.g. Fig. 11) show $n_{CO}$ climbing quickly near 6000K to a large
 maximum number fraction near 0.1. That maximum would almost exhaust free
 carbon. Our results in Fig. \ref{fig:nco}
 so differ from theirs that the difference
 must be resolved. \citet{2013ApJ...762....5C} has analyzed the expectation
-of growth of nCO to a single maximum before declining, and our results are
+of growth of $n_{CO}$ to a single maximum before declining, and our results are
 in line with that expectation. 
 
 These features are further detailed in Fig. \ref{fig:flows},
@@ -401,13 +413,13 @@ near steady state in that the production of CO is almost balanced by the
 two flows destroying CO. The destruction flow $n_{CO}/\tau_\gamma$
 almost balances the
 association flow above 4000K except for a tiny excess leading to the
-slow growth of nCO evident in Fig. \ref{fig:nco}. In that temperature range the
+slow growth of $n_{CO}$ evident in Fig. \ref{fig:nco}. In that temperature range the
 production by \cotoco\ in equilibrium with the thermal radiation field,
 as Fig. \ref{fig:nco} implied. The destruction flow $n_{CO}/\tau_e$
 almost balances the
 creation flow below 3500K. The transition between destruction modes occurs
-near 3500K. It is no coincidence that the maximum of nCO occurs when
-Compton electrons begin to dominate CO dissociation, because nCO would
+near 3500K. It is no coincidence that the maximum of $n_{CO}$ occurs when
+Compton electrons begin to dominate CO dissociation, because $n_{CO}$ would
 continue growing as long as thermal photons dominate CO dissociation. 
 
 \section{Abundances of $\cenn$}
@@ -460,14 +472,14 @@ $\csix$\ at T = 2031K and T = 1802K. The reactions are specified there in the
 compact notation target(in,out)residual. Fig. \ref{fig:cn} and
 Table \ref{tab:flows} are made to be studied together.
 Note that the abundances of $\ceight$\ are very small:
-$Y(C_8)= 10^{-36}$ at T = 1802K. The isomeric transition from linear to
+$Y(\ceight)= 10^{-36}$ at T = 1802K. The isomeric transition from linear to
 ringed $\ceight$, for which we estimate a lifetime $\tau = 10$ s,
 provides the nucleations for graphite growth. Figure \ref{fig:ncoc2} showed
-that $Y(C_{8}^r)$ 
+that $Y(\ceightr)$ 
 
 We call attention to several conclusions to be drawn from Table \ref{tab:flows}.
-Firstly, the strongest flows by a wide margin involving C6 are
-$C_5 + C \to C_6$,
+Firstly, the strongest flows by a wide margin involving $\csix$\ are
+\cfivectocsix,
 which is very fast ($k = 3 \times 10^{-10} cm^3 s^{-1}$)
 because vibrational excitation of $\csix$
 obviates the need for creating a photon \citep{1999Sci...283.1290C},
@@ -476,24 +488,26 @@ are equal to three significant figures, illustrating the near steady
 state of the abundance pattern. Secondly, thermal dissociation of $\csix$\ is
 very much faster than its oxidation, showing the small effect of oxidation
 on the abundance pattern. The destroying flows from $\csix$\ to $\cfive$
-stand in the approximate ratio $C_6(\gamma,C)/C_6(O,CO) = 5 \times 10^5$
+stand in the approximate ratio
+${\rm C}_6(\gamma,{\rm C})/{\rm C_6}({\rm O},{\rm CO}) = 5 \times 10^5$
 at $T = 2031$ K and $2 \times 10^4$ at $T = 1802$ K.
 Photodissociation dominates. The smaller value for that ratio at T=1802K
 occurs because oxidation maintains its effectiveness as T drops but
 thermal disruption does not, being much more temperature sensitive.
-For this reason the abundance pattern is flatter and C6 is approximately
+For this reason the abundance pattern is flatter and $\csix$\ is approximately
 3000 times more abundant at T=1802K than at T=2031K.
 It is for that reason that destruction flows in Table \ref{tab:flows}
-for C6 are
+for $\csix$\ are
 larger at the smaller temperature.
 The steady state shifts to new ratios as T falls.
 Thirdly, calculation of the rates will be illustrated for sake of clarity
-by the flow $C_6 + O \to CO + C_5$.
+by the flow
+\csixotococfive.
 From Fig. \ref{fig:cn}
-one sees that at T=2031K the abundance $Y(\csix) = 10^{-33.3}$.
+one sees that at $T = 2031$ K the abundance $Y(\csix) = 10^{-33.3}$.
 The value of $Y(O) = 10^{10} cm^{-3} / 1.1 \times 10^{10} cm^{-3} = 0.909$,
 so the flow per atom per
-second (e.g. Eq.3) is dY/dt= Y(C6)Y(O)n(2031K)k(C6O).
+second (e.g., Eq. \ref{eq:dycodt}) is $dY/dt= Y(\csix)Y(O)n(2031K)k(C6O)$.
 Expansion from T=6000K to T=2031K has diluted the total number
 density n to 1.1x1010cm-3 (2031K/6000K)3= 4.27x108cm-3.
 The fast oxidation reaction rate is  k(C6O)=3x10-10cm3s-1.
@@ -600,14 +614,15 @@ We are grateful.
 %\plotone{f1.eps}
 \caption{
 Comparison of the density of CO molecules calculated by the numerical
-network (curve) with the expectation nCOγeq = nCnO$k_{CO}$τγ for an abundance
-nCO in thermal equilibrium (dots) with photons.
+network (curve) with the expectation $\ncogeq = n_C n_O k_{CO} \tau_\gamma$
+for an abundance
+$n_{CO}$ in thermal equilibrium (dots) with photons.
 Above T=4000K the CO abundance is seen to be in an accurate thermal
-equilibrium, but at lower temperature nCO is increasingly smaller than
+equilibrium, but at lower temperature $n_{CO}$ is increasingly smaller than
 thermal equilibrium would require. Instead of thermal photons,
 the destruction of CO becomes increasingly dominated by
 Compton electrons for $T < 3500$ K.
-One see in Fig. \ref{fig:nco} that nCOmax occurs near 3500K,
+One see in Fig. \ref{fig:nco} that $n_{CO}$max occurs near 3500K,
 which occurs near $10^7$ s (see Table \ref{tab:quantities})}. 
 \label{fig:nco}
 \end{figure}
@@ -620,7 +635,7 @@ which occurs near $10^7$ s (see Table \ref{tab:quantities})}.
 \caption{
 Flows into and out of CO illustrate the near steady state between creation
 and destruction and the transition region near 3500K between the two modes
-of destruction of CO. The destruction flow nCOnC$k_{CO}$+C is only $3.27 \times
+of destruction of CO. The destruction flow $n_{CO}$nC$k_{CO}$+C is only $3.27 \times
 10^{-16}$ atom$^{-1}$s$^{-1}$, too small to be visible in Fig. \ref{fig:flows}. 
 } \label{fig:flows}
 \end{figure}
@@ -664,63 +679,96 @@ flows into and out of $\cenn$.
 
 \clearpage
 
-\begin{deluxetable}{ccrrrrrrrrcrl}
-\tabletypesize{\scriptsize}
-\rotate
-\tablecaption{Values of $\tau_\gamma$(CO) and related quantities at
-selected $T$}
+\begin{table}
+\begin{center}
+\caption{Values of $\tau_\gamma$(CO) and related quantities at
+selected time $t$ and temperature $T$}
 \label{tab:quantities}
-\tablewidth{0pt}
-\tablehead{
-\colhead{POS} & \colhead{chip} & \colhead{ID} & \colhead{X} & \colhead{Y} &
-\colhead{RA} & \colhead{DEC} & \colhead{IAU$\pm$ $\delta$ IAU} &
-\colhead{IAP1$\pm$ $\delta$ IAP1} & \colhead{IAP2 $\pm$ $\delta$ IAP2} &
-\colhead{star} & \colhead{E} & \colhead{Comment}
-}
-\startdata
-0 & 2 & 1 & 1370.99 & 57.35    &   6.651120 &  17.131149 & 21.344$\pm$0.006  & 2
-4.385$\pm$0.016 & 23.528$\pm$0.013 & 0.0 & 9 & -    \\
-0 & 2 & 2 & 1476.62 & 8.03     &   6.651480 &  17.129572 & 21.641$\pm$0.005  & 2
-3.141$\pm$0.007 & 22.007$\pm$0.004 & 0.0 & 9 & -    \\
-0 & 2 & 3 & 1079.62 & 28.92    &   6.652430 &  17.135000 & 23.953$\pm$0.030  & 2
-4.890$\pm$0.023 & 24.240$\pm$0.023 & 0.0 & - & -    \\
-0 & 2 & 4 & 114.58  & 21.22    &   6.655560 &  17.148020 & 23.801$\pm$0.025  & 2
-5.039$\pm$0.026 & 24.112$\pm$0.021 & 0.0 & - & -    \\
-0 & 2 & 5 & 46.78   & 19.46    &   6.655800 &  17.148932 & 23.012$\pm$0.012  & 2
-3.924$\pm$0.012 & 23.282$\pm$0.011 & 0.0 & - & -    \\
-0 & 2 & 6 & 1441.84 & 16.16    &   6.651480 &  17.130072 & 24.393$\pm$0.045  & 2
-6.099$\pm$0.062 & 25.119$\pm$0.049 & 0.0 & - & -    \\
-0 & 2 & 7 & 205.43  & 3.96     &   6.655520 &  17.146742 & 24.424$\pm$0.032  & 2
-5.028$\pm$0.025 & 24.597$\pm$0.027 & 0.0 & - & -    \\
-0 & 2 & 8 & 1321.63 & 9.76     &   6.651950 &  17.131672 & 22.189$\pm$0.011  & 2
-4.743$\pm$0.021 & 23.298$\pm$0.011 & 0.0 & 4 & edge \\
-\enddata
-\end{deluxetable}
-
-%% If you use the table environment, please indicate horizontal rules using
-%% \tableline, not \hline.
-%% Do not put multiple tabular environments within a single table.
-%% The optional \label should appear inside the \caption command.
+\begin{tabular}{ccccccc}
+\tableline\tableline
+$t$ (s) & $t - t(6000 {\rm K})$ (s) & $\left(t / t(6000 {\rm K} \right)^{-3}$ & $T$ (K) & $\tau_\gamma$ (s) & $k_{CO}$ (cm$^{-3}$ s$^{-1}$) & $\ncogeq$ (cm$^{-3}$) \\
+\tableline
+$5.47 \times 10^6$ &
+  0 &
+  1 &
+  6000 &
+  $4.22 \times 10^{-2}$ &
+  $3.13 \times 10^{-17}$ &
+  $1.32 \times 10^1$ \\
+$5.97 \times 10^6$ &
+  $4.97 \times 10^5$ &
+  0.769 &
+  5500 &
+  $3.54 \times 10^{-1}$ &
+  $2.99 \times 10^{-17}$ &
+  $6.27 \times 10^1$ \\
+$6.57 \times 10^6$ &
+  $1.09 \times 10^6$ &
+  0.578 &
+  5000 &
+  $4.46 \times 10^{0}$ &
+  $2.83 \times 10^{-17}$ &
+  $4.24 \times 10^2$ \\
+$7.30 \times 10^6$ &
+  $1.82 \times 10^6$ &
+  0.422 &
+  4500 &
+  $9.70 \times 10^{1}$ &
+  $2.67 \times 10^{-17}$ &
+  $4.61 \times 10^3$ \\
+$8.21 \times 10^6$ &
+  $2.74 \times 10^6$ &
+  0.296 &
+  4000 &
+  $4.43 \times 10^{3}$ &
+  $2.48 \times 10^{-17}$ &
+  $9.67 \times 10^4$ \\
+$9.38 \times 10^6$ &
+  $3.91 \times 10^6$ &
+  0.198 &
+  3500 &
+  $5.86 \times 10^{5}$ &
+  $2.28 \times 10^{-17}$ &
+  $5.26 \times 10^6$ \\
+$1.09 \times 10^7$ &
+  $5.47 \times 10^6$ &
+  0.125 &
+  3000 &
+  $3.77 \times 10^{8}$ &
+  $2.05 \times 10^{-17}$ &
+  $1.21 \times 10^9$ \\
+\tableline
+\end{tabular}
+\end{center}
+\end{table}
 
 \clearpage
 
 \begin{table}
 \begin{center}
-\caption{Reaction Flows ($n^{-1}s^{-1}$) involving $\csix$\
-at two temperatures.}
+\caption{Reaction Flows involving $\csix$\ at two temperatures.  {\bf UNITS
+ON FLOWS RIGHT?}}
 \label{tab:flows}
-\begin{tabular}{crrrrrrrrrrr}
+\begin{tabular}{ccc}
 \tableline\tableline
-Star & Height & $d_{x}$ & $d_{y}$ & $n$ & $\chi^2$ & $R_{maj}$ & $R_{min}$ &
-\multicolumn{1}{c}{$P$\tablenotemark{a}} & $P R_{maj}$ & $P R_{min}$ &
-\multicolumn{1}{c}{$\Theta$\tablenotemark{b}} \\
-\tableline
-1 &33472.5 &-0.1 &0.4  &53 &27.4 &2.065  &1.940 &3.900 &68.3 &116.2 &-27.639\\
-2 &27802.4 &-0.3 &-0.2 &60 &3.7  &1.628  &1.510 &2.156 &6.8  &7.5 &-26.764\\
-3 &29210.6 &0.9  &0.3  &60 &3.4  &1.622  &1.551 &2.159 &6.7  &7.3 &-40.272\\
-4 &32733.8 &-1.2\tablenotemark{c} &-0.5 &41 &54.8 &2.282  &2.156 &4.313 &117.4 &78.2 &-35.847\\
-5 & 9607.4 &-0.4 &-0.4 &60 &1.4  &1.669\tablenotemark{c}  &1.574 &2.343 &8.0  &8.9 &-33.417\\
-6 &31638.6 &1.6  &0.1  &39 &315.2 & 3.433 &3.075 &7.488 &92.1 &25.3 &-12.052\\
+& \multicolumn{2}{c}{Flow (${\rm atom}^{-1} {\rm s}^{-1}$)} \\
+\cline{2-3}
+Reaction & $T = 2031 {\rm K}$ & $T = 1802 {\rm K}$ \\
+$\cfive({\rm C},\gamma)\csix$ &
+  $1.67 \times 10^{-29}$ &
+  $4.79 \times 10^{-28}$\\
+$\csix(\gamma,{\rm C})\cfive$ &
+  $1.67 \times 10^{-29}$ &
+  $4.79 \times 10^{-28}$\\
+$\csix({\rm C},\gamma)\cseven$ &
+  $2.41 \times 10^{-39}$ &
+  $2.12 \times 10^{-32}$\\
+$\cseven(\gamma,{\rm C})\csix$ &
+  $1.26 \times 10^{-40}$ &
+  $7.27 \times 10^{-40}$\\
+$\csix({\rm O},{\rm CO})\cfive$ &
+  $3.61 \times 10^{-31}$ &
+  $2.90 \times 10^{-32}$\\
 \tableline
 \end{tabular}
 \end{center}
