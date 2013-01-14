@@ -40,15 +40,19 @@
 %% your macros. See the AASTeX v5.x Author Guide
 %% for information.
 
-\newcommand{\myemail}{skywalker@galaxy.far.far.away}
-\newcommand{\ctwo}{${\rm C}_2$}
-\newcommand{\cthree}{${\rm C}_3$}
-\newcommand{\cfour}{${\rm C}_4$}
-\newcommand{\cfive}{${\rm C}_5$}
-\newcommand{\csix}{${\rm C}_6$}
-\newcommand{\cseven}{${\rm C}_7$}
-\newcommand{\ceight}{${\rm C}_8$}
-\newcommand{\ceightr}{${\rm C}_8^r$}
+\newcommand{\ctwo}{{\rm C}_2}
+\newcommand{\cthree}{{\rm C}_3}
+\newcommand{\cfour}{{\rm C}_4}
+\newcommand{\cfive}{{\rm C}_5}
+\newcommand{\csix}{{\rm C}_6}
+\newcommand{\cseven}{{\rm C}_7}
+\newcommand{\ceight}{{\rm C}_8}
+\newcommand{\ceightr}{{\rm C}_8^r}
+\newcommand{\cenn}{{\rm C}_n}
+\newcommand{\cotoco}{${\rm C} + {\rm O} \to {\rm CO} + \gamma$}
+\newcommand{\twoctoctwo}{${\rm C} + {\rm C} \to \ctwo + \gamma$}
+\newcommand{\coctoctwo}{${\rm CO} + {\rm C} \to \ctwo + {\rm O}$}
+\newcommand{\ctowotococ}{$\ctwo + {\rm O} \to {\rm CO} + {\rm C}$}
 \newcommand{\nar}{New Astron. Rev.}
 
 %% You can insert a short comment on the title page using the command below.
@@ -62,7 +66,7 @@
 %% head is a modified title of up to roughly 44 characters.
 %% Running heads will not print in the manuscript style.
 
-\shorttitle{Formation of ${\rm C}_n$ Molecules}
+\shorttitle{Formation of $\cenn$ Molecules}
 \shortauthors{Yu et al.}
 
 %% This is the end of the preamble.  Indicate the beginning of the
@@ -74,7 +78,7 @@
 %% one line. However, you may use \\ to force a line break if
 %% you desire.
 
-\title{Formation of ${\rm C}_n$ Molecules in Oxygen-rich Interiors of Type II
+\title{Formation of $\cenn$ Molecules in Oxygen-rich Interiors of Type II
 Supernovae}
 
 %% Use \author, \affil, and the \and command to format
@@ -101,16 +105,16 @@ Supernovae}
 \begin{abstract}
 Two reaction-rate-based kinetic models for condensation of carbon dust via the
 growth of precursor linear carbon chains are currently under debate. The first
-involved forming \ctwo\ molecules via radiative association of free C
-atoms; the second forms \ctwo\ molecules by the endoergic reaction
-${\rm CO} + {\rm C} \to {\rm C}_2 + O$. Both are
+involved forming $\ctwo$\ molecules via radiative association of free C
+atoms; the second forms $\ctwo$\ molecules by the endoergic reaction
+\coctoctwo. Both are
 followed by C captures until the linear chain eventually makes an isomeric
 transition to ringed carbon on which rapid growth of graphite may occur.
 These two approaches give vastly different results. Because of the high
 importance of condensable carbon for current problems in astronomy,
 we study these competing claims with an intentionally limited reaction-rate
 network that shows clearly that initiation by
-${\rm C} + {\rm C} \to {\rm CO} + \gamma$  is the dominant
+\twoctoctwo\ is the dominant
 pathway to carbon rings. We propose an explanation for why the second pathway
 is not nearly as effective as its proponents calculated it to be.
 \end{abstract}
@@ -137,41 +141,43 @@ transitions from linear carbon chains to carbon rings are not accurately known.
 Their paper provided an existence proof that carbon can condense in O-rich gas.
 Its calculations showed that rare carbon-ring molecules were not prevented from
 formation despite rapid oxidation of their molecular precursors, although
-oxidation does greatly reduce the abundance of those Cn chains. That initial
+oxidation does greatly reduce the abundance of those $\cenn$ chains.
+That initial
 theory has been amplified during the past decade by several studies
 \citep{2001ApJ...562..480C,2003ApJ...594..312D,2006ApJ...638..234D,
 2009ApJ...703..642C,2010ApJ...713....1C,2011NewAR..55..155C,
 2013ApJ...762....5C}.
 
 In basic agreement with this chemical model, \citet{2009ApJ...703..642C} raised
-questions about the most effective way of producing \ctwo\ molecules,
+questions about the most effective way of producing $\ctwo$\ molecules,
 which is the
 first step to linear carbon chains. Using a large network of chemical
 reactions, \citet{2009ApJ...703..642C} discovered that the neutral-neutral
-reaction $CO + C \to C_2 + O$
+reaction \coctoctwo
 has a reasonably large cross section at temperatures near
 5000K despite being endothermic by 4.8eV. Although the CO target abundance for
-production of \ctwo\ in this manner must be calculated, they stated that at
+production of $\ctwo$\ in this manner must be calculated, they stated that at
 $T=5000$K the rate factor
 $\langle \sigma v \rangle = k_{CO,C} = 8.6 \times 10^{-14}$ cm$^3$ s$^{-1}$
-created \ctwo\ much more
-rapidly than the slow radiative reaction $C + C \to C_2 + \gamma$.
+created $\ctwo$\ much more
+rapidly than the slow radiative reaction \twoctoctwo.
 Sensing its significance,
 they claimed in their list of conclusions: ``2. A new pathway to the formation
 of carbon chains is active in the O-rich mass zone of the unmixed ejecta and
-is identified as the CO conversion to \ctwo\ via collisions with C.''  They were
+is identified as the CO conversion to $\ctwo$\ via collisions with C.''  They were
 unable to evaluate its full quantitative consequences because their reaction
-network terminated at \cthree\
+network terminated at $\cthree$\
 and did not include the formation of linear carbon
-chains Cn and their isomerization to carbon rings. Doing so is one goal of our
+chains $\cenn$
+and their isomerization to carbon rings. Doing so is one goal of our
 study. But the overriding goal is to point out large abundance differences
 between the computations of these two groups and to resolve them if possible. 
 
 Several important consequences for astronomy depend on careful
-analysis of this claim that the production of \ctwo\ owing to the reaction
-$C+C \to C_2 + \gamma$, as \citet{1999Sci...283.1290C,2001ApJ...562..480C}
+analysis of this claim that the production of $\ctwo$\ owing to the reaction
+\twoctoctwo, as \citet{1999Sci...283.1290C,2001ApJ...562..480C}
 had done, severely
-underestimates the abundances of linear carbon chains because much more \ctwo\
+underestimates the abundances of linear carbon chains because much more $\ctwo$\
 is made earlier \citep{2010ApJ...713....1C} near T=5000K. Testing this
 competition is essential for understanding of dust condensation within
 supernovae. Dust created by supernova expansions is currently under intense
@@ -197,8 +203,10 @@ $\tau_e$ of CO
 molecules against inelastic scattering dissociation by Compton electrons
 caused by the 56Co radioactivity. In a gas of pure CO the mean energy per ion
 pair is defined as the energy of primary electrons divided by the number of
-pairs produced. Liu and Victor (1994) calculated the mean energy per ion pair
-in pure CO gas and obtained the result ΔE=32.3 eV deposited per dissociated CO
+pairs produced. \citet{1994ApJ...435..909L}
+calculated the mean energy per ion pair
+in pure CO gas and obtained the result $\Delta E = 32.3$ eV
+deposited per dissociated CO
 pair, which agrees well with the measurement of 32.2 eV by
 \citet{1968...Klots}.
 So the efficiency of energetic electrons for dissociating CO seems well
@@ -225,20 +233,21 @@ all would be able to condense if that interior were governed by chemical
 equilibrium. 
 
 We use an intentionally limited set of chemical species because our goal is
-to study carbon chemistry: C, O, CO, \ctwo, \cthree, ... \ceight and
-\ceightr, the ringed isomer of \ceight, to which we give a lifetime
+to study carbon chemistry: C, O, CO, $\ctwo$, $\cthree$, ... $\ceight$\ and
+$\ceightr$, the ringed isomer of $\ceight$, to which we give a lifetime
 $\tau_8^r = 10$ s against thermal isomeric transition
-from linear \ceight to ringed \ceightr.
+from linear $\ceight$ to ringed $\ceightr$.
 Those ringed molecules are the seeds for carbon
 growth because their oxidation rates are much smaller than oxidation rates of
-linear Cn whereas its C capture rates are fast. We take ringed \ceightr to be
+linear $\cenn$
+whereas its C capture rates are fast. We take ringed $\ceightr$ to be
 indestructible, simply integrating their rate of production. Our strategy is
-to compute the number \ceightr remaining after expansion from two differing
-sources of \ctwo\ initiating the linear Cn chains. Those two source reactions
-are
+to compute the number $\ceightr$ remaining after expansion from two differing
+sources of $\ctwo$\ initiating the linear $\cenn$
+chains. Those two source reactions are
 \begin{itemize}
-\item $C + C \to C_2 + \gamma$ \citep{1999Sci...283.1290C}.
-\item $CO + C \to C_2 + O$  \citep{2009ApJ...703..642C,2010ApJ...713....1C}.
+\item \twoctoctwo\ \citep{1999Sci...283.1290C}.
+\item \coctoctwo\ \citep{2009ApJ...703..642C,2010ApJ...713....1C}.
 \end{itemize}
 We take our reaction rates from the rate tables in
 \citet{2009ApJ...703..642C,2010ApJ...713....1C}.
@@ -258,7 +267,7 @@ Because of their helpful cataloging of reaction rate tables,
 and in order to compare results without rate differences, we take the
 rates as given in the tables of
 \citet{2009ApJ...703..642C,2010ApJ...713....1C}.
-As one example, we take the rate for $C + C \to C_2 + \gamma$
+As one example, we take the rate for \twoctoctwo\
 as the rate given by RA4 in Table 5 in \citet{2009ApJ...703..642C}, p. 649.
 
 Our computational reaction network is {\em libnucnet}
@@ -274,7 +283,7 @@ The interior core of C and O resulting from completed He burning in massive
 stars is a mix of C and O atoms having bulk C/O $<$ 1. Post explosive cooling of
 such matter will attempt to associate C and O into CO molecules, with rate
 coefficient $k_{CO}$=3.3x10-17cm3s-1 \citep{1990ApJ...358..262L}.
-The reaction C+O → CO+ γ is one of the crucial reactions of chemical
+The reaction \cotoco\ is one of the crucial reactions of chemical
 astrophysics. Its rate $k_{CO}$ is intrinsically slow because quantum mechanics
 requires not only rearrangement of electronic shells but also simultaneous
 creation of a photon during the collision; nonetheless, the huge product
@@ -359,7 +368,8 @@ the nucleations upon which graphite grows.
 
 Figure \ref{fig:nco}
 compares our network calculation of the abundance of CO molecules
-with the expectation of Eq.(2) when τγ dominates the destruction of CO.
+with the expectation of Eq. (\ref{eq:comax}) when $\tau_\gamma$
+dominates the destruction of CO.
 Solid points display the equilibrium product nCOγeq calculated from the
 factors shown in Table \ref{tab:quantities}
 and from the number densities $n_C$ and $n_O$ after
@@ -392,26 +402,27 @@ two flows destroying CO. The destruction flow $n_{CO}/\tau_\gamma$
 almost balances the
 association flow above 4000K except for a tiny excess leading to the
 slow growth of nCO evident in Fig. \ref{fig:nco}. In that temperature range the
-production by C+O→ CO+γ is in equilibrium with the thermal radiation field,
-as Fig. \ref{fig:nco} implied. The destruction flow nCO/τe almost balances the
+production by \cotoco\ in equilibrium with the thermal radiation field,
+as Fig. \ref{fig:nco} implied. The destruction flow $n_{CO}/\tau_e$
+almost balances the
 creation flow below 3500K. The transition between destruction modes occurs
 near 3500K. It is no coincidence that the maximum of nCO occurs when
 Compton electrons begin to dominate CO dissociation, because nCO would
 continue growing as long as thermal photons dominate CO dissociation. 
 
-\section{Abundances of $C_n$}
+\section{Abundances of $\cenn$}
 
-Figure \ref{fig:ncoc2} displays the number density $n_{C_2}$ along with
-that of $n_{CO}$. At its maximum $n_{C_2} =0.1$ cm$^{-3}$ is only about
-$10^{-7}$ of $n_{CO}$. The reason \ctwo\ is so rare is that its dissociation
+Figure \ref{fig:ncoc2} displays the number density $n_{\ctwo}$ along with
+that of $n_{CO}$. At its maximum $n_{\ctwo} =0.1$ cm$^{-3}$ is only about
+$10^{-7}$ of $n_{CO}$. The reason $\ctwo$\ is so rare is that its dissociation
 rate by thermal photons is much faster than that for CO because the binding
-energy of {\bf \ctwo\ CORRECT?} is
-so much less than that for CO. This $n_{C_2}$
+energy of {\bf $\ctwo$\ CORRECT?} is
+so much less than that for CO. This $n_{\ctwo}$
 maximum differs greatly
 from results in \citet{2009ApJ...703..642C}, where their Fig. 11 shows the
-maximum atom fraction of $n_{C_2}$ to be near $10^{-5}$,
+maximum atom fraction of $n_{\ctwo}$ to be near $10^{-5}$,
 equal to about $10^5$ cm$^{-3}$, almost 1\% of $n_{CO}$ at that time.
-And their maximum for \ctwo\ occurs near 7000 K, far too hot for \ctwo\ to
+And their maximum for $\ctwo$\ occurs near 7000 K, far too hot for $\ctwo$\ to
 be abundant in the face of rapid dissociation. The huge differences between
 these two computations require an explanation. We find it likely that
 \cite{2009ApJ...703..642C} inadvertently omitted photodissociation by thermal
@@ -422,35 +433,35 @@ Figure \ref{fig:yi}
 shows the abundances $Y_i$ of each species in our small network as a
 function of time t-t(6000K) after T=6000K. From Table \ref{tab:quantities},
 start time is $t(6000K) =5.47x10^6$ s. To display each $Y_i$ on a figure with
-reasonable ordinate resolution, we have scaled each $C_n$ by the factor
+reasonable ordinate resolution, we have scaled each $\cenn$\ by the factor
 stated in the box. Many features are noteworthy: (1) C and O are constant
 because their small depletion is negligible on the scale shown;
-(2) maxima in CO and \ctwo\ occur at almost exactly the same time
+(2) maxima in CO and $\ctwo$\ occur at almost exactly the same time
 $t-t(6000K)= 4 \times 10^6$ s, as in Fig. \ref{fig:ncoc2};
-(3) \cthree\ has very small abundance, about $3 \times 10^{-8}$ of \ctwo
-at the \ctwo\ maximum, although much later \cthree\ slowly grows modestly
-relative to much more abundant \ctwo; (4) the rise shapes of \cfour
-through \ceight\ are very similar because they are linked by a near steady
-state; (5) the ringed carbon \ceightr\ has similar abundance shape vs. time,
+(3) $\cthree$\ has very small abundance, about $3 \times 10^{-8}$ of $\ctwo$
+at the $\ctwo$\ maximum, although much later $\cthree$\ slowly grows modestly
+relative to much more abundant $\ctwo$; (4) the rise shapes of $\cfour$
+through $\ceight$\ are very similar because they are linked by a near steady
+state; (5) the ringed carbon $\ceightr$\ has similar abundance shape vs. time,
 but notice that it is actually much more abundant than C7-8 because it
-accumulates from isomeric transitions of \ceight\ and unlike $C_n$ does not
+accumulates from isomeric transitions of $\ceight$\ and unlike $\cenn$\ does not
 suffer from fast oxidation \citep{1999Sci...283.1290C}. Each of these
 features is understandable in terms of the flows into and out of each species. 
 
-Figure \ref{fig:cn} shows the shape of $C_n$ vs. $n$ for \cthree\ to
-\ceight\ at two different temperatures near 2000K. As temperature declines,
-the curve flattens because photoejection from $C_n$ by thermal photons
+Figure \ref{fig:cn} shows the shape of $\cenn$\ vs. $n$ for $\cthree$\ to
+$\ceight$\ at two different temperatures near 2000K. As temperature declines,
+the curve flattens because photoejection from $\cenn$\ by thermal photons
 (or phonons) weakens. These abundance ratios are almost in a steady state,
 but that steady state changes slightly as T falls. These patterns show
-almost equal values for $Y(C_3)$ because that curve is relatively flat
+almost equal values for $Y(\cthree)$ because that curve is relatively flat
 with time near $t-t(6000K) = 10^7$ s (Fig. \ref{fig:yi}).
 Table \ref{tab:flows} lists our computed reaction flows both in and out of
-\csix\ at T = 2031K and T = 1802K. The reactions are specified there in the
+$\csix$\ at T = 2031K and T = 1802K. The reactions are specified there in the
 compact notation target(in,out)residual. Fig. \ref{fig:cn} and
 Table \ref{tab:flows} are made to be studied together.
-Note that the abundances of \ceight\ are very small:
+Note that the abundances of $\ceight$\ are very small:
 $Y(C_8)= 10^{-36}$ at T = 1802K. The isomeric transition from linear to
-ringed \ceight, for which we estimate a lifetime $\tau = 10$ s,
+ringed $\ceight$, for which we estimate a lifetime $\tau = 10$ s,
 provides the nucleations for graphite growth. Figure \ref{fig:ncoc2} showed
 that $Y(C_{8}^r)$ 
 
@@ -458,13 +469,13 @@ We call attention to several conclusions to be drawn from Table \ref{tab:flows}.
 Firstly, the strongest flows by a wide margin involving C6 are
 $C_5 + C \to C_6$,
 which is very fast ($k = 3 \times 10^{-10} cm^3 s^{-1}$)
-because vibrational excitation of \csix\
+because vibrational excitation of $\csix$
 obviates the need for creating a photon \citep{1999Sci...283.1290C},
 and its inverse reaction which ejects a C atom. Furthermore, those flows
 are equal to three significant figures, illustrating the near steady
-state of the abundance pattern. Secondly, thermal dissociation of \csix\ is
+state of the abundance pattern. Secondly, thermal dissociation of $\csix$\ is
 very much faster than its oxidation, showing the small effect of oxidation
-on the abundance pattern. The destroying flows from \csix\ to \cfive\
+on the abundance pattern. The destroying flows from $\csix$\ to $\cfive$
 stand in the approximate ratio $C_6(\gamma,C)/C_6(O,CO) = 5 \times 10^5$
 at $T = 2031$ K and $2 \times 10^4$ at $T = 1802$ K.
 Photodissociation dominates. The smaller value for that ratio at T=1802K
@@ -479,7 +490,7 @@ The steady state shifts to new ratios as T falls.
 Thirdly, calculation of the rates will be illustrated for sake of clarity
 by the flow $C_6 + O \to CO + C_5$.
 From Fig. \ref{fig:cn}
-one sees that at T=2031K the abundance $Y(C_6) = 10^{-33.3}$.
+one sees that at T=2031K the abundance $Y(\csix) = 10^{-33.3}$.
 The value of $Y(O) = 10^{10} cm^{-3} / 1.1 \times 10^{10} cm^{-3} = 0.909$,
 so the flow per atom per
 second (e.g. Eq.3) is dY/dt= Y(C6)Y(O)n(2031K)k(C6O).
@@ -490,21 +501,22 @@ Gathering factors yields approximately 4x10-35 n-1s-1,
 in good approximation to the Table \ref{tab:flows}
 flow entry $3.61 \times 10^{-35} n^{-1}s^{-1}$. 
 
-Our calculations have shown clearly that producing \ctwo\ molecules near
+Our calculations have shown clearly that producing $\ctwo$\ molecules near
 5000K via the CO + C reaction \citep{2009ApJ...703..642C} is not a viable
 prospect for condensation of carbon dust via linear carbon chains.
-The abundance of CO is far too small for it to seed high-T \ctwo\ production.
-The abundance of C8 rings grows much later (Fig. 4) near 2000K, as
+The abundance of CO is far too small for it to seed high-T $\ctwo$\ production.
+The abundance of $\ceight$
+rings grows much later (Fig. \ref{fig:yi}) near 2000K, as
 \citet{1999Sci...283.1290C,2001ApJ...562..480C} had found.
-These rings grew from \ctwo\ created by simple carbon association,
-$C + C \to C_2 + \gamma$.
-Furthermore, the abundance of \ctwo\ is very small near 5000K
+These rings grew from $\ctwo$\ created by simple carbon association,
+\twoctoctwo.
+Furthermore, the abundance of $\ctwo$\ is very small near 5000K
 (Fig. \ref{fig:ncoc2}),
 primarily because its thermal dissociation rate is much too fast for
 it to have significant abundance at that high T.
-What little \ctwo\ is made at 5000K is immediately dissociated by
+What little $\ctwo$\ is made at 5000K is immediately dissociated by
 thermal photos. Therefore its small steady-state abundance is inadequate
-for building abundances of \cthree\ and beyond. 
+for building abundances of $\cthree$\ and beyond. 
 
 \section{Contrast with \citet{2009ApJ...703..642C}}
 
@@ -520,15 +532,15 @@ builds to a maximum of only 10-3, which it achieves only slowly
 (Fig. \ref{fig:ncoc2}), reaching that maximum only at T=3500K rather
 than 5500K.
 
-\item We find a maximum number density $n_{C_2} = 0.1$ cm$^{-3}$,
+\item We find a maximum number density $n_{\ctwo} = 0.1$ cm$^{-3}$,
 only about $10^{-7}$ of
-$n_{CO}$. We find \ctwo\ to be rare at high temperature because its
+$n_{CO}$. We find $\ctwo$\ to be rare at high temperature because its
 dissociation rate by thermal photons is very much faster than for CO
-owing to the smaller binding energy (6.3eV) of \ctwo. This $n_{C_2}$
+owing to the smaller binding energy (6.3eV) of $\ctwo$. This $n_{\ctwo}$
 maximum differs greatly from results in \citet{2009ApJ...703..642C},
-where their Fig. 11 shows the maximum atom fraction of $n_{C_2}$ to be
+where their Fig. 11 shows the maximum atom fraction of $n_{\ctwo}$ to be
 near $10^{-5}$, equal to about $10^5$ cm$^{-3}$, almost 1\% of
-$n_{CO}$ at that time. Our \ctwo/CO abundance ratio is,
+$n_{CO}$ at that time. Our $\ctwo$/CO abundance ratio is,
 in other words, only $10^{-5}$ of the same ratio calculated by
 \citet{2009ApJ...703..642C}.
 
@@ -537,25 +549,25 @@ We reasoned that these big differences could be understood if
 \citet{2009ApJ...703..642C} had inadvertantly omitted the thermal
 dissociation rates of small carbon molecules. Believing that to be the
 cause for the discrepancy, we tested that hypothesis by performing our
-own trial calculation involving only C, O, CO, \ctwo, and \cthree,
+own trial calculation involving only C, O, CO, $\ctwo$, and $\cthree$,
 as they had done,
 and omitted the $\tau_\gamma$ destruction terms.
 Figure 6 displays the result.
 The rapid rise of $Y(CO)$ to $10^{-2}$ at high temperature is very similar to
 Fig. 11 of \citet{2009ApJ...703..642C}.
-Similarity also describes $Y(C_2)$,
+Similarity also describes $Y(\ctwo)$,
 which grows quickly (Fig. 6) to 2x10-4 of Y(CO),
 whereas our Fig. \ref{fig:ncoc2} shows the true value of $Y(CO)$ to be
 only $10^{-8}$ at T=5500K and, considerably later,
-$Y(C_2)/Y(CO) = 10^{-7}$ at their maxima. 
+$Y(\ctwo)/Y(CO) = 10^{-7}$ at their maxima. 
 
-With photodissociation turned off, the destruction of \ctwo\ is primarily
-by oxidation, $C_2+O \to CO + C$, whereas production of \ctwo is by
-$CO + C \to C_2 + O$, the reaction we study in this work.
+With photodissociation turned off, the destruction of $\ctwo$\ is primarily
+by oxidation, \ctowotococ, whereas production of $\ctwo$ is by
+\coctoctwo, the reaction we study in this work.
 Those strive to balance, which if achieved establishes a steady state
-ratio $Y(CO)/Y(C_2) = 3.5 \times 10^4$. Fig. 6 and their Fig. 11 do show
-approximately that value, but $Y(C_2)$ declines faster than $Y(CO)$
-because of declining production of \ctwo\ as T declines.
+ratio $Y(CO)/Y(\ctwo) = 3.5 \times 10^4$. Fig. 6 and their Fig. 11 do show
+approximately that value, but $Y(\ctwo)$ declines faster than $Y(CO)$
+because of declining production of $\ctwo$\ as T declines.
 
 We could not expect detailed agreement, even if our hypothesis for the
 cause of the discrepancy is correct. Our calculation used
@@ -565,7 +577,7 @@ T=18500/(t/100d)1.8.
 We believe that their T is too hot owing to omission of CO cooling
 (\citealp{1996ApJ...471..480L}, Fig. 5),
 which we tried to accommodate roughly by
-the choice T=3800K at t=100d, which is about 50% of the temperature
+the choice T=3800K at t=100d, which is about 50\% of the temperature
 within published models which do omit CO cooling. And owing to the
 factor $t^{-1.8}$, their T falls through a specified temperature drop
 (say, 5000K to 3000K) more quickly than does our parameterization.
@@ -619,8 +631,8 @@ of destruction of CO. The destruction flow nCOnC$k_{CO}$+C is only $3.27 \times
 \epsscale{.80}
 %\plotone{f1.eps}
 \caption{
-Number densities of CO and of \ctwo\ as functions of temperature.
-The maximum density of \ctwo\ is 0.1 cm$^{-3}$.
+Number densities of CO and of $\ctwo$\ as functions of temperature.
+The maximum density of $\ctwo$\ is 0.1 cm$^{-3}$.
 Both abundances grow much more slowly than in the calculation by
 \citet{2009ApJ...703..642C}.} \label{fig:ncoc2}
 \end{figure}
@@ -631,8 +643,8 @@ Both abundances grow much more slowly than in the calculation by
 \epsscale{.80}
 %\plotone{f1.eps}
 \caption{
-The abundance (number per atom) of linear chains $C_n$ and of ringed isomer
-\ceightr. We have scaled each $Y(C_n)$ by the factor stated in the box.}
+The abundance (number per atom) of linear chains $\cenn$\ and of ringed isomer
+$\ceightr$. We have scaled each $Y(C_n)$ by the factor stated in the box.}
 \label{fig:yi}
 \end{figure}
 
@@ -642,9 +654,10 @@ The abundance (number per atom) of linear chains $C_n$ and of ringed isomer
 \epsscale{.80}
 %\plotone{f1.eps}
 \caption{
-Shape of $Y(C_n)$ vs. n for \cthree to \ceight\ at two different temperatures
+Shape of $Y(C_n)$ vs. n for $\cthree$\ to $\ceight$
+at two different temperatures
 near 2000K. These shapes can be understood by the relative magnitudes of
-flows into and out of $C_n$.
+flows into and out of $\cenn$.
 }
 \label{fig:cn}
 \end{figure}
@@ -693,7 +706,8 @@ selected $T$}
 
 \begin{table}
 \begin{center}
-\caption{Reaction Flows ($n^{-1}s^{-1}$) involving \csix\ at two temperatures.}
+\caption{Reaction Flows ($n^{-1}s^{-1}$) involving $\csix$\
+at two temperatures.}
 \label{tab:flows}
 \begin{tabular}{crrrrrrrrrrr}
 \tableline\tableline
