@@ -1,44 +1,4 @@
-%%
-%% Beginning of file 'sample.tex'
-%%
-%% Modified 2005 December 5
-%%
-%% This is a sample manuscript marked up using the
-%% AASTeX v5.x LaTeX 2e macros.
-
-%% The first piece of markup in an AASTeX v5.x document
-%% is the \documentclass command. LaTeX will ignore
-%% any data that comes before this command.
-
-%% The command below calls the preprint style
-%% which will produce a one-column, single-spaced document.
-%% Examples of commands for other substyles follow. Use
-%% whichever is most appropriate for your purposes.
-%%
-%%\documentclass[12pt,preprint]{aastex}
-
-%% manuscript produces a one-column, double-spaced document:
-
 \documentclass[manuscript]{aastex}
-
-%% preprint2 produces a double-column, single-spaced document:
-
-%% \documentclass[preprint2]{aastex}
-
-%% Sometimes a paper's abstract is too long to fit on the
-%% title page in preprint2 mode. When that is the case,
-%% use the longabstract style option.
-
-%% \documentclass[preprint2,longabstract]{aastex}
-
-%% If you want to create your own macros, you can do so
-%% using \newcommand. Your macros should appear before
-%% the \begin{document} command.
-%%
-%% If you are submitting to a journal that translates manuscripts
-%% into SGML, you need to follow certain guidelines when preparing
-%% your macros. See the AASTeX v5.x Author Guide
-%% for information.
 
 \newcommand{\ctwo}{{\rm C}_2}
 \newcommand{\cthree}{{\rm C}_3}
@@ -58,52 +18,16 @@
 \newcommand{\ncogeq}{n_{CO}^{\gamma eq}}
 \newcommand{\nar}{New Astron. Rev.}
 
-%% You can insert a short comment on the title page using the command below.
-
-%\slugcomment{Not to appear in Nonlearned J., 45.}
-
-%% If you wish, you may supply running head information, although
-%% this information may be modified by the editorial offices.
-%% The left head contains a list of authors,
-%% usually a maximum of three (otherwise use et al.).  The right
-%% head is a modified title of up to roughly 44 characters.
-%% Running heads will not print in the manuscript style.
-
 \shorttitle{Formation of $\cenn$ Molecules}
 \shortauthors{Yu et al.}
 
-%% This is the end of the preamble.  Indicate the beginning of the
-%% paper itself with \begin{document}.
-
 \begin{document}
-
-%% LaTeX will automatically break titles if they run longer than
-%% one line. However, you may use \\ to force a line break if
-%% you desire.
 
 \title{Formation of $\cenn$ Molecules in Oxygen-rich Interiors of Type II
 Supernovae}
 
-%% Use \author, \affil, and the \and command to format
-%% author and affiliation information.
-%% Note that \email has replaced the old \authoremail command
-%% from AASTeX v4.0. You can use \email to mark an email address
-%% anywhere in the paper, not just in the front matter.
-%% As in the title, use \\ to force line breaks.
-
 \author{Tianhong Yu, Bradley S. Meyer, and Donald D. Clayton}
 \affil{Department of Physics and Astronomy, Clemson University, Clemson, SC 29634-0978}
-
-%% Notice that each of these authors has alternate affiliations, which
-%% are identified by the \altaffilmark after each name.  Specify alternate
-%% affiliation information with \altaffiltext, with one command per each
-%% affiliation.
-
-%% Mark off your abstract in the ``abstract'' environment. In the manuscript
-%% style, abstract will output a Received/Accepted line after the
-%% title and affiliation information. No date will appear since the author
-%% does not have this information. The dates will be filled in by the
-%% editorial office after submission.
 
 \begin{abstract}
 Two reaction-rate-based kinetic models for condensation of carbon dust via the
@@ -122,12 +46,7 @@ pathway to carbon rings. We propose an explanation for why the second pathway
 is not nearly as effective as its proponents calculated it to be.
 \end{abstract}
 
-%% Keywords should appear after the \end{abstract} command. The uncommented
-%% example has been keyed in ApJ style. See the instructions to authors
-%% for the journal to which you are submitting your paper to determine
-%% what keyword punctuation is appropriate.
-
-\keywords{atomic processes, ISM: abundances, ISM: general, meteorites, meteors, meteoroids, supernovae: general, supernovae: individual: SN 1987A}
+\keywords{atomic processes --- ISM: abundances --- ISM: general --- meteorites, meteors, meteoroids --- supernovae: general --- supernovae: individual (SN 1987A)}
 
 \section{Introduction}
 
@@ -850,6 +769,3 @@ $\csix({\rm O},{\rm CO})\cfive$ &
 \bibliography{clemson}
 
 \end{document}
-
-%%
-%% End of file `sample.tex'.
