@@ -1,4 +1,4 @@
-file_name = 'co_c2_T.jpeg'
+file_name = 'co_c2_T.eps'
 restore, 'template12.dat'
 
 file1 = 'prop'
@@ -18,7 +18,7 @@ yrange = [1.e0,1.e7]
 s1 = read_ascii( file1, template = template12 )
 s2 = read_ascii( file2, template = template12 )
 
-names = ['species', '$n_{CO}$', '$10^5\timesn_{C_2}$']
+names = ['species', '$n(CO)$', '$10^5\timesn(C_2)$']
 
 xtitle = '$Temperature (K)$'
 ytitle = '$Number density (cm^{-3})$'
@@ -33,7 +33,8 @@ y2 = 1.e5 * na * s1.d / s1.d[0] * s2.e / 2. + d_small
 
 p1 = plot( x1, y1, name = names[1], 'r', $
            xlog = xlog, ylog = ylog, $
-           title = title, xtitle = xtitle, ytitle = ytitle, $
+           ;title = title, 
+           xtitle = xtitle, ytitle = ytitle, $
            xrange = xrange, yrange = yrange, buffer = buf )
 p2 = plot( x1, y2, name = names[2], /overplot, 'b' )
 

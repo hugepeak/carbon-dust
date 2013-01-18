@@ -1,4 +1,4 @@
-file_name = 'scaled_cn_time.jpeg'
+file_name = 'scaled_cn_time.eps'
 restore, 'template12.dat'
 
 file1 = 'prop'
@@ -45,14 +45,15 @@ y11 = s2.l / 8. * 1.e16 + d_small
 
 p1 = plot( x1, y1, name = names[1], 'c', $
            xlog = xlog, ylog = ylog, $
-           title = title, xtitle = xtitle, ytitle = ytitle, $
+           ;title = title, 
+           xtitle = xtitle, ytitle = ytitle, $
            xrange = xrange, yrange = yrange, buffer = buf )
 p2 = plot( x1, y2, name = names[2], /overplot, 'b' )
 p3 = plot( x1, y3, name = names[3], /overplot, 'g' )
 p4 = plot( x1, y4, name = names[4], /overplot, 'r' )
 p5 = plot( x1, y5, name = names[5], /overplot, 'c--' )
 p6 = plot( x1, y6, name = names[6], /overplot, 'm--' )
-p7 = plot( x1, y7, name = names[7], /overplot, 'y--' )
+p7 = plot( x1, y7, name = names[7], /overplot, 'k--' )
 p8 = plot( x1, y8, name = names[8], /overplot, 'b--' )
 p9 = plot( x1, y9, name = names[9], /overplot, 'g--' )
 p10 = plot( x1, y10, name = names[10], /overplot, 'm' )

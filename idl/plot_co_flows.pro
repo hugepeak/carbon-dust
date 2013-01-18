@@ -1,4 +1,4 @@
-file_name = 'co_flows_T.jpeg'
+file_name = 'co_flows_T.eps'
 restore, 'template12.dat'
 
 buf = 1
@@ -12,8 +12,8 @@ file2 = 'co_flows'
 s1 = read_ascii( file1, template = template12 )
 s2 = read_ascii( file2, template = template12 )
 
-names = ['name', '$CO + e^- -> CO + e^-$', $
-         '$CO + \gamma -> C + O$', $
+names = ['name', '$CO + e -> C + O + e\prime$', $
+         '$CO + \gamma$' + '$ -> C + O$', $
          '$C + O -> CO + \gamma$']
 
 title = '$expand from T=6000(K) ' $
@@ -37,7 +37,8 @@ y3 = s2.e + d_small
 
 p1 = plot( x1, y1, name = names[1], 'r', $
            xlog = xlog, ylog = ylog, $
-           title = title, xtitle = xtitle, ytitle = ytitle, $
+           ;title = title, 
+           xtitle = xtitle, ytitle = ytitle, $
            xrange = xrange, yrange = yrange, buffer = buf )
 p2 = plot( x1, y2, name = names[2], /overplot, 'b' )
 p3 = plot( x1, y3, name = names[3], /overplot, 'g' )

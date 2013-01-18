@@ -1,4 +1,4 @@
-file_name = 'cn_n.jpeg'
+file_name = 'cn_n.eps'
 restore, 'template12.dat'
 
 file1 = 'prop'
@@ -6,6 +6,7 @@ file2 = 'mass_fractions'
 
 buf = 1
 position = [0.8, 0.8]
+dimensions = [640, 512]
 xlog = 0
 ylog = 0
 
@@ -36,6 +37,7 @@ yy1 = alog10(y1)
 yy2 = alog10(y2)
 
 p1 = plot( x1, yy1, name = names[1], 'k', $
+           dimensions = dimensions, $
            xlog = xlog, ylog = ylog, $
            ;title = title, 
            xtitle = xtitle, ytitle = ytitle, $
