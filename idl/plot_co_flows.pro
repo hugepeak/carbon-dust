@@ -17,8 +17,7 @@ names = ['name', '$CO + e -> C + O + e\prime$', $
          '$C + O -> CO + \gamma$']
 
 title = '$expand from T=6000(K) ' $
-        + 'with n(C)=10^9(cm^{-3}) & n(O)=10^{10}(cm^{-3}), ' $
-        + '\tau~100(days)$'
+        + 'with n(C)=10^9(cm^{-3}) & n(O)=10^{10}(cm^{-3})$'
 xtitle = '$t - t(6000K) (s)$'
 xtitle = '$T(K)$'
 ytitle = '$Flows (reactions per second per atom)$'
@@ -35,13 +34,13 @@ y1 = s2.c + d_small
 y2 = s2.d + d_small
 y3 = s2.e + d_small
 
-p1 = plot( x1, y1, name = names[1], 'r', $
+p1 = plot( x1, y1, name = names[1], '-.', $
            xlog = xlog, ylog = ylog, $
-           ;title = title, 
+           ;title = title, $
            xtitle = xtitle, ytitle = ytitle, $
            xrange = xrange, yrange = yrange, buffer = buf )
-p2 = plot( x1, y2, name = names[2], /overplot, 'b' )
-p3 = plot( x1, y3, name = names[3], /overplot, 'g' )
+p2 = plot( x1, y2, name = names[2], /overplot, '--' )
+p3 = plot( x1, y3, name = names[3], /overplot, '-' )
 
 l = legend( target = [p1,p2,p3], $
             position = position ) 

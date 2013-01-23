@@ -20,6 +20,8 @@ names = ['names', 'T=2031(K)', 'T=1802(K)', '$CO$', $
          '$C_2$', '$C_3$', '$C_4$', '$C_5$', '$C_6$', $
          '$C_7$', '$C_8^C$', '$C_8^R$' ]
 
+title = '$expand from T=6000(K), ' $
+        + 'with n(C)=10^9(cm^{-3}) & n(O)=10^{10}(cm^{-3})$'
 xtitle = '$Number of Carbon Atoms$'
 ytitle = '$log Abundance$'
 
@@ -39,11 +41,11 @@ yy2 = alog10(y2)
 p1 = plot( x1, yy1, name = names[1], 'k', $
            dimensions = dimensions, $
            xlog = xlog, ylog = ylog, $
-           ;title = title, 
+           ;title = title, $
            xtitle = xtitle, ytitle = ytitle, $
            xminor = 0, $
            xrange = xrange, yrange = yrange, buffer = buf )
-p2 = plot( x1, yy2, name = names[2], 'r', /overplot )
+p2 = plot( x1, yy2, name = names[2], '--', /overplot )
 
 l = legend( target = [p1,p2], position = position ) 
 

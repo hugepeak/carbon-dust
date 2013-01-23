@@ -4,8 +4,7 @@ restore, 'template12.dat'
 file1 = 'prop'
 file2 = 'mass_fractions'
 title = '$expand from T=6000(K), ' $ 
-        + 'with n(C)=10^9(cm^{-3}) & n(O)=10^{10}(cm^{-3}), ' $
-        + '\tau~100(days)$' 
+        + 'with n(C)=10^9(cm^{-3}) & n(O)=10^{10}(cm^{-3})$'
 
 buf = 1
 position = [0.8, 0.33]
@@ -31,12 +30,12 @@ x1 = s1.c * 1.e9
 y1 = na * s1.d / s1.d[0] * s2.d / 2. + d_small
 y2 = 1.e5 * na * s1.d / s1.d[0] * s2.e / 2. + d_small
 
-p1 = plot( x1, y1, name = names[1], 'r', $
+p1 = plot( x1, y1, name = names[1], 'k', $
            xlog = xlog, ylog = ylog, $
-           ;title = title, 
+           ;title = title, $
            xtitle = xtitle, ytitle = ytitle, $
            xrange = xrange, yrange = yrange, buffer = buf )
-p2 = plot( x1, y2, name = names[2], /overplot, 'b' )
+p2 = plot( x1, y2, name = names[2], /overplot, '--' )
 
 l = legend( target = [p1,p2], $
             position = position ) 

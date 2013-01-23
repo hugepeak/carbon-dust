@@ -1,4 +1,4 @@
-file_name = 'compare_co.jpeg'
+file_name = 'compare_co.eps'
 restore, 'template12.dat'
 
 file1 = 'prop'
