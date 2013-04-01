@@ -1,4 +1,5 @@
 \documentclass[manuscript]{aastex}
+\usepackage{CJK}
 
 \newcommand{\ctwo}{{\rm C}_2}
 \newcommand{\cthree}{{\rm C}_3}
@@ -22,11 +23,12 @@
 \shortauthors{Yu et al.}
 
 \begin{document}
+\begin{CJK*}{UTF8}{gbsn}
 
 \title{Formation of $\cenn$ Molecules in Oxygen-rich Interiors of Type II
 Supernovae}
 
-\author{Tianhong Yu, Bradley S. Meyer, and Donald D. Clayton}
+\author{Tianhong Yu (喻天弘), Bradley S. Meyer, and Donald D. Clayton}
 \affil{Department of Physics and Astronomy, Clemson University, Clemson, SC 29634-0978}
 
 \begin{abstract}
@@ -136,10 +138,10 @@ $T = 3800 K / (t / 100 {\rm d}) =
 where t is the time elapsed since core collapse.
 We chooose $n_O = 10^{10}$ cm$^{-3}$
 and $n_C = 10^9$ cm$^{-3}$
-at the starting time $t = t(6000 {\rm K})$ 
+at the starting time $t = t_{6000 {\rm K} }$ 
 at $T=6000$ K for our chemical network . From our model choice for $T(t)$ we get
-$t(6000K) = 5.47 \times 10^6$s. At
-subsequent times $n_O(t) = 10^{10}{\rm cm}^{-3}(t/t(6000 {\rm K}))^{-3}$
+$t_{6000 {\rm K} } = 5.47 \times 10^6$s. At
+subsequent times $n_O(t) = 10^{10}{\rm cm}^{-3}(t/t_{6000 {\rm K}})^{-3}$
 owing to homologous expansion.
 Let $N$ be the number of any specific molecular species
 in a comoving, expanding, initially 1 cm$^3$ volume at 6000 K.
@@ -213,8 +215,7 @@ exposing coding errors.
 
 The interior core of C and O resulting from completed He burning in massive
 stars is a mix of C and O atoms having bulk C/O $<$ 1. Post explosive cooling of
-such matter will attempt to associate C and O into CO molecules, with rate
-coefficient $k_{CO} = 3.3 \times 10^{-17}$ cm$^3$ s$^{-1}$
+such matter will attempt to associate C and O into CO molecules 
 \citep{1990ApJ...358..262L}.
 The reaction \cotoco\ is one of the crucial reactions of chemical
 astrophysics. Its rate $k_{CO}$ is intrinsically slow because quantum mechanics
@@ -262,9 +263,9 @@ which is the form integrated by our network of coupled reactions.
 The number density $n$ is needed for the rate
 $n({\rm cm}^{-3}) k_{CO}({\rm cm}^3{\rm s}^{-1})$.
 In our numerical example we take $n_O = 10^{10}$ cm$^{-3}$ and
-$n_C = 10^9$ cm$^{-3}$ at $t(6000 {\rm K})$ as starting conditions for the
+$n_C = 10^9$ cm$^{-3}$ at $t_{6000 {\rm K}}$ as starting conditions for the
 chemical network. Subsequent values are $n = 1.1 \times 10^{10}$ cm$^{-3}$
-$[t(6000 {\rm K})/t]^3$, where the expansion factor reduces the initial number
+$[t_{6000 {\rm K}}/t]^3$, where the expansion factor reduces the initial number
 density appropriately. Expansion factors are also in Table 1. Then
 Eq. (\ref{eq:comax}) reads:
 \begin{equation}
@@ -314,7 +315,7 @@ Solid points display the equilibrium product $\ncogeq$ calculated from the
 factors shown in Table \ref{tab:quantities}
 and from the number densities $n_C$ and $n_O$ after
 their initial values at $T=6000$ K have been reduced by the expansion factor
-$(t/t(6000 {\rm K}))^{-3}$.
+$(t/t_{6000 {\rm K}})^{-3}$.
 Tight agreement for $T > 4000$ K is immediately evident,
 demonstrating that for $T > 4000$ K the abundance of CO is almost exactly in
 thermal equilibrium. Eq. (\ref{eq:comax}) validly describes the black dots in
@@ -333,7 +334,7 @@ Our kinetic results demonstrate that CO does quickly achieve its
 equilibrium abundance above $T = 4000$ K, and Eq. (\ref{eq:dycodt})
 shows that equilibrium to increase as $\tau_\gamma$ lengthens.
 At its final maximum $n_{CO} = 1.5 \times 10^6$ cm$^{-3}$,
-corresponding to $Y(CO) = 0.7 \times 10^{-3}$. The slow growth of $n_{CO}$
+corresponding to $Y_{CO} = 0.7 \times 10^{-3}$. The slow growth of $n_{CO}$
 shown in Fig. \ref{fig:nco} differs markedly from the results of
 \citet{2009ApJ...703..642C}.
 Their results (e.g. Fig. 11) show $n_{CO}$ climbing quickly near 6000 K
@@ -402,21 +403,22 @@ photons from their destruction rates.
 
 Figure \ref{fig:yi}
 shows the abundances $Y_i$ of each species in our small network as a
-function of time $t-t(6000 {\rm K})$ after $T=6000$ K.
+function of time $t-t_{6000 {\rm K}}$ after $T=6000$ K.
 From Table \ref{tab:quantities},
-start time is $t(6000K) =5.47 \times 10^6$ s.
+start time is $t_{6000 {\rm K}} =5.47 \times 10^6$ s.
 To display each $Y_i$ on a figure with
 reasonable ordinate resolution, we have scaled each $Y_n$\ by the factor
 stated in the box. Many features are noteworthy: (1) $Y_C$ and $Y_O$ 
 are constant
 because their small depletion is negligible on the scale shown;
 (2) maxima of $Y_{CO}$ and $Y_2$\ occur at almost exactly the same time
-$t-t(6000K)= 4 \times 10^6$ s, as was also seen in Fig. \ref{fig:ncoc2};
+$t-t_{6000K}= 4 \times 10^6$ s, as was also seen in Fig. \ref{fig:ncoc2};
 (3) $\cthree$\ has very small abundance, about $10^{-7}$ of $Y_2$, 
 although much later $Y_3$\ slowly grows modestly
 relative to much more abundant $\ctwo$; (4) the rise shapes of $Y_4$
 through $Y_8$\ are very similar because they are linked by a near steady
-state; (5) the ringed carbon $Y(\ceightr$) has similar abundance shape vs. time,
+state; (5) the ringed carbon abundance $Y_8^r$ has similar abundance shape 
+vs. time,
 but notice that it is actually much more abundant than lineaer $C_{7-8}$ and
 because it accumulates from isomeric transitions of $\ceight$\
 and unlike $\cenn$\ does not
@@ -425,7 +427,7 @@ features is understandable in terms of the flows into and out of each species.
 
 One sees from Fig. \ref{fig:yi} that the \coctoctwo\ reaction plays no
 role in $\ceightr$\ production from the fact that $\ceightr$\ rises only for
-$t - t(6000 {\rm K}) > 1.5 \times 10^7$ s, corresponding to $T < 2000$ K,
+$t - t_{6000 {\rm K}} > 1.5 \times 10^7$ s, corresponding to $T < 2000$ K,
 despite $\ctwo$\ and $\cthree$\ rising at much earlier times.
 Whatsoever $\ctwo$\ is made earlier plays no role in $\ceightr$\ production
 because the ejection of C atoms from $\cenn$\ at higher $T$ prevents the
@@ -433,9 +435,9 @@ flow to $\ceight$.  Only at $T < 2000$ K do those photodissociation reactions
 become so slow that $\ceight$\ can grow, which it does from the $\ctwo$\
 recently
 formed by the \twoctoctwo\ reaction near 2000 K.  Fig. \ref{fig:yi} also shows
-that $Y(\ceightr)$
+that $Y_8^r$
 grows quickly to $10^{-16}$.  Since available C is $Y_C = 0.1$,
-the ratio gives $10^{-15}$ C/ring.  This is enough to grow very large
+the ratio gives $10^{15}$ C/ring.  This is enough to grow very large
 graphite.
 
 Figure \ref{fig:cn} shows the shape of $\cenn$\ vs. $n$ for $\cthree$\ to
@@ -443,8 +445,8 @@ $\ceight$\ at two different temperatures near 2000 K. As temperature declines,
 the curve flattens because photoejection from $\cenn$\ by thermal photons
 (or vibrations) weakens. These abundance ratios are almost in a steady state,
 but that steady state changes slightly as $T$ falls. These patterns show
-almost equal values for $Y(\cthree)$ because that curve is relatively flat
-with time near $t-t(6000K) = 10^7$ s (Fig. \ref{fig:yi}).
+almost equal values for $Y_3$ because that curve is relatively flat
+with time near $t-t_{6000 {\rm K}} = 10^7$ s (Fig. \ref{fig:yi}).
 Table \ref{tab:flows} lists our computed reaction flows both in and out of
 $\csix$\ at $T = 2031$ K and $T = 1802$ K.
 The reactions are specified there in the
@@ -453,7 +455,7 @@ We tabulate the flow magnitudes for $\csix$ to aid readers checking our
 numerical results. Fig. \ref{fig:cn} and
 Table \ref{tab:flows} are made to be studied together.
 Note that the abundances of $\ceight$\ are very small:
-$Y(\ceight)= 10^{-36}$ at $T = 1802$ K.
+$Y_8= 10^{-36}$ at $T = 1802$ K.
 The isomeric transition from linear to
 ringed $\ceight$, for which we estimate a lifetime $\tau = 10$ s,
 provides the nucleations for graphite growth.
@@ -493,11 +495,11 @@ Thirdly, calculation of the rates will be illustrated for sake of clarity
 by the flow
 \csixotococfive.
 From Fig. \ref{fig:cn}
-one sees that at $T = 2031$ K the abundance $Y(\csix) = 10^{-33.3}$.
-The value of $Y(O) = 10^{10} cm^{-3} / 1.1 \times 10^{10} cm^{-3} = 0.909$,
+one sees that at $T = 2031$ K the abundance $Y_6 = 10^{-33.3}$.
+The value of $Y_O = 10^{10} cm^{-3} / 1.1 \times 10^{10} cm^{-3} = 0.909$,
 so the flow per atom per
 second (e.g., Eq. \ref{eq:dycodt}) is
-$dY/dt= Y(\csix)Y(O)n(2031K)k(\csix + {\rm O})$.
+$dY/dt= Y_6 Y_O n(2031K)k(\csix + {\rm O})$.
 Expansion from $T=6000$ K to $T=2031$ K has diluted the total number
 density $n$ to $1.1 \times 10^{10}{\rm cm}^{-3}
 (2031 {\rm K}/6000 {\rm K})^3 = 4.27 \times 10^8{\rm cm}^{-3}$.
@@ -533,8 +535,8 @@ and those of \citet{2009ApJ...703..642C,2010ApJ...713....1C}
 seem to be characterized by these differences:
 \begin{enumerate}
 
-\item Instead of growing large CO abundance near $Y(CO)=0.1$ at $T=5500$ K
-as in Fig. 11 of \citet{2009ApJ...703..642C}, we find that $Y(CO)$
+\item Instead of growing large CO abundance near $Y_{CO}=0.1$ at $T=5500$ K
+as in Fig. 11 of \citet{2009ApJ...703..642C}, we find that $Y_{CO}$
 builds to a maximum of only $10^{-3}$, which it achieves only slowly
 (Fig. \ref{fig:ncoc2}), reaching that maximum only at $T=3500$ K rather
 than 5500 K.
@@ -560,22 +562,22 @@ own trial calculation involving only C, O, CO, $\ctwo$, and $\cthree$,
 as they had done,
 and omitted the $\tau_\gamma$ destruction terms and the oxidation of $\cthree$.
 Figure \ref{fig:no_gamma} displays the result.
-The rapid rise of $Y(CO)$ to about $10^{-2}$ at high temperature is very 
+The rapid rise of $Y_{CO}$ to about $10^{-2}$ at high temperature is very 
 similar to Fig. 11 of \citet{2009ApJ...703..642C}.
-Similar also is $Y(\ctwo)$,
-which grows quickly (Fig. \ref{fig:no_gamma}) to $2 \times 10^{-4}$ of $Y(CO)$,
-whereas our Fig. \ref{fig:ncoc2} shows the true value of $Y(CO)$ to be
+Similar also is $Y_2$,
+which grows quickly (Fig. \ref{fig:no_gamma}) to $2 \times 10^{-4}$ of $Y_{CO}$,
+whereas our Fig. \ref{fig:ncoc2} shows the true value of $Y_{CO}$ to be
 only $10^{-8}$ at $T=5500$ K and, considerably later,
-$Y(\ctwo)/Y(CO) = 10^{-7}$ at their maxima. 
+$Y_2/Y_{CO} = 10^{-7}$ at their maxima. 
 
 With photodissociation turned off, the destruction of $\ctwo$\ occurs primarily
 by oxidation, \ctowotococ, whereas production of $\ctwo$ is by
 \coctoctwo, the reaction we study in this work.
 Those reactions strive to balance, which if achieved would
 establish a steady state
-ratio $Y(CO)/Y(\ctwo) = 3.5 \times 10^4$. Fig. \ref{fig:no_gamma}
+ratio $Y_{CO}/Y_2 = 3.5 \times 10^4$. Fig. \ref{fig:no_gamma}
 and their Fig. 11 do show
-approximately that value, but $Y(\ctwo)$ declines faster than $Y(CO)$
+approximately that value, but $Y_2$ declines faster than $Y_{CO}$
 because of declining production of $\ctwo$\ as T declines.
 
 We could not expect detailed agreement with \citet{2009ApJ...703..642C},
@@ -621,7 +623,7 @@ equilibrium, but at lower temperature $n_{CO}$ is increasingly smaller than
 thermal equilibrium would require. Instead of thermal photons,
 the destruction of CO becomes increasingly dominated by
 Compton electrons for $T < 3500$ K.
-One see in Fig. \ref{fig:nco} that $n_{CO}$max occurs near 3500K,
+One see in Fig. \ref{fig:nco} that $n_{CO,max}$ occurs near 3500K,
 which occurs near $10^7$ s (see Table \ref{tab:quantities}).} 
 \label{fig:nco}
 \end{figure}
@@ -656,7 +658,7 @@ Both abundances grow much more slowly than in the calculation by
 \plotone{Yi}
 \caption{
 The abundance (number per atom) of linear chains $\cenn$\ and of ringed isomer
-$\ceightr$. We have scaled each $Y(C_n)$ by the factor stated in the box.}
+$\ceightr$. We have scaled each $Y_n$ by the factor stated in the box.}
 \label{fig:yi}
 \end{figure}
 
@@ -665,7 +667,7 @@ $\ceightr$. We have scaled each $Y(C_n)$ by the factor stated in the box.}
 \begin{figure}
 \plotone{cn}
 \caption{
-Shape of $Y(C_n)$ vs. n for $\cthree$\ to $\ceight$
+Shape of $\log10(Y_n)$ vs. n for $\cthree$\ to $\ceight$
 at two different temperatures
 near 2000K. These shapes can be understood by the relative magnitudes of
 flows into and out of $\cenn$.
@@ -679,8 +681,8 @@ flows into and out of $\cenn$.
 \plotone{no_gamma}
 \caption{
 Abundances for network containing only C, O, CO, $\ctwo$, and $\cthree$
-when photodissociation of molecules is omitted. Rapid rise of $Y(CO)$
-to $10^{-2}$ near 5500 K and the ratio $Y(CO)/Y(\ctwo)$ near $10^4$ are
+when photodissociation of molecules is omitted. Rapid rise of $Y_{CO}$
+to $10^{-2}$ near 5500 K and the ratio $Y_{CO}/Y_2$ near $10^4$ are
 similar to Fig. 11 of \citet{2009ApJ...703..642C}.
 }
 \label{fig:no_gamma}
@@ -695,7 +697,7 @@ selected time $t$ and temperature $T$}
 \label{tab:quantities}
 \begin{tabular}{ccccccc}
 \tableline\tableline
-$t$ (s) & $\left[t / t(6000 {\rm K}) \right]^{-3}$ & $T$ (K) & $\tau_\gamma$ (s) & $k_{CO}$ (cm$^{-3}$ s$^{-1}$) & $\ncogeq$ (cm$^{-3}$) \\
+$t$ (s) & $\left[t / t_{6000 {\rm K}} \right]^{-3}$ & $T$ (K) & $\tau_\gamma$ (s) & $k_{CO}$ (cm$^{-3}$ s$^{-1}$) & $\ncogeq$ (cm$^{-3}$) \\
 \tableline
 $5.47 \times 10^6$ &
   1 &
@@ -835,4 +837,5 @@ Takai, T., Lee, C., Halicioglu, T., \& Tiller, W.~A. 1990, The Journal of
 
 \end{thebibliography}
 
+\end{CJK*}
 \end{document}
