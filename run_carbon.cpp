@@ -156,6 +156,14 @@ int main( int argc, char * argv[] ) {
   );
 
   //============================================================================
+  // Toggle off the reverse rates for reactions from detailed balance. 
+  //============================================================================
+
+  Libnucnet__Zone__toggleReverseRateDetailedBalance(
+    zone.getNucnetZone(), "off"
+  );
+
+  //============================================================================
   // Evolve network while t < final t.
   //============================================================================
 
