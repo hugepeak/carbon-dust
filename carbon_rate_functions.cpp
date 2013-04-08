@@ -15,24 +15,24 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \file
-//! \brief Example code for an exponential expansion.
+//! \brief Code for carbon rate functions. 
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "carbon_rate_functions.h"
 
 //##############################################################################
-// register_carbon_rate_functions()
+// register_my_rate_functions()
 //############################################################################//
 
 void
-register_carbon_rate_functions(
+register_my_rate_functions(
   Libnucnet__Reac * p_reac
 )
 {
 
-  /*============================================================================
-  // Register Cherchneff et al. (2009).
-  //==========================================================================*/
+  //============================================================================
+  // Register arrhenius rates, Cherchneff et al. (2009).
+  //============================================================================
 
   Libnucnet__Reac__registerUserRateFunction(
     p_reac, 
@@ -40,19 +40,19 @@ register_carbon_rate_functions(
     (Libnucnet__Reaction__userRateFunction) arrhenius_rate_function
   );
 
-  /*============================================================================
-  // Register Clayton PNews3 (2012). 
-  //==========================================================================*/
+  //============================================================================
+  // Register arrhenius inverse rates, Clayton PNews3 (2012). 
+  //============================================================================
 
   Libnucnet__Reac__registerUserRateFunction(
     p_reac, 
-    S_CARBON_PHOTOINVERSE_RATE,
-    (Libnucnet__Reaction__userRateFunction) carbon_photoinverse_rate_function
+    S_ARRHENIUS_INVERSE_RATE,
+    (Libnucnet__Reaction__userRateFunction) arrhenius_inverse_rate_function
   );
 
-  /*============================================================================
+  //============================================================================
   // Register carbon condensation rate function(2012). 
-  //==========================================================================*/
+  //============================================================================
 
   Libnucnet__Reac__registerUserRateFunction(
     p_reac, 
@@ -60,14 +60,24 @@ register_carbon_rate_functions(
     (Libnucnet__Reaction__userRateFunction) carbon_condensation_rate_function
   );
 
-  /*============================================================================
+  //============================================================================
   // Register compton electron rate function(2012). 
-  //==========================================================================*/
+  //============================================================================
 
   Libnucnet__Reac__registerUserRateFunction(
     p_reac, 
     S_COMPTON_ELECTRON_RATE,
     (Libnucnet__Reaction__userRateFunction) compton_electron_rate_function
+  );
+
+  //============================================================================
+  // Register isomer rate function(2012). 
+  //============================================================================
+
+  Libnucnet__Reac__registerUserRateFunction(
+    p_reac, 
+    S_ISOMER_RATE,
+    (Libnucnet__Reaction__userRateFunction) isomer_rate_function
   );
 
 }
@@ -90,7 +100,7 @@ arrhenius_rate_function(
 
   //============================================================================
   // Check input.
-  //==========================================================================//
+  //============================================================================
 
   if( !p_reaction )
   {
@@ -140,7 +150,7 @@ arrhenius_rate_function(
     exp( -atof( s_value ) / ( d_t9 * GSL_CONST_NUM_GIGA ) );
 
   //============================================================================
-  // multiply by N_A for bimolecular reactants. Need check here.
+  // multiply by N_A for bimolecular reactants. 
   //============================================================================
 
   int i_count = 0;
@@ -156,7 +166,7 @@ arrhenius_rate_function(
     d_rate *= 
       (
         GSL_CONST_NUM_AVOGADRO *
-        carbon_compute_Ya( zone )
+        compute_Ya( zone )
       );
   }
 
@@ -190,11 +200,11 @@ count_reactants(
 }
 
 //##############################################################################
-// carbon_photoinverse_rate_function()
-//############################################################################//
+// arrhenius_inverse_rate_function()
+//##############################################################################
 
 double
-carbon_photoinverse_rate_function(
+arrhenius_inverse_rate_function(
   Libnucnet__Reaction * p_reaction,
   double d_t9,
   void *p_data
@@ -207,7 +217,7 @@ carbon_photoinverse_rate_function(
 
   //============================================================================
   // Check input.
-  //==========================================================================//
+  //============================================================================
 
   if( !p_reaction )
   {
@@ -242,13 +252,15 @@ carbon_photoinverse_rate_function(
   Libnucnet__Reaction__iterateNuclideProducts(
     p_reaction,
     (Libnucnet__Reaction__Element__iterateFunction) 
-      carbon_compute_reduced_mass,
+      compute_reduced_mass,
     &zone
   );
 
   double d_reduced_mass = 
     1. /
-    boost::lexical_cast<double>( zone.getProperty( S_INVERSE_REDUCED_MASS) ) * 
+    boost::lexical_cast<double>( 
+      zone.getProperty( S_INVERSE_REDUCED_MASS) 
+    ) * 
     GSL_CONST_CGSM_UNIFIED_ATOMIC_MASS;
 
   d_tau *=
@@ -274,11 +286,11 @@ carbon_photoinverse_rate_function(
 }
 
 //##############################################################################
-// carbon_compute_reduced_mass()
+// compute_reduced_mass()
 //##############################################################################
 
 int
-carbon_compute_reduced_mass(
+compute_reduced_mass(
   Libnucnet__Reaction__Element *p_reactant,
   void *p_data
 )
@@ -376,7 +388,7 @@ carbon_condensation_rate_function(
   d_rate *=
     (
       GSL_CONST_NUM_AVOGADRO *
-      carbon_compute_Ya( zone )
+      compute_Ya( zone )
     );
 
   return d_rate;
@@ -401,7 +413,7 @@ compton_electron_rate_function(
 
   //============================================================================
   // Check input.
-  //==========================================================================//
+  //============================================================================
 
   if( !p_reaction )
   {
@@ -438,11 +450,62 @@ compton_electron_rate_function(
 }
 
 //##############################################################################
-// update_carbon_rate_functions_data().
+// isomer_rate_function()
+//############################################################################//
+
+double
+isomer_rate_function(
+  Libnucnet__Reaction * p_reaction,
+  double d_t9,
+  void *p_data
+)
+{
+
+  double d_tau;
+  const char * s_value;
+
+  //============================================================================
+  // Check input.
+  //============================================================================
+  
+  if( !p_reaction )
+  {
+    fprintf( stderr, "No reaction supplied.\n" );
+    exit( EXIT_FAILURE );
+  }
+
+  if( d_t9 <= 0. )
+  {
+    fprintf( stderr, "Invalid temperature.\n" );
+    exit( EXIT_FAILURE );
+  }
+
+  if( p_data )
+  {
+    fprintf( stderr, "No extra data needed in isomer rate.\n" );
+    exit( EXIT_FAILURE );
+  }
+
+  s_value =
+    Libnucnet__Reaction__getUserRateFunctionProperty(
+      p_reaction,
+      "tau",
+      NULL,
+      NULL
+    );
+
+  d_tau = atof( s_value );
+
+  return 1. / d_tau;
+  
+}
+
+//##############################################################################
+// update_my_rate_functions_data().
 //##############################################################################
 
 void
-update_carbon_rate_functions_data(
+update_my_rate_functions_data(
   nnt::Zone &zone
 )
 {
@@ -455,7 +518,7 @@ update_carbon_rate_functions_data(
 
   Libnucnet__Zone__updateDataForUserRateFunction(
     zone.getNucnetZone(),
-    S_CARBON_PHOTOINVERSE_RATE,
+    S_ARRHENIUS_INVERSE_RATE,
     &zone
   );
 
@@ -474,11 +537,11 @@ update_carbon_rate_functions_data(
 }
   
 //##############################################################################
-// carbon_compute_Ya().
+// compute_Ya().
 //##############################################################################
 
 double
-carbon_compute_Ya(
+compute_Ya(
   nnt::Zone &zone
 )
 {
@@ -490,7 +553,7 @@ carbon_compute_Ya(
 
   Libnucnet__Nuc__iterateSpecies(
     Libnucnet__Net__getNuc( Libnucnet__Zone__getNet( zone.getNucnetZone() ) ),
-    (Libnucnet__Species__iterateFunction) carbon_compute_nucleon_number,
+    (Libnucnet__Species__iterateFunction) compute_nucleon_number,
     &zone 
   );
 
@@ -507,11 +570,11 @@ carbon_compute_Ya(
 }
   
 //##############################################################################
-// carbon_compute_nucleon_number().
+// compute_nucleon_number().
 //##############################################################################
 
 int
-carbon_compute_nucleon_number(
+compute_nucleon_number(
   Libnucnet__Species * p_species,
   void * p_data 
 )

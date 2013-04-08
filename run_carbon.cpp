@@ -68,7 +68,7 @@ int main( int argc, char * argv[] ) {
     Libnucnet__Net__getReac( Libnucnet__getNet( p_my_nucnet ) )
   );
 
-  register_carbon_rate_functions(
+  register_my_rate_functions(
     Libnucnet__Net__getReac( Libnucnet__getNet( p_my_nucnet ) )
   );
 
@@ -86,7 +86,7 @@ int main( int argc, char * argv[] ) {
   // Update user rate data. 
   //============================================================================
 
-  update_carbon_rate_functions_data( zone );
+  update_my_rate_functions_data( zone );
 
   //============================================================================
   // Initialize time.
@@ -140,7 +140,7 @@ int main( int argc, char * argv[] ) {
 
     zone.updateProperty( nnt::s_SOLVER, nnt::s_ARROW );
 
-    zone.updateProperty( nnt::s_ARROW_WIDTH, "3" );
+    zone.updateProperty( nnt::s_ARROW_WIDTH, "2" );
 
   }
 

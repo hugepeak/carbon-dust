@@ -77,7 +77,7 @@ int main( int argc, char * argv[] ) {
     )
   );
 
-  register_carbon_rate_functions(
+  register_my_rate_functions(
     Libnucnet__Net__getReac(
       Libnucnet__getNet( p_my_nucnet )
     )
@@ -134,7 +134,7 @@ int main( int argc, char * argv[] ) {
   {
    
     user::update_my_rate_functions_data( zone );
-    update_carbon_rate_functions_data( zone );
+    update_my_rate_functions_data( zone );
 
     //==========================================================================
     // Print conditions.

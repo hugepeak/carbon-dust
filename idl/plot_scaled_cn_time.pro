@@ -6,7 +6,7 @@ file2 = 'mass_fractions'
 title = '$expand from T=6000(K), ' $ 
         + 'with n(C)=10^9(cm^{-3}) & n(O)=10^{10}(cm^{-3})$'
 
-buf = 0
+buf = 1
 position = [0.35, 0.75]
 xlog = 1
 ylog = 1

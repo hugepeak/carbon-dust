@@ -53,8 +53,10 @@ VPATH = $(BUILD_DIR):$(NNT_DIR):$(USER_DIR)
 # Carbon object. 
 #===============================================================================
 
-CARBON_OBJ = $(OBJDIR)/carbon_hydro.o           \
-             $(OBJDIR)/carbon_rate_functions.o
+CARBON_OBJ = $(OBJDIR)/carbon_hydro.o              \
+             $(OBJDIR)/carbon_rate_functions.o     \
+             $(OBJDIR)/carbon_molecule_utilities.o \
+             $(OBJDIR)/carbon_reaction_utilities.o 
 
 $(CARBON_OBJ): $(OBJDIR)/%.o: %.cpp
 	$(CC) -c -o $@ $<
@@ -85,8 +87,9 @@ NET_DEP = $(CARBON_OBJS)
 # Executables.
 #===============================================================================
 
-CARBON_EXEC = run_carbon            \
-              compute_carbon_flows  \
+CARBON_EXEC = run_carbon               \
+              compute_carbon_flows     \
+              create_carbon_network    \
               print_carbon_flows
 
 $(CARBON_EXEC): $(NET_DEP)
@@ -94,6 +97,13 @@ $(CARBON_EXEC): $(NET_DEP)
 	$(MC) $(CARBON_OBJS) $(OBJDIR)/$@.o $(CLIBS) $(FLIBS) -o $(BINDIR)/$@
 
 .PHONY all_carbon : $(CARBON_EXEC)
+
+#===============================================================================
+# Make data.
+#===============================================================================
+
+carbon_data: 
+	create_carbon_network
 
 #===============================================================================
 # Clean up.
