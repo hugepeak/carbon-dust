@@ -35,7 +35,43 @@ add_default_reactions_to_net(
   add_carbon_oxygen_reactions_to_net( p_net );
 
   //============================================================================
-  // Add C + CO -> C2 + O (h1 + h2 -> he2 + n).
+  // Add O + O -> O2 + gamma (n + n -> nn + gamma) and inverse. RA3.
+  //============================================================================
+ 
+  add_arrhenius_rate_to_net(
+    p_net,
+    "n", "n", 
+    "nn", "gamma",
+    1.e-19, 0., 0. 
+  );
+
+  add_arrhenius_inverse_rate_to_net(
+    p_net,
+    "nn", "gamma",
+    "n", "n", 
+    1.e-19, 0., 0., 5.15
+  );
+
+  //============================================================================
+  // Add C + O2 -> CO + O (h1 + nn -> h2 + n) and inverse. NN56 and NN37.
+  //============================================================================
+ 
+  add_arrhenius_rate_to_net(
+    p_net,
+    "h1", "nn", 
+    "h2", "n",
+    2.46e-12, 1.5, -613. 
+  );
+
+  add_arrhenius_rate_to_net(
+    p_net,
+    "h2", "n",
+    "h1", "nn", 
+    1.e-16, 0., 0. 
+  );
+
+  //============================================================================
+  // Add C + CO -> C2 + O (h1 + h2 -> he2 + n). NN57.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -46,7 +82,7 @@ add_default_reactions_to_net(
   );
 
   //============================================================================
-  // Add CO + gamma -> C + O (h2 + gamma -> n + h1).
+  // Add CO + gamma -> C + O (h2 + gamma -> n + h1). Inverse of RA4.
   //============================================================================
  
   add_arrhenius_inverse_rate_to_net(
@@ -57,7 +93,7 @@ add_default_reactions_to_net(
   );
 
   //============================================================================
-  // Add CO + e -> C + O + e (h2 + electron -> h1 + n + electron).
+  // Add CO + e -> C + O + e (h2 + electron -> h1 + n + electron). Clayton 2012.
   //============================================================================
  
   add_compton_electron_rate_to_net(
@@ -68,7 +104,7 @@ add_default_reactions_to_net(
   );
 
   //============================================================================
-  // Add C8c -> C8r (o8C -> o8R).
+  // Add C8c -> C8r (o8C -> o8R). Clayton 2012.
   //============================================================================
  
   add_isomer_rate_to_net(
@@ -91,7 +127,7 @@ add_carbon_carbon_reactions_to_net(
 {
 
   //============================================================================
-  // Add C + C -> C2 + gamma (h1 + h1 -> he2 + gamma), and the inverse.
+  // Add C + C -> C2 + gamma (h1 + h1 -> he2 + gamma), and the inverse. C1.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -109,7 +145,7 @@ add_carbon_carbon_reactions_to_net(
   );
 
   //============================================================================
-  // Add C + C2 -> C3 + gamma (h1 + he2 -> li3 + gamma), and the inverse.
+  // Add C + C2 -> C3 + gamma (h1 + he2 -> li3 + gamma), and the inverse. C2.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -127,7 +163,7 @@ add_carbon_carbon_reactions_to_net(
   );
 
   //============================================================================
-  // Add C + C3 -> C4 + gamma (h1 + li3 -> be4 + gamma), and the inverse.
+  // Add C + C3 -> C4 + gamma (h1 + li3 -> be4 + gamma), and the inverse. C3.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -145,7 +181,7 @@ add_carbon_carbon_reactions_to_net(
   );
 
   //============================================================================
-  // Add C + C4 -> C5 + gamma (h1 + be4 -> b5 + gamma), and the inverse.
+  // Add C + C4 -> C5 + gamma (h1 + be4 -> b5 + gamma), and the inverse. C4.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -163,7 +199,7 @@ add_carbon_carbon_reactions_to_net(
   );
 
   //============================================================================
-  // Add C + C5 -> C6 + gamma (h1 + b5 -> c6C + gamma), and the inverse.
+  // Add C + C5 -> C6 + gamma (h1 + b5 -> c6C + gamma), and the inverse. C6.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -181,7 +217,7 @@ add_carbon_carbon_reactions_to_net(
   );
 
   //============================================================================
-  // Add C + C6 -> C7 + gamma (h1 + c6C -> n7C + gamma), and the inverse.
+  // Add C + C6 -> C7 + gamma (h1 + c6C -> n7C + gamma), and the inverse. C7.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -199,7 +235,7 @@ add_carbon_carbon_reactions_to_net(
   );
 
   //============================================================================
-  // Add C + C7 -> C8 + gamma (h1 + n7C -> o8C + gamma), and the inverse.
+  // Add C + C7 -> C8 + gamma (h1 + n7C -> o8C + gamma), and the inverse. C10.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -231,7 +267,7 @@ add_carbon_oxygen_reactions_to_net(
   ReactionData reaction_data;
 
   //============================================================================
-  // Add O + C -> CO + gamma (n + h1 -> h2 + gamma).
+  // Add O + C -> CO + gamma (n + h1 -> h2 + gamma). RA4.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -242,7 +278,7 @@ add_carbon_oxygen_reactions_to_net(
   );
 
   //============================================================================
-  // Add O + C2 -> CO + C (n + he2 -> h2 + h1).
+  // Add O + C2 -> CO + C (n + he2 -> h2 + h1). C38.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -253,7 +289,7 @@ add_carbon_oxygen_reactions_to_net(
   );
 
   //============================================================================
-  // Add O + C3 -> CO + C2 (n + li3 -> h2 + he2).
+  // Add O + C3 -> CO + C2 (n + li3 -> h2 + he2). C39.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -264,7 +300,7 @@ add_carbon_oxygen_reactions_to_net(
   );
 
   //============================================================================
-  // Add O + C4 -> CO + C3 (n + be4 -> h2 + li3).
+  // Add O + C4 -> CO + C3 (n + be4 -> h2 + li3). C40.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -275,7 +311,7 @@ add_carbon_oxygen_reactions_to_net(
   );
 
   //============================================================================
-  // Add O + C5 -> CO + C4 (n + b5 -> h2 + be4).
+  // Add O + C5 -> CO + C4 (n + b5 -> h2 + be4). C41.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -286,7 +322,7 @@ add_carbon_oxygen_reactions_to_net(
   );
 
   //============================================================================
-  // Add O + C6 -> CO + C5 (n + c6C -> h2 + b5).
+  // Add O + C6 -> CO + C5 (n + c6C -> h2 + b5). C42.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -297,7 +333,7 @@ add_carbon_oxygen_reactions_to_net(
   );
 
   //============================================================================
-  // Add O + C7 -> CO + C6 (n + n7C -> h2 + c6C).
+  // Add O + C7 -> CO + C6 (n + n7C -> h2 + c6C). C43.
   //============================================================================
  
   add_arrhenius_rate_to_net(
@@ -308,7 +344,7 @@ add_carbon_oxygen_reactions_to_net(
   );
 
   //============================================================================
-  // Add O + C8 -> CO + C7 (n + o8C -> h2 + n7C).
+  // Add O + C8 -> CO + C7 (n + o8C -> h2 + n7C). C44.
   //============================================================================
  
   add_arrhenius_rate_to_net(

@@ -20,7 +20,8 @@ s2 = read_ascii( file2, template = template12 )
 names = ['species', 'O', 'C', '$10^3\timesCO$', $
          '$10^{10}\timesC_2$', '$10^{16}\timesC_3$', '$10^{15}\timesC_4$', $
          '$10^{17}\timesC_5$', '$10^{15}\timesC_6$', $
-         '$10^{18}\timesC_7$', '$10^{23}\timesC_8^C$', '$10^{16}\timesC_8^R$' ]
+         '$10^{18}\timesC_7$', '$10^{23}\timesC_8^C$', '$10^{16}\timesC_8^R$', $
+         '$10^3\timesO_2$' ]
 
 subtitle = '$T=T_0\times(\tau/t)^{1.8}, \rho=\rho_0\times(\tau/t)^3$'
 xtitle = '$t - t_{6000K} (s)$'
@@ -44,6 +45,7 @@ y8 = s2.i / 6. * 1.e15 + d_small
 y9 = s2.j / 7. * 1.e18 + d_small
 y10 = s2.k / 8. * 1.e23 + d_small
 y11 = s2.l / 8. * 1.e16 + d_small
+y12 = s2.m / 2. * 1.e3 + d_small
 
 y1 *= fac
 y2 *= fac
@@ -56,6 +58,7 @@ y8 *= fac
 y9 *= fac
 y10 *= fac
 y11 *= fac
+y12 *= fac
 
 p1 = plot( x1, y1, name = names[1], 'c', $
            xlog = xlog, ylog = ylog, $
@@ -72,8 +75,9 @@ p8 = plot( x1, y8, name = names[8], /overplot, 'b--' )
 p9 = plot( x1, y9, name = names[9], /overplot, 'g--' )
 p10 = plot( x1, y10, name = names[10], /overplot, 'm' )
 p11 = plot( x1, y11, name = names[11], /overplot, '2k' )
+p12 = plot( x1, y12, name = names[12], /overplot, '2r--' )
 
-l = legend( target = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11], $
+l = legend( target = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12], $
             position = position ) 
 
 p1.save, file_name
