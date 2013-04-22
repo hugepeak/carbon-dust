@@ -436,13 +436,13 @@ compton_electron_rate_function(
     );
 
   d_tau = 
-    1.e5 *
+    atof( s_value ) *
     exp(
       (
         boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) ) -
         1.e6
       ) /
-      atof( s_value ) 
+      9.59e6 
     );
 
   return 1. / d_tau;

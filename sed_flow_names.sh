@@ -3,6 +3,7 @@
 FILE_NAME=flows
 OUTPUT=flows_out
 sed -e "s/n7C/c7/g" \
+    -e "s/nn/o2/g" \
     -e "s/n/o/g" \
     -e "s/h1/c /g" \
     -e "s/h2/co/g" \
