@@ -18,35 +18,26 @@
 //! \brief Example code to create carbon network. 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "carbon_molecule_utilities.h"
-#include "carbon_reaction_utilities.h"
+#include "my_molecule_utilities.h"
+#include "my_reaction_utilities.h"
 
 int main()
 {
+
+  unsigned int i_max = 10000;
 
   Libnucnet__Net * p_net;
 
   p_net = Libnucnet__Net__new();
 
-  add_default_molecules_to_nuc( 
-    Libnucnet__Net__getNuc( p_net )
+  my_user::add_molecules_to_nuc( 
+    Libnucnet__Net__getNuc( p_net ),
+    1,
+    i_max
   );
 
-  //============================================================================
-  // Here write and re-read xml file to save "h1C" to "h1" e.g. Otherwise
-  // there will be problem when adding reactant and product to reaction.
-  //============================================================================
-  
-  Libnucnet__Net__writeToXmlFile( 
-    p_net,
-    "data/my_net.xml" 
-  );
-
-  Libnucnet__Net__free( p_net );
-
-  p_net = Libnucnet__Net__new_from_xml( "data/my_net.xml", NULL, NULL );
-
-  add_default_reactions_to_net( p_net );
+  my_user::add_reactions_to_net( p_net, 1, 10 );
+  my_user::add_forward_reactions_to_net( p_net, 10, i_max );
 
   Libnucnet__Net__writeToXmlFile( 
     p_net,

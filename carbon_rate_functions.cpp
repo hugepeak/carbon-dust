@@ -1,5 +1,5 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file was originally written by Bradley S. Meyer.
+////////////////////////////////////////////////////////////////////////////////
+// This file was originally written by Tianhong Yu.
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -51,13 +51,21 @@ register_my_rate_functions(
   );
 
   //============================================================================
-  // Register carbon condensation rate function(2012). 
+  // Register carbon condensation rate function and the inverse (2013). 
   //============================================================================
 
   Libnucnet__Reac__registerUserRateFunction(
     p_reac, 
     S_CARBON_CONDENSATION_RATE,
-    (Libnucnet__Reaction__userRateFunction) carbon_condensation_rate_function
+    (Libnucnet__Reaction__userRateFunction) 
+      carbon_condensation_rate_function
+  );
+
+  Libnucnet__Reac__registerUserRateFunction(
+    p_reac, 
+    S_CARBON_CONDENSATION_INVERSE_RATE,
+    (Libnucnet__Reaction__userRateFunction) 
+      carbon_condensation_inverse_rate_function
   );
 
   //============================================================================
@@ -166,7 +174,7 @@ arrhenius_rate_function(
     d_rate *= 
       (
         GSL_CONST_NUM_AVOGADRO *
-        compute_Ya( zone )
+        carbon_compute_Ya( zone )
       );
   }
 
@@ -345,7 +353,6 @@ carbon_condensation_rate_function(
 {
 
   double d_rate, d_Rc = 1.7e-8;
-  const char * s_value;
   nnt::Zone zone = *(nnt::Zone *) p_data;
 
   //============================================================================
@@ -364,16 +371,28 @@ carbon_condensation_rate_function(
     exit( EXIT_FAILURE );
   }
 
-  s_value =
-    Libnucnet__Reaction__getUserRateFunctionProperty(
-      p_reaction,
-      "CarbonNumber",
-      NULL,
-      NULL
-    );
+  zone.updateProperty( S_CARBON_NUMBER, "1" );
 
+  Libnucnet__Reaction__iterateNuclideReactants(
+    p_reaction,
+    (Libnucnet__Reaction__Element__iterateFunction) carbon_number_callback,
+    p_data
+  );
+
+  Libnucnet__Reaction__iterateNuclideProducts(
+    p_reaction,
+    (Libnucnet__Reaction__Element__iterateFunction) carbon_number_callback,
+    p_data
+  );
+
+  double d_carbon_number =
+      boost::lexical_cast<double>( zone.getProperty( S_CARBON_NUMBER ) );
+ 
   d_rate = 
-    pow( boost::lexical_cast<double>( s_value ), 2./3. ) *
+    pow( 
+      d_carbon_number,
+      2./3. 
+    ) *
     M_PI *
     gsl_pow_2( d_Rc ) *
     sqrt(
@@ -388,11 +407,138 @@ carbon_condensation_rate_function(
   d_rate *=
     (
       GSL_CONST_NUM_AVOGADRO *
-      compute_Ya( zone )
+      carbon_compute_Ya( zone )
     );
 
   return d_rate;
   
+}
+
+//##############################################################################
+// carbon_number_callback()
+//############################################################################//
+
+int
+carbon_number_callback(
+  Libnucnet__Reaction__Element * p_element,
+  void * p_data
+)
+{
+
+  nnt::Zone zone = *(nnt::Zone *) p_data;
+
+  unsigned int i_Z = 
+    Libnucnet__Species__getZ(
+      Libnucnet__Nuc__getSpeciesByName(
+        Libnucnet__Net__getNuc(
+          Libnucnet__Zone__getNet( zone.getNucnetZone() )
+        ),
+        Libnucnet__Reaction__Element__getName( p_element )
+      )
+    );
+
+  if( 
+    i_Z >
+    boost::lexical_cast<unsigned int>( 
+      zone.getProperty( S_CARBON_NUMBER )
+    )
+  )
+    zone.updateProperty( 
+      S_CARBON_NUMBER, 
+      boost::lexical_cast<std::string>( i_Z - 1 )
+    );
+
+  return 1;
+           
+}
+
+//##############################################################################
+// carbon_condensation_inverse_rate_function()
+//##############################################################################
+
+double
+carbon_condensation_inverse_rate_function(
+  Libnucnet__Reaction * p_reaction,
+  double d_t9,
+  void *p_data
+)
+{
+
+  double d_tau;
+  const char * s_value;
+  nnt::Zone zone = *(nnt::Zone *) p_data;
+
+  //============================================================================
+  // Check input.
+  //============================================================================
+
+  if( !p_reaction )
+  {
+    fprintf( stderr, "No reaction supplied.\n" );
+    exit( EXIT_FAILURE );
+  }
+
+  if( d_t9 <= 0. )
+  {
+    fprintf( stderr, "Invalid temperature.\n" );
+    exit( EXIT_FAILURE );
+  }
+
+  s_value =
+    Libnucnet__Reaction__getUserRateFunctionProperty(
+      p_reaction,
+      "BondEnergy",
+      NULL,
+      NULL
+    );
+
+  double d_condense_rate =
+    carbon_condensation_rate_function( p_reaction, d_t9, p_data );
+
+  d_tau = 
+    1. / 
+    d_condense_rate;
+
+  //============================================================================
+  // Calculate reduced mass. 
+  //============================================================================
+
+  zone.updateProperty( S_INVERSE_REDUCED_MASS, "0." );
+
+  Libnucnet__Reaction__iterateNuclideProducts(
+    p_reaction,
+    (Libnucnet__Reaction__Element__iterateFunction) 
+      compute_reduced_mass,
+    &zone
+  );
+
+  double d_reduced_mass = 
+    1. /
+    boost::lexical_cast<double>( 
+      zone.getProperty( S_INVERSE_REDUCED_MASS) 
+    ) * 
+    GSL_CONST_CGSM_UNIFIED_ATOMIC_MASS;
+
+  d_tau *=
+    pow(
+      gsl_pow_2( GSL_CONST_CGSM_PLANCKS_CONSTANT_H ) /
+      (
+        2. * M_PI * d_reduced_mass *
+        GSL_CONST_CGSM_BOLTZMANN *
+        d_t9 * GSL_CONST_NUM_GIGA
+      ),
+      1.5
+    ) *
+    exp(
+      atof( s_value ) * GSL_CONST_CGSM_ELECTRON_VOLT /
+      (
+        GSL_CONST_CGSM_BOLTZMANN *
+        d_t9 * GSL_CONST_NUM_GIGA
+      )
+    );
+
+  return 1. / d_tau;
+
 }
 
 //##############################################################################
@@ -530,6 +676,12 @@ update_my_rate_functions_data(
 
   Libnucnet__Zone__updateDataForUserRateFunction(
     zone.getNucnetZone(),
+    S_CARBON_CONDENSATION_INVERSE_RATE,
+    &zone
+  );
+
+  Libnucnet__Zone__updateDataForUserRateFunction(
+    zone.getNucnetZone(),
     S_COMPTON_ELECTRON_RATE,
     &zone
   );
@@ -537,11 +689,11 @@ update_my_rate_functions_data(
 }
   
 //##############################################################################
-// compute_Ya().
+// carbon_compute_Ya().
 //##############################################################################
 
 double
-compute_Ya(
+carbon_compute_Ya(
   nnt::Zone &zone
 )
 {
@@ -553,7 +705,7 @@ compute_Ya(
 
   Libnucnet__Nuc__iterateSpecies(
     Libnucnet__Net__getNuc( Libnucnet__Zone__getNet( zone.getNucnetZone() ) ),
-    (Libnucnet__Species__iterateFunction) compute_nucleon_number,
+    (Libnucnet__Species__iterateFunction) carbon_compute_Ya_callback,
     &zone 
   );
 
@@ -570,11 +722,11 @@ compute_Ya(
 }
   
 //##############################################################################
-// compute_nucleon_number().
+// carbon_compute_Ya_callback().
 //##############################################################################
 
 int
-compute_nucleon_number(
+carbon_compute_Ya_callback(
   Libnucnet__Species * p_species,
   void * p_data 
 )

@@ -18,7 +18,10 @@
 //! \brief Carbon molecule utility code. 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "carbon_molecule_utilities.h"
+#include "my_molecule_utilities.h"
+
+namespace my_user
+{
 
 //##############################################################################
 // add_default_molecules_to_nuc().
@@ -30,59 +33,19 @@ add_default_molecules_to_nuc(
 )
 {
 
-  gsl_vector * p_t9, * p_log10_partf;
-  unsigned int i_Z, i_A;
-  std::string s_state;
-
-  p_t9 = gsl_vector_alloc( 1 );
-  p_log10_partf = gsl_vector_alloc( 1 );
-
-  gsl_vector_set( p_t9, 0, 1. );
-  gsl_vector_set( p_log10_partf, 0, 0. );
-
-  //============================================================================
-  // Add O, O2, CO.
-  //============================================================================
-
-  s_state = "";
-
-  i_Z = 0;
-  i_A = 1;
-
-  add_molecule_to_nuc( p_nuc, i_Z, i_A, s_state, p_t9, p_log10_partf );
-
-  i_Z = 0;
-  i_A = 2;
-
-  add_molecule_to_nuc( p_nuc, i_Z, i_A, s_state, p_t9, p_log10_partf );
-
-  i_Z = 1;
-  i_A = 2;
-
-  add_molecule_to_nuc( p_nuc, i_Z, i_A, s_state, p_t9, p_log10_partf );
-
-  //============================================================================
-  // Add carbon chains and rings.
-  //============================================================================
-
-  add_carbon_molecules_to_nuc( p_nuc, 1, 8, 6, 8 );
-
-  gsl_vector_free( p_t9 );
-  gsl_vector_free( p_log10_partf );
+  add_molecules_to_nuc( p_nuc, 1, 100 );
 
 }
 
 //##############################################################################
-// add_carbon_molecules_to_nuc().
+// add_molecules_to_nuc().
 //##############################################################################
 
 void
-add_carbon_molecules_to_nuc(
+add_molecules_to_nuc(
   Libnucnet__Nuc * p_nuc,
-  unsigned int i_chain_lo,
-  unsigned int i_chain_hi,
-  unsigned int i_ring_lo,
-  unsigned int i_ring_hi
+  unsigned int i_lo,
+  unsigned int i_hi
 )
 {
 
@@ -96,22 +59,15 @@ add_carbon_molecules_to_nuc(
   gsl_vector_set( p_log10_partf, 0, 0. );
 
   //============================================================================
-  // Add Carbon chains. 
+  // Add Carbon and neutron. 
   //============================================================================
 
-  s_state = "C";
+  s_state = "";
 
-  for( unsigned int i = i_chain_lo; i <= i_chain_hi; i++ )
+  for( unsigned int i = i_lo; i <= i_hi; i++ )
     add_molecule_to_nuc( p_nuc, i, i, s_state, p_t9, p_log10_partf );
 
-  //============================================================================
-  // Add Carbon rings. 
-  //============================================================================
-
-  s_state = "R";
-
-  for( unsigned int i = i_ring_lo; i <= i_ring_hi; i++ ) 
-    add_molecule_to_nuc( p_nuc, i, i, s_state, p_t9, p_log10_partf );
+  add_molecule_to_nuc( p_nuc, 0, 1, s_state, p_t9, p_log10_partf );
 
   gsl_vector_free( p_t9 );
   gsl_vector_free( p_log10_partf );
@@ -140,8 +96,7 @@ add_molecule_to_nuc(
   double d_mass_excess = 0.;
   double d_spin = 0.;
 
-  if( s_state.length() )
-    i_state = 1;
+  i_state = 0;
      
   p_species = 
     Libnucnet__Species__new(
@@ -160,3 +115,4 @@ add_molecule_to_nuc(
 
 }
 
+}

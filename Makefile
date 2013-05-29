@@ -1,7 +1,7 @@
 #///////////////////////////////////////////////////////////////////////////////
 #  Copyright (c) 2011-2012 Clemson University.
 # 
-#  This file was originally written by Bradley S. Meyer.
+#  This file was originally written by Tianhong Yu. 
 # 
 #  This is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU General Public License as published by
@@ -50,12 +50,33 @@ include $(USER_DIR)/Makefile.inc
 VPATH = $(BUILD_DIR):$(NNT_DIR):$(USER_DIR)
 
 #===============================================================================
+# Set the hydro.  CARBON_HYDRO_CODE is an environment variable.  In a bash 
+# shell, set this by typing at the command line, for example,
+# 'export CARBON_HYDRO_CODE=traj'.  This approach replaces the deprecated
+# approach in which you set, for example, CARBON_HYDRO_CODE=traj within this 
+# Makefile.
+#===============================================================================
+
+ifdef CARBON_HYDRO_CODE
+  ifeq ($(CARBON_HYDRO_CODE), default)
+        CFLAGS += -DHYDRO_DEFAULT
+  else ifeq ($(CARBON_HYDRO_CODE), traj)
+        CFLAGS += -DHYDRO_TRAJ
+  endif
+else
+        CFLAGS += -DHYDRO_TRAJ
+endif
+
+#===============================================================================
 # Carbon object. 
 #===============================================================================
 
 CARBON_OBJ = $(OBJDIR)/carbon_hydro.o              \
              $(OBJDIR)/carbon_rate_functions.o     \
+             $(OBJDIR)/carbon_evolve.o             \
              $(OBJDIR)/carbon_molecule_utilities.o \
+             $(OBJDIR)/my_molecule_utilities.o     \
+             $(OBJDIR)/my_reaction_utilities.o \
              $(OBJDIR)/carbon_reaction_utilities.o 
 
 $(CARBON_OBJ): $(OBJDIR)/%.o: %.cpp
@@ -71,17 +92,19 @@ CARBON_OBJS = $(WN_OBJ)		\
                $(CARBON_OBJ)	\
                $(USER_OBJ)
 
+CARBON_DEP = clean_carbon_hydro
+
 ifeq ($(USE_SPARSE_SOLVER), yes)
 	CFLAGS += -DSPARSE_SOLVER
 	CARBON_OBJS += $(SP_OBJ)
-	NET_DEP += sparse
+	CARBON_DEP += sparse
 	FLIBS= -L$(SPARSKITDIR) -lskit
 	MC = $(FF)
 else
 	MC = $(CC)
 endif
 
-NET_DEP = $(CARBON_OBJS)
+CARBON_DEP += $(CARBON_OBJS)
 
 #===============================================================================
 # Executables.
@@ -90,9 +113,10 @@ NET_DEP = $(CARBON_OBJS)
 CARBON_EXEC = run_carbon               \
               compute_carbon_flows     \
               create_carbon_network    \
+              create_my_network    \
               print_carbon_flows
 
-$(CARBON_EXEC): $(NET_DEP)
+$(CARBON_EXEC): $(CARBON_DEP)
 	$(CC) -c -o $(OBJDIR)/$@.o $@.cpp
 	$(MC) $(CARBON_OBJS) $(OBJDIR)/$@.o $(CLIBS) $(FLIBS) -o $(BINDIR)/$@
 
@@ -109,7 +133,7 @@ carbon_data:
 # Clean up.
 #===============================================================================
 
-.PHONY: clean_carbon cleanall_carbon clean_hydro
+.PHONY: clean_carbon cleanall_carbon clean_carbon_hydro
 
 clean_carbon: 
 	rm -f $(CARBON_OBJS)
@@ -117,7 +141,7 @@ clean_carbon:
 cleanall_carbon: clean_carbon
 	rm -f $(BINDIR)/$(CARBON_EXEC) $(BINDIR)/$(CARBON_EXEC).exe
 
-clean_hydro:
+clean_carbon_hydro:
 	rm -f $(OBJDIR)/carbon_hydro.o
 
 #===============================================================================

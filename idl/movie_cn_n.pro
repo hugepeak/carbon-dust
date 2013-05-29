@@ -1,27 +1,16 @@
-file_name = 'cn_n.jpeg'
-restore, 'template12.dat'
+pro movie_cn_n, file = file
 
-file = 'idl'
-file1 = 'prop'
-file2 = 'mass_fractions'
+s1 = read_abunds( file )
 
 buf = 1
-position = [0.8, 0.8]
-xlog = 0
-ylog = 0
+xlog = 1
+ylog = 1
 
-xrange = [3,8]
-yrange = [-35,-15]
+xrange = [1.e0, 1.e6]
+yrange = [1.e-20, 1.e1]
 
-s1 = read_ascii( file1, template = template12 )
-s2 = read_ascii( file2, template = template12 )
-
-names = ['names', 'T=1953(K)', 'T=1824(K)', '$CO$', $
-         '$C_2$', '$C_3$', '$C_4$', '$C_5$', '$C_6$', $
-         '$C_7$', '$C_8^C$', '$C_8^R$' ]
-
-xtitle = '$Number of Carbon Atoms$'
-ytitle = '$log Abundance$'
+xtitle = '$Number of Carbon Atoms in Molecule$'
+ytitle = '$Abundance$'
 
 video_file = file + '.mp4'
 video = idlffvideowrite(video_file)
@@ -29,18 +18,21 @@ framerate = 10
 framedims = [640,512]
 stream = video.addvideostream(framedims[0], framedims[1], framerate)
 
-x1 = [3.,4.,5.,6.,7.,8.]
+d_small = 1.e-30
 
-for i = 1, 214 do begin
+for i = 0, n_elements(s1) - 1 do begin
 
-  y1 = [s2.f(i),s2.g(i),s2.h(i),s2.i(i),s2.j(i),s2.k(i)]
+  x1 = s1[i].z
+  y1 = s1[i].y + d_small
 
-  y1 /= x1
-  yy1 = alog10(y1)
+  title = 'time=' + string( s1[i].t, format='(e7.1)' ) $
+          + ', dt=' + string( s1[i].dt, format='(e7.1)' ) $
+          + ', $T_9$=' + string( s1[i].t9, format='(e7.1)' ) $
+          + ', $\rho$=' + string( s1[i].rho, format='(e7.1)' ) + '(g/$cm^3$)' 
 
-  p1 = plot( x1, yy1, name = names[1], 'k', $
+  p1 = plot( x1, y1, name = '1', 'k', $
              xlog = xlog, ylog = ylog, $
-             ;title = title, 
+             title = title, $
              xtitle = xtitle, ytitle = ytitle, $
              xminor = 0, $
              xrange = xrange, yrange = yrange, buffer = buf )

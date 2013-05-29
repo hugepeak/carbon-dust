@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // This file was originally written by Tianhong Yu.
 //
 // This is free software; you can redistribute it and/or modify it
@@ -274,8 +274,6 @@ add_carbon_oxygen_reactions_to_net(
   Libnucnet__Net * p_net 
 )
 {
-
-  ReactionData reaction_data;
 
   //============================================================================
   // Add O + C -> CO + gamma (n + h1 -> h2 + gamma). RA4.

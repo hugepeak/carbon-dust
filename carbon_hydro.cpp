@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // This file was originally written by Tianhong Yu.
 //
 // This is free software; you can redistribute it and/or modify it
@@ -18,12 +18,13 @@
 //! \brief Example code for carbon dust hydrodynamics.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define I_LO  9
-#define I_HI  20
-
-#define S_INCLUED_BIG_MOLECULES "no"
-
 #include "carbon_hydro.h"
+
+//##############################################################################
+// Code for default expansion: rho(t) = rho_0 * (t/t_initial)^(-3).
+//##############################################################################
+
+#ifdef HYDRO_DEFAULT
 
 //##############################################################################
 // get_nucnet().
@@ -55,8 +56,8 @@ get_nucnet( int argc, char **argv )
   if( argc == 2 && strcmp( argv[1], "--example" ) == 0 )
   {
     std::cout << std::endl;
-    std::cout << argv[0] << " ../../data_pub/co_net.xml " <<
-      "../../data_pub/co_zone.xml my_output.xml \"[z <= 20]\"" <<
+    std::cout << argv[0] << " data/my_net.xml " <<
+      "data/zone.xml out " <<
       std::endl << std::endl;
     exit( EXIT_FAILURE );
   }
@@ -125,7 +126,6 @@ get_nucnet( int argc, char **argv )
       NULL,
       NULL
     );
-
   }
   else if( argc == 5 )
   {
@@ -146,162 +146,90 @@ get_nucnet( int argc, char **argv )
     );
   }
 
-  if( strcmp( S_INCLUED_BIG_MOLECULES, "yes" ) == 0 ) {
-
-    unsigned int i_lo = I_LO;
-    unsigned int i_hi = I_HI;
-
-    add_carbon_molecules( 
-      Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
-      i_lo,
-      i_hi
-    );
-
-    add_carbon_reactions(
-      Libnucnet__getNet( p_nucnet ),
-      i_lo,
-      i_hi
-    );
-
-  }
- 
   Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
 
-  return p_nucnet;
+  //============================================================================
+  // Create decade molecules and reactions if desired. 
+  //============================================================================
 
-}
+  nnt::Zone zone;
 
-//##############################################################################
-// add_carbon_molecules().
-//##############################################################################
+  if( !Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" ) )
+  {
+    std::cerr << "Zone not found!" << std::endl;
+    return 0;
+  }
 
-void
-add_carbon_molecules(
-  Libnucnet__Nuc * p_nuc,
-  unsigned int i_lo,
-  unsigned int i_hi
-)
-{
+  zone.setNucnetZone(
+    Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" )
+  );
 
-  Libnucnet__Species * p_species;
-  gsl_vector * p_t9, * p_log10_parf;
+  if( 
+    zone.hasProperty( S_RUN_DECADE ) &&
+    zone.getProperty( S_RUN_DECADE ) == "yes"
+  )
+  {
 
-  for( unsigned int i = i_lo; i <= i_hi; i++ ) {
+    unsigned int i_exp_start = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP_START ) );
+    unsigned int i_exp = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP ) );
+    unsigned int i_base = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_BASE ) );
+    unsigned int i_photon_end = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_PHOTON_END ) );
 
-    p_t9 = gsl_vector_alloc( 1 );
-    p_log10_parf = gsl_vector_alloc( 1 );
+    Libnucnet__free( p_nucnet );
 
-    gsl_vector_set( p_t9, 0, 1. );
-    gsl_vector_set( p_log10_parf, 0, 0. );
+    p_nucnet = Libnucnet__new();
 
-    p_species = 
-      Libnucnet__Species__new(
-        i,
-        i,
-        "example",
-        1,
-        "C",
-        0.,
-        0.,
-        p_t9,
-        p_log10_parf
-      );
-
-    Libnucnet__Nuc__addSpecies( p_nuc, p_species );
-
-    p_species = 
-      Libnucnet__Species__new(
-        i,
-        i,
-        "example",
-        1,
-        "R",
-        0.,
-        0.,
-        p_t9,
-        p_log10_parf
-      );
-
-    Libnucnet__Nuc__addSpecies( p_nuc, p_species );
-
-    gsl_vector_free( p_t9 );
-    gsl_vector_free( p_log10_parf );
-
-  } 
-
-}
-
-//##############################################################################
-// add_carbon_reactions().
-//##############################################################################
-
-void
-add_carbon_reactions(
-  Libnucnet__Net * p_net,
-  unsigned int i_lo,
-  unsigned int i_hi
-)
-{
-
-  Libnucnet__Reaction * p_reaction;
-
-  for( unsigned int i = i_lo; i <= i_hi; i++ ) {
-
-    p_reaction = Libnucnet__Reaction__new();
-
-    Libnucnet__Reaction__setUserRateFunctionKey(
-      p_reaction,
-      "carbon condensation rate"
+    my_user::add_molecules_to_nuc(
+      Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
+      1, 
+      i_exp_start
     );
 
-    Libnucnet__Reaction__updateSource( p_reaction, "Meyer, notes" );
-
-    //--------------------------------------------------------------------------
-    // Add reaction: C_{i-1}^R + C -> C_i^R + gamma.
-    //--------------------------------------------------------------------------
-
-    Libnucnet__Reaction__addReactant( 
-      p_reaction, 
-      Libnucnet__Species__getName(
-        Libnucnet__Nuc__getSpeciesByZA(
-          Libnucnet__Net__getNuc( p_net ), 
-          i - 1, 
-          i - 1,
-          "R"
-        )
-      )   
-    );
-
-    Libnucnet__Reaction__addReactant( p_reaction, "h1" );
-
-    Libnucnet__Reaction__addProduct(
-      p_reaction, 
-      Libnucnet__Species__getName(
-        Libnucnet__Nuc__getSpeciesByZA(
-          Libnucnet__Net__getNuc( p_net ), 
-          i, 
-          i,
-          "R"
-        )
-      )   
-    );
-
-    Libnucnet__Reaction__addProduct( p_reaction, "gamma" );
-
-    Libnucnet__Reaction__updateUserRateFunctionProperty(
-       p_reaction,
-       "CarbonNumber",
-       NULL,
-       NULL,
-       boost::lexical_cast<std::string>( i - 1 ).c_str()
-    );
-
-    Libnucnet__Reac__addReaction( 
-      Libnucnet__Net__getReac( p_net ), 
-      p_reaction 
+    my_user::add_reactions_to_net(
+      Libnucnet__getNet( p_nucnet ),
+      1,
+      i_photon_end
+    ); 
+  
+    my_user::add_forward_reactions_to_net(
+      Libnucnet__getNet( p_nucnet ),
+      i_photon_end,
+      i_exp_start
     ); 
 
+    for( 
+      unsigned int i = 1; 
+      i <= i_exp; 
+      i++
+    )
+    {
+  
+      unsigned int i_index =
+        i_exp_start *
+        (unsigned int) pow( 
+          i_base,
+          i
+        ); 
+        
+      my_user::add_molecules_to_nuc(
+        Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
+        i_index,
+        i_index
+      );
+  
+    }
+
+    Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
+
+    return p_nucnet;
+
   }
+    
+  return p_nucnet;
 
 }
 
@@ -337,11 +265,6 @@ initialize_zone( nnt::Zone& zone, char ** argv )
   zone.updateProperty(
     nnt::s_T9,
     zone.getProperty( nnt::s_T9_0 )
-  );
-
-  zone.updateProperty(
-    nnt::s_TIME,
-    zone.getProperty( nnt::s_TIME )
   );
 
 }
@@ -442,4 +365,357 @@ set_zone( Libnucnet * p_nucnet, nnt::Zone& zone, char ** argv )
   return 1;
 
 }
+
+#endif // HYDRO_DEFAULT
+
+//##############################################################################
+// Code for expansion from ascii trajectory file. 
+//##############################################################################
+
+#ifdef HYDRO_TRAJ
+
+//##############################################################################
+// globals.
+//##############################################################################
+
+std::vector<double> v_time, v_t9, v_log10_rho;
+
+//##############################################################################
+// get_nucnet().
+//##############################################################################
+
+Libnucnet *
+get_nucnet( int argc, char **argv )
+{
+
+  Libnucnet * p_nucnet;
+
+  //============================================================================
+  // Check input.
+  //============================================================================
+
+  if( argc == 2 && strcmp( argv[1], "--help" ) == 0 )
+  {
+    std::cout << std::endl;
+    std::cout << argv[0] <<
+      " runs a carbon oxygen network calculation for matter expanding" <<
+      std::endl;
+    std::cout <<
+      "according to data from a trajectory file." << std::endl << std::endl;
+    std::cout << "For a usage statement, type " << std::endl << std::endl;
+    std::cout << argv[0] << " --usage" << std::endl << std::endl;
+    std::cout << "For an example usage, type " << std::endl << std::endl;
+    std::cout << argv[0] << " --example" << std::endl << std::endl;
+    exit( EXIT_FAILURE );
+  }
+
+  if( argc == 2 && strcmp( argv[1], "--example" ) == 0 )
+  {
+    std::cout << std::endl;
+    std::cout << argv[0] << " data/my_net.xml data/zone_traj.xml " << 
+      "data/traj.txt out " <<
+      std::endl << std::endl;
+    exit( EXIT_FAILURE );
+  }
+
+  if( argc < 5 || argc > 7 || strcmp( argv[1], "--usage" ) == 0 )
+  {
+    fprintf(
+      stderr,
+      "\nUsage: %s net_file zone_file out_file traj_file xpath_nuc xpath_reac\n\n",
+      argv[0]
+    );
+    fprintf(
+      stderr, "  net_file = input network data xml filename\n\n"
+    );
+    fprintf(
+      stderr, "  zone_file = input single zone data xml filename\n\n"
+    );
+    fprintf(
+      stderr, "  out_file = output data xml filename\n\n"
+    );
+    fprintf(
+      stderr, "  traj_file = trajectory text file\n\n"
+    );
+    fprintf(
+      stderr,
+      "  xpath_nuc = nuclear xpath expression (optional--required if xpath_reac specified)\n\n"
+    );
+    fprintf(
+      stderr, "  xpath_reac = reaction xpath expression (optional)\n\n"
+    );
+    exit( EXIT_FAILURE );
+  }
+
+  //============================================================================
+  // Validate input zone file.
+  //============================================================================
+
+  if( strcmp( VALIDATE, "yes" ) == 0 )
+  {
+    if( !Libnucnet__is_valid_zone_data_xml( argv[2] ) ) {
+      fprintf( stderr, "Not valid libnucnet zone data input!\n" );
+      exit( EXIT_FAILURE );
+    }
+  }
+
+  //============================================================================
+  // Create nucnet. 
+  //============================================================================
+
+  p_nucnet = Libnucnet__new();
+
+  if( argc == 5 )
+  {
+    Libnucnet__Net__updateFromXml(
+      Libnucnet__getNet( p_nucnet ),
+      argv[1],
+      NULL,
+      NULL
+    );
+  }
+  else if( argc == 6 )
+  {
+    Libnucnet__Net__updateFromXml(
+      Libnucnet__getNet( p_nucnet ),
+      argv[1],
+      argv[5],
+      NULL
+    );
+  }
+  else
+  {
+    Libnucnet__Net__updateFromXml(
+      Libnucnet__getNet( p_nucnet ),
+      argv[1],
+      argv[5],
+      argv[6]
+    );
+  }
+
+
+  //============================================================================
+  // Get zone data.
+  //============================================================================
+
+  Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
+
+  //============================================================================
+  // Get trajectory data.
+  //============================================================================
+
+  get_trajectory_data( argv[3] );
+
+  //============================================================================
+  // Create decade molecules and reactions if desired. 
+  //============================================================================
+
+  nnt::Zone zone;
+
+  if( !Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" ) )
+  {
+    std::cerr << "Zone not found!" << std::endl;
+    return 0;
+  }
+
+  zone.setNucnetZone(
+    Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" )
+  );
+
+  if( 
+    zone.hasProperty( S_RUN_DECADE ) &&
+    zone.getProperty( S_RUN_DECADE ) == "yes"
+  )
+  {
+
+    unsigned int i_exp_start = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP_START ) );
+    unsigned int i_exp = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP ) );
+    unsigned int i_base = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_BASE ) );
+    unsigned int i_photon_end = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_PHOTON_END ) );
+
+    Libnucnet__free( p_nucnet );
+
+    p_nucnet = Libnucnet__new();
+
+    my_user::add_molecules_to_nuc(
+      Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
+      1, 
+      i_exp_start
+    );
+
+    my_user::add_reactions_to_net(
+      Libnucnet__getNet( p_nucnet ),
+      1,
+      i_photon_end
+    ); 
+  
+    my_user::add_forward_reactions_to_net(
+      Libnucnet__getNet( p_nucnet ),
+      i_photon_end,
+      i_exp_start
+    ); 
+
+    for( 
+      unsigned int i = 1; 
+      i <= i_exp; 
+      i++
+    )
+    {
+  
+      unsigned int i_index =
+        i_exp_start *
+        (unsigned int) pow( 
+          i_base,
+          i
+        ); 
+        
+      my_user::add_molecules_to_nuc(
+        Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
+        i_index,
+        i_index
+      );
+  
+    }
+
+    Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
+
+    return p_nucnet;
+
+  }
+    
+  //============================================================================
+  // Done.
+  //============================================================================
+
+  return p_nucnet;
+
+}
+
+//##############################################################################
+// get_trajectory_data().
+//##############################################################################
+
+void
+get_trajectory_data( char *s_file )
+{
+
+  std::ifstream my_file;
+  int i_x0;
+  double d_x1, d_x2, d_x3;
+
+  //============================================================================
+  // Open file thermodynamics file.
+  //============================================================================
+
+  my_file.open( s_file );
+
+  if( my_file.bad() )
+  {
+    fprintf( stderr, "Couldn't open file.\n" );
+    exit( EXIT_FAILURE );
+  }
+
+  //============================================================================
+  // Assign vectors.
+  //============================================================================
+
+  double d_factor_t = 1.e0;
+  double d_factor_rho = 1.e0;
+
+  while( my_file >> i_x0 >> d_x1 >> d_x2 >> d_x3 )
+  {
+    v_time.push_back( d_x1 * d_factor_t );
+    v_t9.push_back( d_x2 );
+    v_log10_rho.push_back( log10( d_x3 * d_factor_rho ) );
+  }
+
+  my_file.close();
+
+}
+
+//##############################################################################
+// initialize_zone().
+//##############################################################################
+
+void
+initialize_zone( nnt::Zone& zone, char ** argv )
+{
+
+  //============================================================================
+  // Set output file.
+  //============================================================================
+
+  Libnucnet__Zone__updateProperty(
+    zone.getNucnetZone(),
+    S_OUTPUT_XML_FILE,
+    NULL,
+    NULL,
+    argv[4]
+  );
+
+  user::update_t9_rho_in_zone_by_interpolation(
+    zone,
+    "spline",
+    v_time,
+    v_t9,
+    v_log10_rho
+  );
+
+  return;
+
+}
+
+//##############################################################################
+// update_zone_properties().
+//##############################################################################
+
+void
+update_zone_properties(
+  nnt::Zone& zone
+)
+{
+
+  user::update_t9_rho_in_zone_by_interpolation(
+    zone,
+    "spline",
+    v_time,
+    v_t9,
+    v_log10_rho
+  );
+
+} 
+
+//##############################################################################
+// set_zone().
+//##############################################################################
+
+int
+set_zone( Libnucnet * p_nucnet, nnt::Zone& zone, char ** argv )
+{
+
+  if( !argv )
+  {
+    std::cerr << "Invalid input." << std::endl;
+    return 0;
+  }
+
+  if( !Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" ) )
+  {
+    std::cerr << "Zone not found!" << std::endl;
+    return 0;
+  }
+
+  zone.setNucnetZone(
+    Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" )
+  );
+
+  return 1;
+
+}
+
+#endif // HYDRO_TRAJ
 

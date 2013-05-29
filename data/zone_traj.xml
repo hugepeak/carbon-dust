@@ -1,0 +1,28 @@
+  <zone_data>
+    <zone>
+      <optional_properties>
+        <property name="tau">5.472e6</property>
+        <property name="power">1.</property>
+        <property name="t9_0">6.e-6</property>
+        <property name="rho_0">2.857e-13</property>
+        <property name="tend">3.e8</property>
+        <property name="steps">10</property>
+        <property name="time">5.472e6</property>
+        <property name="munuekT">-inf</property>
+        <property name="dt">1.e-2</property>
+        <property name="photon end">10</property>
+        <property name="exp start">10</property>
+        <property name="base">2</property>
+        <property name="exp">28</property>
+        <property name="run decade">yes</property>
+        <property name="idl print">yes</property>
+      </optional_properties>
+      <mass_fractions>
+        <nuclide name="h1">
+          <z>1</z>
+          <a>1</a>
+          <x>1</x>
+        </nuclide>
+      </mass_fractions>
+    </zone>
+  </zone_data>

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// This file was originally written by Bradley S. Meyer.
+// This file was originally written by Tianhong Yu.
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -29,7 +29,8 @@
 #include "user/my_network_limiter.h"
 #include "user/my_rate_modifiers.h"
 #include "user/my_user_rate_functions.h"
-#include "user/evolve.h"
+
+#include "carbon_evolve.h"
 #include "carbon_rate_functions.h"
 #include "carbon_hydro.h"
 
@@ -42,6 +43,14 @@
 #define D_REG_Y        0.15         // Abundance change regulator for dt update 
 #define D_Y_MIN_DT     1.e-10       // Smallest y for dt update
 #define S_SOLVER       nnt::s_ARROW // Solver type: ARROW or GSL
+
+#define S_IDL_PRINT    "idl print"
+
+void
+my_print_abundances( nnt::Zone & );
+
+int
+print_abundance( Libnucnet__Species *, Libnucnet__Zone * );
 
 //##############################################################################
 // main().
@@ -140,7 +149,7 @@ int main( int argc, char * argv[] ) {
 
     zone.updateProperty( nnt::s_SOLVER, nnt::s_ARROW );
 
-    zone.updateProperty( nnt::s_ARROW_WIDTH, "2" );
+    zone.updateProperty( nnt::s_ARROW_WIDTH, "1" );
 
   }
 
@@ -168,6 +177,13 @@ int main( int argc, char * argv[] ) {
   //============================================================================
 
   i_step = 0;
+
+  std::cout << "species number = " <<
+    Libnucnet__Nuc__getNumberOfSpecies(
+      Libnucnet__Net__getNuc(
+        Libnucnet__Zone__getNet( zone.getNucnetZone() )
+      )
+    ) << std::endl;
 
   while ( d_t < boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) ) )
   {
@@ -204,7 +220,7 @@ int main( int argc, char * argv[] ) {
   // Evolve abundances.
   //============================================================================
 
-    user::evolve( zone );
+    my_user::evolve( zone );
 
   //============================================================================
   // Print out abundances.
@@ -225,7 +241,14 @@ int main( int argc, char * argv[] ) {
         NULL,
         NULL
       );
-      zone.printAbundances();
+      if( 
+        zone.hasProperty( S_IDL_PRINT ) &&
+        zone.getProperty( S_IDL_PRINT ) == "yes"
+      ) {
+        my_print_abundances( zone );
+      } else {
+        zone.printAbundances();
+      }
       zone.updateProperty(
         nnt::s_YE,
         boost::lexical_cast<std::string>(
@@ -285,6 +308,104 @@ int main( int argc, char * argv[] ) {
   Libnucnet__free( p_my_output );
 
   return EXIT_SUCCESS;
+
+}
+
+void
+my_print_abundances(
+  nnt::Zone & zone
+)
+{
+
+  double d_t, d_dt, d_t9, d_rho;
+
+  d_t = boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) );
+
+  d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
+
+  d_t9 = boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) );
+
+  d_rho = boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) );
+
+  printf(
+    "t = %10.4e\ndt = %10.4e\nt9 = %10.4e\nrho (g/cc) = %10.4e\n\n",
+    d_t, d_dt, d_t9, d_rho
+  );
+
+    Libnucnet__Nuc__setSpeciesCompareFunction(
+      Libnucnet__Net__getNuc( 
+        Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
+      ),
+      (Libnucnet__Species__compare_function) nnt::species_sort_by_z_then_a
+    );
+
+    Libnucnet__Nuc__sortSpecies(
+      Libnucnet__Net__getNuc( 
+        Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
+      ) 
+    );
+
+  Libnucnet__Nuc__iterateSpecies(
+    Libnucnet__Net__getNuc(
+      Libnucnet__Zone__getNet( zone.getNucnetZone() )
+    ),
+    (Libnucnet__Species__iterateFunction) print_abundance,
+    zone.getNucnetZone()
+  );
+
+  fprintf(
+    stdout,
+    "1 - xsum = %e\n",
+    1. - Libnucnet__Zone__computeAMoment( zone.getNucnetZone(), 1 )
+  );
+
+  fprintf(
+    stdout,
+    "Ye = %f\n\n",
+    Libnucnet__Zone__computeZMoment( zone.getNucnetZone(), 1 )
+  );
+
+    Libnucnet__Nuc__setSpeciesCompareFunction(
+      Libnucnet__Net__getNuc( 
+        Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
+      ),
+      (Libnucnet__Species__compare_function) nnt::species_sort_function
+    );
+
+    Libnucnet__Nuc__sortSpecies(
+      Libnucnet__Net__getNuc( 
+        Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
+      ) 
+    );
+
+}
+
+//############################################################################
+// print_abundance()
+//############################################################################
+
+int
+print_abundance(
+  Libnucnet__Species *p_species,
+  Libnucnet__Zone *p_zone
+)
+{
+
+  double d_abund;
+
+  d_abund =
+    Libnucnet__Zone__getSpeciesAbundance( p_zone, p_species );
+  
+  printf( "%12lu%12lu%16.6e%16.6e\n",
+    (unsigned long) Libnucnet__Species__getZ( p_species ),
+    (unsigned long) Libnucnet__Species__getA( p_species ),
+    d_abund,
+    Libnucnet__Zone__getSpeciesAbundanceChange(
+      p_zone, p_species
+    )
+  );
+
+  return 1;
 
 }
 

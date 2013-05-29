@@ -1,5 +1,5 @@
-////////////////////////////////////////////////////////////////////////////////
-// This file was originally written by Tianhong Yu.
+//////////////////////////////////////////////////////////////////////////////
+// This file was originally written by Bradley S. Meyer.
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -15,38 +15,56 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \file
-//! \brief A header file for the carbon molecule utilities file.
+//! \brief A header file for the evolution routines.
 ////////////////////////////////////////////////////////////////////////////////
 
 //##############################################################################
-// Includes.
+// Includes. 
 //##############################################################################
 
-#include <iostream>
-//#include <string>
-#include <Libnucnet.h>
+#include "user/evolve.h"
 
-//##############################################################################
-// Prototypes.
-//##############################################################################
+#include "carbon_rate_functions.h"
+#include "carbon_hydro.h"
 
-void
-add_default_molecules_to_nuc(
-  Libnucnet__Nuc *
-);
+/**
+ * @brief A namespace for user-defined rate functions.
+ */
+namespace my_user
+{
 
-void
-add_carbon_molecules_to_nuc(
-  Libnucnet__Nuc *, unsigned int, unsigned int, unsigned int, unsigned int
-);
+int
+evolve( nnt::Zone& );
 
 void
-add_molecule_to_nuc(
-  Libnucnet__Nuc *, 
-  unsigned int, 
-  unsigned int, 
-  std::string, 
+update_102_rates(
+  WnMatrix *,
   gsl_vector *,
-  gsl_vector *
+  nnt::Zone &
 );
 
+void
+update_decade_rates(
+  WnMatrix *,
+  gsl_vector *,
+  nnt::Zone &
+);
+
+size_t
+get_gsl_vector_index_for_species(
+  unsigned int,
+  unsigned int
+);
+
+unsigned int
+get_matrix_row_index_for_species(
+  unsigned int,
+  unsigned int
+);
+
+double
+compute_effective_rate(
+  double, double, double
+);
+
+} // namespace my_user

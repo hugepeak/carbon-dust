@@ -15,7 +15,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \file
-//! \brief A header file for the carbon molecule utilities file.
+//! \brief A header file for the carbon utilities file.
 ////////////////////////////////////////////////////////////////////////////////
 
 //##############################################################################
@@ -23,30 +23,53 @@
 //##############################################################################
 
 #include <iostream>
-//#include <string>
+#include <utility>
+#include <vector>
 #include <Libnucnet.h>
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+
+namespace my_user
+{
+
+struct ReactionData {
+
+  ~ReactionData();
+  void clear();
+  std::vector<std::pair<unsigned int,unsigned int> > vReactants;
+  std::vector<std::pair<unsigned int,unsigned int> > vProducts;
+  std::string sSource;
+  std::string sUserRateFunctionKey;
+  std::vector<std::pair<std::string,std::string> > vUserRateData;
+
+};
 
 //##############################################################################
 // Prototypes.
 //##############################################################################
 
 void
-add_default_molecules_to_nuc(
-  Libnucnet__Nuc *
+add_default_reactions_to_net( Libnucnet__Net * );
+
+void
+add_reactions_to_net( 
+  Libnucnet__Net *, unsigned int, unsigned int
 );
 
 void
-add_carbon_molecules_to_nuc(
-  Libnucnet__Nuc *, unsigned int, unsigned int, unsigned int, unsigned int
+add_forward_reactions_to_net( 
+  Libnucnet__Net *, unsigned int, unsigned int
 );
 
 void
-add_molecule_to_nuc(
-  Libnucnet__Nuc *, 
-  unsigned int, 
-  unsigned int, 
-  std::string, 
-  gsl_vector *,
-  gsl_vector *
+add_reverse_reactions_to_net( 
+  Libnucnet__Net *, unsigned int, unsigned int
 );
 
+void
+add_reaction_to_net(
+  Libnucnet__Net *,
+  ReactionData &
+);
+
+}

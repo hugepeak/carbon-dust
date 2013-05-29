@@ -23,8 +23,10 @@
 //##############################################################################
 
 #include <iostream>
-//#include <string>
 #include <Libnucnet.h>
+
+namespace my_user
+{
 
 //##############################################################################
 // Prototypes.
@@ -36,8 +38,8 @@ add_default_molecules_to_nuc(
 );
 
 void
-add_carbon_molecules_to_nuc(
-  Libnucnet__Nuc *, unsigned int, unsigned int, unsigned int, unsigned int
+add_molecules_to_nuc(
+  Libnucnet__Nuc *, unsigned int, unsigned int
 );
 
 void
@@ -50,3 +52,4 @@ add_molecule_to_nuc(
   gsl_vector *
 );
 
+}
