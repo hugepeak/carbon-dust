@@ -432,10 +432,10 @@ get_nucnet( int argc, char **argv )
       stderr, "  zone_file = input single zone data xml filename\n\n"
     );
     fprintf(
-      stderr, "  out_file = output data xml filename\n\n"
+      stderr, "  traj_file = trajectory text file\n\n"
     );
     fprintf(
-      stderr, "  traj_file = trajectory text file\n\n"
+      stderr, "  out_file = output data xml filename\n\n"
     );
     fprintf(
       stderr,
