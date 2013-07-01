@@ -62,10 +62,40 @@ add_default_molecules_to_nuc(
   add_molecule_to_nuc( p_nuc, i_Z, i_A, s_state, p_t9, p_log10_partf );
 
   //============================================================================
+  // Add C and C+.
+  //============================================================================
+
+  i_Z = 1;
+  i_A = 1;
+
+  s_state = "g";
+
+  add_molecule_to_nuc( p_nuc, i_Z, i_A, s_state, p_t9, p_log10_partf );
+
+  s_state = "+";
+
+  add_molecule_to_nuc( p_nuc, i_Z, i_A, s_state, p_t9, p_log10_partf );
+
+  //============================================================================
+  // Add He and He+.
+  //============================================================================
+
+  i_Z = 2;
+  i_A = 4;
+
+  s_state = "g";
+
+  add_molecule_to_nuc( p_nuc, i_Z, i_A, s_state, p_t9, p_log10_partf );
+
+  s_state = "+";
+
+  add_molecule_to_nuc( p_nuc, i_Z, i_A, s_state, p_t9, p_log10_partf );
+
+  //============================================================================
   // Add carbon chains and rings.
   //============================================================================
 
-  add_carbon_molecules_to_nuc( p_nuc, 1, 8, 6, 8 );
+  add_carbon_molecules_to_nuc( p_nuc, 2, 8, 2, 8 );
 
   gsl_vector_free( p_t9 );
   gsl_vector_free( p_log10_partf );
@@ -99,7 +129,7 @@ add_carbon_molecules_to_nuc(
   // Add Carbon chains. 
   //============================================================================
 
-  s_state = "C";
+  s_state = "c";
 
   for( unsigned int i = i_chain_lo; i <= i_chain_hi; i++ )
     add_molecule_to_nuc( p_nuc, i, i, s_state, p_t9, p_log10_partf );
@@ -108,7 +138,7 @@ add_carbon_molecules_to_nuc(
   // Add Carbon rings. 
   //============================================================================
 
-  s_state = "R";
+  s_state = "r";
 
   for( unsigned int i = i_ring_lo; i <= i_ring_hi; i++ ) 
     add_molecule_to_nuc( p_nuc, i, i, s_state, p_t9, p_log10_partf );

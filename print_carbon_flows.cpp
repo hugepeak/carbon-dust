@@ -28,6 +28,7 @@
 
 #include "user/my_user_rate_functions.h"
 #include "user/my_flow_utilities.h"
+#include "carbon_flow_utilities.h"
 #include "carbon_rate_functions.h"
 
 int main( int argc, char * argv[] ) {
@@ -151,7 +152,7 @@ int main( int argc, char * argv[] ) {
     {
 
       flows =
-        user::compute_flows_for_reaction(
+        compute_flows_for_reaction(
           zone,
           reaction.getNucnetReaction()
       );

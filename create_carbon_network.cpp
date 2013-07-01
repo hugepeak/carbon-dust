@@ -32,20 +32,6 @@ int main()
     Libnucnet__Net__getNuc( p_net )
   );
 
-  //============================================================================
-  // Here write and re-read xml file to save "h1C" to "h1" e.g. Otherwise
-  // there will be problem when adding reactant and product to reaction.
-  //============================================================================
-  
-  Libnucnet__Net__writeToXmlFile( 
-    p_net,
-    "data/my_net.xml" 
-  );
-
-  Libnucnet__Net__free( p_net );
-
-  p_net = Libnucnet__Net__new_from_xml( "data/my_net.xml", NULL, NULL );
-
   add_default_reactions_to_net( p_net );
 
   Libnucnet__Net__writeToXmlFile( 

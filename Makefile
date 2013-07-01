@@ -64,7 +64,7 @@ ifdef CARBON_HYDRO_CODE
         CFLAGS += -DHYDRO_TRAJ
   endif
 else
-        CFLAGS += -DHYDRO_TRAJ
+        CFLAGS += -DHYDRO_DEFAULT
 endif
 
 #===============================================================================
@@ -75,6 +75,7 @@ CARBON_OBJ = $(OBJDIR)/carbon_hydro.o              \
              $(OBJDIR)/carbon_rate_functions.o     \
              $(OBJDIR)/carbon_evolve.o             \
              $(OBJDIR)/carbon_molecule_utilities.o \
+             $(OBJDIR)/carbon_flow_utilities.o \
              $(OBJDIR)/my_molecule_utilities.o     \
              $(OBJDIR)/my_reaction_utilities.o \
              $(OBJDIR)/carbon_reaction_utilities.o 

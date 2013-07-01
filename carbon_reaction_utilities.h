@@ -57,8 +57,37 @@ void
 add_carbon_oxygen_reactions_to_net( Libnucnet__Net * );
 
 void
+add_ion_molecule_reactions_to_net( Libnucnet__Net * );
+
+void
+add_electronic_recombination_reactions_to_net( Libnucnet__Net * );
+
+void
 add_arrhenius_rate_to_net( 
   Libnucnet__Net *,
+  std::string,
+  std::string,
+  double,
+  double,
+  double
+);
+
+void
+add_arrhenius_rate_to_net( 
+  Libnucnet__Net *,
+  std::string,
+  std::string,
+  std::string,
+  std::string,
+  double,
+  double,
+  double
+);
+
+void
+add_arrhenius_rate_to_net( 
+  Libnucnet__Net *,
+  std::string,
   std::string,
   std::string,
   std::string,

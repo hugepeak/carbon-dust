@@ -149,7 +149,7 @@ int main( int argc, char * argv[] ) {
 
     zone.updateProperty( nnt::s_SOLVER, nnt::s_ARROW );
 
-    zone.updateProperty( nnt::s_ARROW_WIDTH, "1" );
+    zone.updateProperty( nnt::s_ARROW_WIDTH, "2" );
 
   }
 

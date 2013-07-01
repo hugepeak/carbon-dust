@@ -422,7 +422,7 @@ get_nucnet( int argc, char **argv )
   {
     fprintf(
       stderr,
-      "\nUsage: %s net_file zone_file out_file traj_file xpath_nuc xpath_reac\n\n",
+      "\nUsage: %s net_file zone_file traj_file out_file xpath_nuc xpath_reac\n\n",
       argv[0]
     );
     fprintf(

@@ -34,6 +34,10 @@ add_default_reactions_to_net(
 
   add_carbon_oxygen_reactions_to_net( p_net );
 
+  add_ion_molecule_reactions_to_net( p_net );
+
+  add_electronic_recombination_reactions_to_net( p_net );
+
   //============================================================================
   // Add O + O -> O2 + gamma (n + n -> nn + gamma) and inverse. RA3.
   //============================================================================
@@ -53,12 +57,12 @@ add_default_reactions_to_net(
   );
 
   //============================================================================
-  // Add C + O2 -> CO + O (h1 + nn -> h2 + n) and inverse. NN56 and NN37.
+  // Add C + O2 -> CO + O (h1g + nn -> h2 + n) and inverse. NN56 and NN37.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "h1", "nn", 
+    "h1g", "nn", 
     "h2", "n",
     2.46e-12, 1.5, -613. 
   );
@@ -66,40 +70,41 @@ add_default_reactions_to_net(
   add_arrhenius_rate_to_net(
     p_net,
     "h2", "n",
-    "h1", "nn", 
+    "h1g", "nn", 
     1.e-16, 0., 0. 
   );
 
   //============================================================================
-  // Add C + CO -> C2 + O (h1 + h2 -> he2 + n). NN57.
+  // Add C + CO -> C2 + O (h1g + h2 -> he2c + n). NN57.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "h1", "h2", 
-    "he2", "n",
+    "h1g", "h2", 
+    "he2c", "n",
     5.43e-7, -1.5, 57200.0
   );
 
   //============================================================================
-  // Add CO + gamma -> C + O (h2 + gamma -> n + h1). Inverse of RA4.
+  // Add CO + gamma -> C + O (h2 + gamma -> n + h1g). Inverse of RA4.
   //============================================================================
  
   add_arrhenius_inverse_rate_to_net(
     p_net,
     "h2", "gamma",
-    "n", "h1", 
+    "n", "h1g", 
     1.58e-17, 0.3, 1297.4, 11.1
   );
 
   //============================================================================
-  // Add CO + e -> C + O + e (h2 + electron -> h1 + n + electron). Clayton 2012.
+  // Add CO + e -> C + O + e (h2 + electron -> h1g + n + electron). 
+  //   Clayton 2012.
   //============================================================================
  
   add_compton_electron_rate_to_net(
     p_net,
     "h2", "electron", 
-    "h1", "n", "electron",
+    "h1g", "n", "electron",
     1.e5 
   );
 
@@ -115,13 +120,13 @@ add_default_reactions_to_net(
   );
 
   //============================================================================
-  // Add C8c -> C8r (o8C -> o8R). Clayton 2012.
+  // Add C8c -> C8r (o8c -> o8r). Clayton 2012.
   //============================================================================
  
   add_isomer_rate_to_net(
     p_net,
-    "o8C",
-    "o8R",
+    "o8c",
+    "o8r",
     10.
   );
     
@@ -138,128 +143,128 @@ add_carbon_carbon_reactions_to_net(
 {
 
   //============================================================================
-  // Add C + C -> C2 + gamma (h1 + h1 -> he2 + gamma), and the inverse. C1.
+  // Add C + C -> C2 + gamma (h1g + h1g -> he2c + gamma), and the inverse. C1.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "h1", "h1", 
-    "he2", "gamma",
+    "h1g", "h1g", 
+    "he2c", "gamma",
     4.36e-18, 0.3, 161.3
   );
 
   add_arrhenius_inverse_rate_to_net(
     p_net,
-    "he2", "gamma",
-    "h1", "h1", 
+    "he2c", "gamma",
+    "h1g", "h1g", 
     4.36e-18, 0.3, 161.3, 6.30
   );
 
   //============================================================================
-  // Add C + C2 -> C3 + gamma (h1 + he2 -> li3 + gamma), and the inverse. C2.
+  // Add C + C2 -> C3 + gamma (h1g + he2c -> li3c + gamma), and the inverse. C2.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "h1", "he2", 
-    "li3", "gamma",
+    "h1g", "he2c", 
+    "li3c", "gamma",
     1.e-17, 0., 0.
   );
 
   add_arrhenius_inverse_rate_to_net(
     p_net,
-    "li3", "gamma",
-    "h1", "he2", 
+    "li3c", "gamma",
+    "h1g", "he2c", 
     1.e-17, 0., 0., 7.21
   );
 
   //============================================================================
-  // Add C + C3 -> C4 + gamma (h1 + li3 -> be4 + gamma), and the inverse. C3.
+  // Add C + C3 -> C4 + gamma (h1g + li3c -> be4c + gamma), and the inverse. C3.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "h1", "li3", 
-    "be4", "gamma",
+    "h1g", "li3c", 
+    "be4c", "gamma",
     1.e-10, 0., 0.
   );
 
   add_arrhenius_inverse_rate_to_net(
     p_net,
-    "be4", "gamma",
-    "h1", "li3", 
+    "be4c", "gamma",
+    "h1g", "li3c", 
     1.e-10, 0., 0., 5.06
   );
 
   //============================================================================
-  // Add C + C4 -> C5 + gamma (h1 + be4 -> b5 + gamma), and the inverse. C4.
+  // Add C + C4 -> C5 + gamma (h1g + be4c -> b5c + gamma), and the inverse. C4.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "h1", "be4", 
-    "b5", "gamma",
+    "h1g", "be4c", 
+    "b5c", "gamma",
     1.e-13, 0., 0.
   );
 
   add_arrhenius_inverse_rate_to_net(
     p_net,
-    "b5", "gamma",
-    "h1", "be4", 
+    "b5c", "gamma",
+    "h1g", "be4c", 
     1.e-13, 0., 0., 7.06
   );
 
   //============================================================================
-  // Add C + C5 -> C6 + gamma (h1 + b5 -> c6C + gamma), and the inverse. C6.
+  // Add C + C5 -> C6 + gamma (h1g + b5c -> c6c + gamma), and the inverse. C6.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "h1", "b5", 
-    "c6C", "gamma",
+    "h1g", "b5c", 
+    "c6c", "gamma",
     1.e-10, 0., 0.
   );
 
   add_arrhenius_inverse_rate_to_net(
     p_net,
-    "c6C", "gamma",
-    "h1", "b5", 
+    "c6c", "gamma",
+    "h1g", "b5c", 
     1.e-10, 0., 0., 4.96
   );
 
   //============================================================================
-  // Add C + C6 -> C7 + gamma (h1 + c6C -> n7C + gamma), and the inverse. C7.
+  // Add C + C6 -> C7 + gamma (h1g + c6c -> n7c + gamma), and the inverse. C7.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "h1", "c6C", 
-    "n7C", "gamma",
+    "h1g", "c6c", 
+    "n7c", "gamma",
     1.e-13, 0., 0.
   );
 
   add_arrhenius_inverse_rate_to_net(
     p_net,
-    "n7C", "gamma",
-    "h1", "c6C", 
+    "n7c", "gamma",
+    "h1g", "c6c", 
     1.e-13, 0., 0., 7.22
   );
 
   //============================================================================
-  // Add C + C7 -> C8 + gamma (h1 + n7C -> o8C + gamma), and the inverse. C10.
+  // Add C + C7 -> C8 + gamma (h1g + n7c -> o8c + gamma), and the inverse. C10.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "h1", "n7C", 
-    "o8C", "gamma",
+    "h1g", "n7c", 
+    "o8c", "gamma",
     1.e-10, 0., 0.
   );
 
   add_arrhenius_inverse_rate_to_net(
     p_net,
-    "o8C", "gamma",
-    "h1", "n7C", 
+    "o8c", "gamma",
+    "h1g", "n7c", 
     1.e-10, 0., 0., 5.68
   );
 
@@ -276,91 +281,137 @@ add_carbon_oxygen_reactions_to_net(
 {
 
   //============================================================================
-  // Add O + C -> CO + gamma (n + h1 -> h2 + gamma). RA4.
+  // Add O + C -> CO + gamma (n + h1g -> h2 + gamma). RA4.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "n", "h1", 
+    "n", "h1g", 
     "h2", "gamma",
     1.58e-17, 0.3, 1297.4
   );
 
   //============================================================================
-  // Add O + C2 -> CO + C (n + he2 -> h2 + h1). C38.
+  // Add O + C2 -> CO + C (n + he2c -> h2 + h1g). C38.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "n", "he2", 
-    "h2", "h1",
+    "n", "he2c", 
+    "h2", "h1g",
     5.99e-10, 0., 0.
   );
 
   //============================================================================
-  // Add O + C3 -> CO + C2 (n + li3 -> h2 + he2). C39.
+  // Add O + C3 -> CO + C2 (n + li3c -> h2 + he2c). C39.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "n", "li3", 
-    "h2", "he2",
+    "n", "li3c", 
+    "h2", "he2c",
     1.e-11, 0.3, 1130.
   );
 
   //============================================================================
-  // Add O + C4 -> CO + C3 (n + be4 -> h2 + li3). C40.
+  // Add O + C4 -> CO + C3 (n + be4c -> h2 + li3c). C40.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "n", "be4", 
-    "h2", "li3",
+    "n", "be4c", 
+    "h2", "li3c",
     3.e-10, 0., 1420.
   );
 
   //============================================================================
-  // Add O + C5 -> CO + C4 (n + b5 -> h2 + be4). C41.
+  // Add O + C5 -> CO + C4 (n + b5c -> h2 + be4c). C41.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "n", "b5", 
-    "h2", "be4",
+    "n", "b5c", 
+    "h2", "be4c",
     1.e-11, -0.3, 1130.
   );
 
   //============================================================================
-  // Add O + C6 -> CO + C5 (n + c6C -> h2 + b5). C42.
+  // Add O + C6 -> CO + C5 (n + c6c -> h2 + b5c). C42.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "n", "c6C", 
-    "h2", "b5",
+    "n", "c6c", 
+    "h2", "b5c",
     3.e-10, 0., 1420.
   );
 
   //============================================================================
-  // Add O + C7 -> CO + C6 (n + n7C -> h2 + c6C). C43.
+  // Add O + C7 -> CO + C6 (n + n7c -> h2 + c6c). C43.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "n", "n7C", 
-    "h2", "c6C",
+    "n", "n7c", 
+    "h2", "c6c",
     1.e-11, -0.3, 1130.
   );
 
   //============================================================================
-  // Add O + C8 -> CO + C7 (n + o8C -> h2 + n7C). C44.
+  // Add O + C8 -> CO + C7 (n + o8c -> h2 + n7c). C44.
   //============================================================================
  
   add_arrhenius_rate_to_net(
     p_net,
-    "n", "o8C", 
-    "h2", "n7C",
+    "n", "o8c", 
+    "h2", "n7c",
     3.e-10, 0., 1420.
+  );
+
+}
+
+//##############################################################################
+// add_ion_molecule_reactions_to_net(). 
+//##############################################################################
+
+void
+add_ion_molecule_reactions_to_net(
+  Libnucnet__Net * p_net
+)
+{
+
+  //============================================================================
+  // Add He+ + CO -> C+ + O + He (he4+ + h2 -> h1+ + n + he4g). IM13.
+  //============================================================================
+ 
+  add_arrhenius_rate_to_net(
+    p_net,
+    "he4+", "h2", 
+    "h1+", "n", "he4g",
+    3.e-10, 0., 1420.
+  );
+
+}
+
+//##############################################################################
+// add_electronic_recombination_reactions_to_net(). 
+//##############################################################################
+
+void
+add_electronic_recombination_reactions_to_net(
+  Libnucnet__Net * p_net
+)
+{
+
+  //============================================================================
+  // Add C+ + electron -> C (h1+ + electron -> h1g). ER5.
+  //============================================================================
+ 
+  add_arrhenius_rate_to_net(
+    p_net,
+    "h1+",
+    "h1g",
+    4.67e-12, -0.6, 0.
   );
 
 }
@@ -437,6 +488,39 @@ void
 add_arrhenius_rate_to_net(
   Libnucnet__Net * p_net,
   std::string s_first_reactant,
+  std::string s_first_product,
+  double d_A,
+  double d_nu,
+  double d_Ea
+)
+{
+
+  ReactionData reaction_data;
+
+  reaction_data.sSource = "Cherchneff et al. (2009)";
+  reaction_data.sUserRateFunctionKey = "arrhenius rate";
+
+  reaction_data.vReactants.push_back( s_first_reactant );
+  reaction_data.vProducts.push_back( s_first_product );
+
+  reaction_data.vUserRateData.push_back( 
+    std::make_pair( "A", boost::lexical_cast<std::string>( d_A ) ) 
+  ); 
+  reaction_data.vUserRateData.push_back( 
+    std::make_pair( "nu", boost::lexical_cast<std::string>( d_nu ) ) 
+  ); 
+  reaction_data.vUserRateData.push_back( 
+    std::make_pair( "Ea", boost::lexical_cast<std::string>( d_Ea ) ) 
+  ); 
+
+  add_reaction_to_net( p_net, reaction_data );
+
+}
+
+void
+add_arrhenius_rate_to_net(
+  Libnucnet__Net * p_net,
+  std::string s_first_reactant,
   std::string s_second_reactant,
   std::string s_first_product,
   std::string s_second_product,
@@ -455,6 +539,45 @@ add_arrhenius_rate_to_net(
   reaction_data.vReactants.push_back( s_second_reactant );
   reaction_data.vProducts.push_back( s_first_product );
   reaction_data.vProducts.push_back( s_second_product );
+
+  reaction_data.vUserRateData.push_back( 
+    std::make_pair( "A", boost::lexical_cast<std::string>( d_A ) ) 
+  ); 
+  reaction_data.vUserRateData.push_back( 
+    std::make_pair( "nu", boost::lexical_cast<std::string>( d_nu ) ) 
+  ); 
+  reaction_data.vUserRateData.push_back( 
+    std::make_pair( "Ea", boost::lexical_cast<std::string>( d_Ea ) ) 
+  ); 
+
+  add_reaction_to_net( p_net, reaction_data );
+
+}
+
+void
+add_arrhenius_rate_to_net(
+  Libnucnet__Net * p_net,
+  std::string s_first_reactant,
+  std::string s_second_reactant,
+  std::string s_first_product,
+  std::string s_second_product,
+  std::string s_third_product,
+  double d_A,
+  double d_nu,
+  double d_Ea
+)
+{
+
+  ReactionData reaction_data;
+
+  reaction_data.sSource = "Cherchneff et al. (2009)";
+  reaction_data.sUserRateFunctionKey = "arrhenius rate";
+
+  reaction_data.vReactants.push_back( s_first_reactant );
+  reaction_data.vReactants.push_back( s_second_reactant );
+  reaction_data.vProducts.push_back( s_first_product );
+  reaction_data.vProducts.push_back( s_second_product );
+  reaction_data.vProducts.push_back( s_third_product );
 
   reaction_data.vUserRateData.push_back( 
     std::make_pair( "A", boost::lexical_cast<std::string>( d_A ) ) 
