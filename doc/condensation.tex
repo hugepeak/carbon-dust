@@ -1,0 +1,175 @@
+\documentclass{article}
+
+\begin{document}
+
+\section{Abundance Change}
+
+For a reaction:
+\[
+1 + 2 \longleftrightarrow 3 + \gamma
+\]
+we can write the number density change of species 1 as:
+\begin{equation}
+\frac{{\rm d}n_1}{{\rm d}t} = 
+  -k \, n_1 n_2 + \lambda_\gamma n_3
+\label{eq:number_density}
+\end{equation}
+where $k$ is the reaction rate in the unit of $cm^3s^{-1}$ and 
+$\lambda_\gamma$ is the photodissociation rate of species 3 with the unit of
+$s^{-1}$.
+
+In a expanding or a collapsing system the number densities change with volume. 
+We'd like to study a quantity that does not depend on volume directly so that
+we use the fraction of each species in number instead of number density:
+\[
+Y_i \equiv n_i / n_{total}
+\]
+where $Y_i$ is called the abundance of species i, $n_i$ is the number density
+of species i and $n_{total}$ is the number density of the unit particles, here
+the number density of total atoms. So $Y_i$ here indicates the number
+of species i per atom. And
+\[
+n_{total} = n_{atom} = n_{baryon} \times Y_{atom} 
+\]
+where $n_{baryon} = \rho N_A$ is the baryon number density and $Y_{atom}$ is
+the atom fraction, i.e. number of atoms per baryon. Take pure $^{12}$C for 
+example, $Y_{atom} = 1 / 12$. So Eq.\ref{eq:number_density} can be rewrite as
+\begin{equation}
+\frac{{\rm d}Y_1}{{\rm d}t} = 
+  -k n_{atom} =
+  -k \rho N_A Y_{atom} Y_1 Y_2 + \lambda_\gamma Y_3
+\label{eq:abundance}
+\end{equation}
+where $\rho$ is the mass density and $N_A$ is the Avogadro number. Then what
+we need to study is how the abundances of each species change with time.
+
+\section{Condensation Effective Rates}
+
+For a single kind of atom, we study the effective condensation rate here.
+The condensation here means one atom attaches to an existing multi-atom
+particle:
+\begin{equation}
+P_1 + P_i \longleftrightarrow P_{i+1} + \gamma
+\label{eq:reaction}
+\end{equation} 
+where $P_i$ denotes a particle with $i$ atoms in it.
+
+Let's assume that the condensation rate is proportional to the surface area
+(or cross section) of the larger particle, which goes like $n^{2/3}$, i.e.
+\[
+k \propto A \propto n^{2/3}
+\]
+where $k$ is the rate, $A$ is the surface area and $n$ is the number of atoms
+in the particle.
+
+To make the calculation of a large atom number particle possible, we introduce
+the ``bin" after a continuous size increment. In a bin we neglect the details 
+of the single particles and focus on the
+two ends of the bin. For example if we start the bin from size $a$ and the bin 
+size is 10, the particles we care about after size $a$
+are just $P_a$, $P_{10a}$, $P_{100a}$, etc. 
+And we just calculate the effective reaction rates between these particles.
+
+From graph theory we know that for a series of vertices 1, 2, ..., N, the
+effective rate between 1 and N is like:
+\[
+k_{1,N}^{eff} \Delta t = \frac 
+  { k_{1,2}k_{2,3}...k_{N-1,N}\Delta t^{N-1} }
+  { 
+    k_{2,3}k_{3,4}...k_{N-1,N}\Delta t^{N-2} +
+    k_{1,2}k_{3,4}...k_{N-1,N}\Delta t^{N-2} +
+    ...
+    k_{1,2}...k_{N-2,N-1}\Delta t^{N-2}
+  }
+\]
+
+\[
+k_{1,N}^{eff} = \frac {1}
+  { 
+    \frac{1}{k_{1,2}} +
+    \frac{1}{k_{2,3}} +
+    ...
+    \frac{1}{k_{N-1,N}}
+  }
+\]
+
+Back to the problem we are looking at(Eq.\ref{eq:reaction}), we can write
+\[
+k_{i,i+1} \equiv k_i = k_1 i^{2/3}
+\]
+If we start from $p_a$, for the bin size of $b$ we can write the effective
+reaction as:
+\[
+P_a + a\times (b-1) P_1 \to P_{a\times b}
+\]
+And the effective rate is
+\[
+k^{eff} = \frac {1}
+  {
+    \frac {1} {k_{a}} +
+    \frac {1} {k_{a+1}} +
+    ...
+    \frac {1} {k_{a\times b}}
+  }
+\]
+\[
+\frac {1} {k_{eff}} =
+  \sum_{i=a}^{a\times b} \frac {1} {k_i} =
+  \frac{1}{k_1} \sum_{i=a}^{a\times b} \frac {1} {i^{2/3}} \approx
+  \frac{1}{k_1} \int_a^{a\times b} x^{-2/3} {\rm d} x =
+  \frac{1}{k_1} \cdot 3 \cdot [(a\times b)^{1/3} - a^{1/3}]
+\]
+\[
+k^{eff} = \frac{k_1}{3} 
+  \frac{1}{ (a\times b)^{1/3} - a^{1/3} }
+\]
+
+If we denote the atom number at the beginning of a bin as $N_{begin}$ and
+the one at the end as $N_{end}$, then we can write the effective rate as:
+\begin{equation}
+k^{eff} = \frac{k_1}{3} 
+  \frac{1}{ N_{end}^{1/3} - N_{begin}^{1/3} }
+\label{eq:rate}
+\end{equation}
+
+We estimate $k_1$ as two single atoms collide together with thermal velocity
+and the transverse section.
+\begin{equation}
+k_1 = \: <\! \sigma_1 v\! > \: = \pi R^2 \sqrt{3k_BT/m}
+\label{eq:k1}
+\end{equation}
+where $\sigma_1$ is the cross section for a single atom and $R$ is the radius
+of a single atom, $v$ is the thermal velocity which is taken to be the average
+value in 3 dimensions, $k_B$ is the Boltzmann constant, $T$ is the temperature
+and $m$ is the mass of a single atom.
+
+\section{Atom Conservation}
+
+The abundance change rates of $P_{begin}$, $P_{end}$ and $P_1$ due to 
+reaction $P_{begin} + X P_1 \longleftrightarrow P_{end} + \gamma$ are
+\[
+\frac{{\rm d}Y_{begin}}{{\rm d}t} =
+  -k^{eff} Y_{atom} Y_{begin} Y_1 + \lambda_\gamma^{eff} Y_{end}  
+\]
+\[
+\frac{{\rm d}Y_{end}}{{\rm d}t} =
+  k^{eff} Y_{atom} Y_{begin} Y_1 - \lambda_\gamma^{eff} Y_{end}  
+\]
+\[
+\frac{{\rm d}Y_1}{{\rm d}t} =
+  X( -k^{eff} Y_{atom} Y_{begin} Y_1 + \lambda_\gamma^{eff} Y_{end} )
+\]
+where $\lambda_\gamma^{eff}$ is the effective photodissociation rate which
+will be discussed later and $X$ is the factor to be determined that ensure
+the total atom number conserved. Atom conservation requires
+\[
+N_{begin} \times \frac{{\rm d}Y_{begin}}{{\rm d}t} +
+N_{end} \times \frac{{\rm d}Y_{end}}{{\rm d}t} +
+\frac{{\rm d}Y_1}{{\rm d}t} = 0.
+\] 
+So we have
+\[
+X = N_{end} - N_{begin}
+\]
+
+\end{document}
