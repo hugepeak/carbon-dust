@@ -148,87 +148,6 @@ get_nucnet( int argc, char **argv )
 
   Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
 
-  //============================================================================
-  // Create decade molecules and reactions if desired. 
-  //============================================================================
-
-  nnt::Zone zone;
-
-  if( !Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" ) )
-  {
-    std::cerr << "Zone not found!" << std::endl;
-    return 0;
-  }
-
-  zone.setNucnetZone(
-    Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" )
-  );
-
-  if( 
-    zone.hasProperty( S_RUN_DECADE ) &&
-    zone.getProperty( S_RUN_DECADE ) == "yes"
-  )
-  {
-
-    unsigned int i_exp_start = 
-      boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP_START ) );
-    unsigned int i_exp = 
-      boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP ) );
-    unsigned int i_base = 
-      boost::lexical_cast<unsigned int>( zone.getProperty( S_BASE ) );
-    unsigned int i_photon_end = 
-      boost::lexical_cast<unsigned int>( zone.getProperty( S_PHOTON_END ) );
-
-    Libnucnet__free( p_nucnet );
-
-    p_nucnet = Libnucnet__new();
-
-    my_user::add_molecules_to_nuc(
-      Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
-      1, 
-      i_exp_start
-    );
-
-    my_user::add_reactions_to_net(
-      Libnucnet__getNet( p_nucnet ),
-      1,
-      i_photon_end
-    ); 
-  
-    my_user::add_forward_reactions_to_net(
-      Libnucnet__getNet( p_nucnet ),
-      i_photon_end,
-      i_exp_start
-    ); 
-
-    for( 
-      unsigned int i = 1; 
-      i <= i_exp; 
-      i++
-    )
-    {
-  
-      unsigned int i_index =
-        i_exp_start *
-        (unsigned int) pow( 
-          i_base,
-          i
-        ); 
-        
-      my_user::add_molecules_to_nuc(
-        Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
-        i_index,
-        i_index
-      );
-  
-    }
-
-    Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
-
-    return p_nucnet;
-
-  }
-    
   return p_nucnet;
 
 }
@@ -418,15 +337,12 @@ get_nucnet( int argc, char **argv )
     exit( EXIT_FAILURE );
   }
 
-  if( argc < 5 || argc > 7 || strcmp( argv[1], "--usage" ) == 0 )
+  if( argc != 4 || strcmp( argv[1], "--usage" ) == 0 )
   {
     fprintf(
       stderr,
-      "\nUsage: %s net_file zone_file traj_file out_file xpath_nuc xpath_reac\n\n",
+      "\nUsage: %s zone_file traj_file out_file \n\n",
       argv[0]
-    );
-    fprintf(
-      stderr, "  net_file = input network data xml filename\n\n"
     );
     fprintf(
       stderr, "  zone_file = input single zone data xml filename\n\n"
@@ -437,13 +353,6 @@ get_nucnet( int argc, char **argv )
     fprintf(
       stderr, "  out_file = output data xml filename\n\n"
     );
-    fprintf(
-      stderr,
-      "  xpath_nuc = nuclear xpath expression (optional--required if xpath_reac specified)\n\n"
-    );
-    fprintf(
-      stderr, "  xpath_reac = reaction xpath expression (optional)\n\n"
-    );
     exit( EXIT_FAILURE );
   }
 
@@ -453,7 +362,7 @@ get_nucnet( int argc, char **argv )
 
   if( strcmp( VALIDATE, "yes" ) == 0 )
   {
-    if( !Libnucnet__is_valid_zone_data_xml( argv[2] ) ) {
+    if( !Libnucnet__is_valid_zone_data_xml( argv[1] ) ) {
       fprintf( stderr, "Not valid libnucnet zone data input!\n" );
       exit( EXIT_FAILURE );
     }
@@ -465,128 +374,29 @@ get_nucnet( int argc, char **argv )
 
   p_nucnet = Libnucnet__new();
 
-  if( argc == 5 )
-  {
-    Libnucnet__Net__updateFromXml(
-      Libnucnet__getNet( p_nucnet ),
-      argv[1],
-      NULL,
-      NULL
-    );
-  }
-  else if( argc == 6 )
-  {
-    Libnucnet__Net__updateFromXml(
-      Libnucnet__getNet( p_nucnet ),
-      argv[1],
-      argv[5],
-      NULL
-    );
-  }
-  else
-  {
-    Libnucnet__Net__updateFromXml(
-      Libnucnet__getNet( p_nucnet ),
-      argv[1],
-      argv[5],
-      argv[6]
-    );
-  }
-
+  my_user::add_default_molecules_to_nuc(
+    Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) )
+  );
 
   //============================================================================
   // Get zone data.
   //============================================================================
 
-  Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
+  Libnucnet__assignZoneDataFromXml( p_nucnet, argv[1], NULL );
 
   //============================================================================
   // Get trajectory data.
   //============================================================================
 
-  get_trajectory_data( argv[3] );
+  get_trajectory_data( argv[2] );
 
   //============================================================================
-  // Create decade molecules and reactions if desired. 
+  // Create bin molecules and reactions if desired. 
   //============================================================================
 
-  nnt::Zone zone;
+  if( my_user::update_bin_net( p_nucnet ) )
+    Libnucnet__assignZoneDataFromXml( p_nucnet, argv[1], NULL );
 
-  if( !Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" ) )
-  {
-    std::cerr << "Zone not found!" << std::endl;
-    return 0;
-  }
-
-  zone.setNucnetZone(
-    Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" )
-  );
-
-  if( 
-    zone.hasProperty( S_RUN_DECADE ) &&
-    zone.getProperty( S_RUN_DECADE ) == "yes"
-  )
-  {
-
-    unsigned int i_exp_start = 
-      boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP_START ) );
-    unsigned int i_exp = 
-      boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP ) );
-    unsigned int i_base = 
-      boost::lexical_cast<unsigned int>( zone.getProperty( S_BASE ) );
-    unsigned int i_photon_end = 
-      boost::lexical_cast<unsigned int>( zone.getProperty( S_PHOTON_END ) );
-
-    Libnucnet__free( p_nucnet );
-
-    p_nucnet = Libnucnet__new();
-
-    my_user::add_molecules_to_nuc(
-      Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
-      1, 
-      i_exp_start
-    );
-
-    my_user::add_reactions_to_net(
-      Libnucnet__getNet( p_nucnet ),
-      1,
-      i_photon_end
-    ); 
-  
-    my_user::add_forward_reactions_to_net(
-      Libnucnet__getNet( p_nucnet ),
-      i_photon_end,
-      i_exp_start
-    ); 
-
-    for( 
-      unsigned int i = 1; 
-      i <= i_exp; 
-      i++
-    )
-    {
-  
-      unsigned int i_index =
-        i_exp_start *
-        (unsigned int) pow( 
-          i_base,
-          i
-        ); 
-        
-      my_user::add_molecules_to_nuc(
-        Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
-        i_index,
-        i_index
-      );
-  
-    }
-
-    Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
-
-    return p_nucnet;
-
-  }
-    
   //============================================================================
   // Done.
   //============================================================================
@@ -654,7 +464,7 @@ initialize_zone( nnt::Zone& zone, char ** argv )
     S_OUTPUT_XML_FILE,
     NULL,
     NULL,
-    argv[4]
+    argv[3]
   );
 
   user::update_t9_rho_in_zone_by_interpolation(
@@ -665,6 +475,39 @@ initialize_zone( nnt::Zone& zone, char ** argv )
     v_log10_rho
   );
 
+  //============================================================================
+  // Initialize bin abundances.
+  //============================================================================
+
+  if( 
+    zone.hasProperty( "run bin" ) && 
+    zone.getProperty( "run bin" ) == "yes"
+  )
+  {
+
+    for(
+      unsigned i = 1;
+      i <= boost::lexical_cast<unsigned>( zone.getProperty( "bin number" ) );
+      i++
+    )
+    {
+
+      zone.updateProperty( 
+        "bin", 
+        boost::lexical_cast<std::string>( i ), 
+        "0." 
+      );
+
+      zone.updateProperty( 
+        "bin change", 
+        boost::lexical_cast<std::string>( i ), 
+        "0." 
+      );
+
+    }
+
+  }
+   
   return;
 
 }
@@ -686,6 +529,13 @@ update_zone_properties(
     v_t9,
     v_log10_rho
   );
+
+  if(
+    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
+  )
+    compute_carbon_k1( zone );
+
+  return;
 
 } 
 
@@ -718,4 +568,36 @@ set_zone( Libnucnet * p_nucnet, nnt::Zone& zone, char ** argv )
 }
 
 #endif // HYDRO_TRAJ
+
+//##############################################################################
+// compute_carbon_k1().
+//##############################################################################
+
+double
+compute_carbon_k1(
+  nnt::Zone & zone
+)
+{
+
+  double d_Rc = 1.7e-8;
+  double d_A = 12.;
+
+  double d_result =
+    M_PI *
+    gsl_pow_2( d_Rc ) *
+    sqrt(
+      3. *
+      GSL_CONST_CGSM_BOLTZMANN *
+      boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) *
+      GSL_CONST_NUM_GIGA /
+      (
+        d_A / GSL_CONST_NUM_AVOGADRO
+      )
+    );
+
+  zone.updateProperty( "k1", boost::lexical_cast<std::string>( d_result ) );
+
+  return d_result;
+
+}
 

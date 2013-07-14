@@ -27,44 +27,35 @@
 #include "carbon_rate_functions.h"
 #include "carbon_hydro.h"
 
-/**
- * @brief A namespace for user-defined rate functions.
- */
-namespace my_user
-{
-
 int
 evolve( nnt::Zone& );
 
-void
-update_102_rates(
-  WnMatrix *,
-  gsl_vector *,
-  nnt::Zone &
+double
+compute_effective_rate(
+  nnt::Zone &, double, double
 );
 
 void
-update_decade_rates(
-  WnMatrix *,
-  gsl_vector *,
-  nnt::Zone &
+update_bin_rates(
+  nnt::Zone &, WnMatrix *, gsl_vector *
 );
 
-size_t
-get_gsl_vector_index_for_species(
-  unsigned int,
-  unsigned int
-);
-
-unsigned int
-get_matrix_row_index_for_species(
-  unsigned int,
-  unsigned int
+void
+evolve_bin( 
+  nnt::Zone &, std::vector<double> &
 );
 
 double
-compute_effective_rate(
-  double, double, double
+check_bin_change(
+  nnt::Zone &
 );
 
-} // namespace my_user
+std::vector<double>
+get_bin_abundances(
+  nnt::Zone &
+);
+
+std::pair<WnMatrix *, gsl_vector *>
+get_evolution_matrix_and_vector( 
+  nnt::Zone &
+);

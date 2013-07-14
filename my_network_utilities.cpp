@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // This file was originally written by Tianhong Yu.
 //
 // This is free software; you can redistribute it and/or modify it
@@ -15,13 +15,105 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \file
-//! \brief My utility code. 
+//! \brief Carbon molecule utility code. 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "my_reaction_utilities.h"
+#include "my_network_utilities.h"
 
 namespace my_user
 {
+
+//##############################################################################
+// add_default_molecules_to_nuc().
+//##############################################################################
+
+void
+add_default_molecules_to_nuc( 
+  Libnucnet__Nuc * p_nuc
+)
+{
+
+  add_molecules_to_nuc( p_nuc, 1, 10 );
+
+}
+
+//##############################################################################
+// add_molecules_to_nuc().
+//##############################################################################
+
+void
+add_molecules_to_nuc(
+  Libnucnet__Nuc * p_nuc,
+  unsigned int i_lo,
+  unsigned int i_hi
+)
+{
+
+  gsl_vector * p_t9, * p_log10_partf;
+  std::string s_state;
+
+  p_t9 = gsl_vector_alloc( 1 );
+  p_log10_partf = gsl_vector_alloc( 1 );
+
+  gsl_vector_set( p_t9, 0, 1. );
+  gsl_vector_set( p_log10_partf, 0, 0. );
+
+  //============================================================================
+  // Add Carbon and neutron. 
+  //============================================================================
+
+  s_state = "";
+
+  for( unsigned int i = i_lo; i <= i_hi; i++ )
+    add_molecule_to_nuc( p_nuc, i, i, s_state, p_t9, p_log10_partf );
+
+  //add_molecule_to_nuc( p_nuc, 0, 1, s_state, p_t9, p_log10_partf );
+
+  gsl_vector_free( p_t9 );
+  gsl_vector_free( p_log10_partf );
+
+}
+
+//##############################################################################
+// add_molecule_to_nuc().
+//##############################################################################
+
+void
+add_molecule_to_nuc(
+  Libnucnet__Nuc * p_nuc,
+  unsigned int i_Z,
+  unsigned int i_A,
+  std::string s_state,
+  gsl_vector * p_t9,
+  gsl_vector * p_log10_parf
+)
+{
+ 
+  Libnucnet__Species * p_species;
+
+  std::string s_source = "example";
+  int i_state = 0;
+  double d_mass_excess = 0.;
+  double d_spin = 0.;
+
+  i_state = 0;
+     
+  p_species = 
+    Libnucnet__Species__new(
+      i_Z,
+      i_A,
+      s_source.c_str(),
+      i_state,
+      s_state.c_str(),
+      d_mass_excess,
+      d_spin,
+      p_t9,
+      p_log10_parf
+    );
+
+  Libnucnet__Nuc__addSpecies( p_nuc, p_species );
+
+}
 
 //##############################################################################
 // add_default_reactions_to_net().
@@ -265,4 +357,67 @@ ReactionData::clear()
 
 }
  
+//##############################################################################
+// update_bin_net(). 
+//##############################################################################
+
+int
+update_bin_net(
+  Libnucnet * p_nucnet
+)
+{
+
+  nnt::Zone zone;
+
+  if( !Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" ) )
+  {
+    std::cerr << "Zone not found!" << std::endl;
+    return 0;
+  }
+
+  zone.setNucnetZone(
+    Libnucnet__getZoneByLabels( p_nucnet, "0", "0", "0" )
+  );
+
+  if( 
+    zone.hasProperty( S_RUN_BIN ) &&
+    zone.getProperty( S_RUN_BIN ) == "yes"
+  )
+  {
+
+    unsigned int i_bin_start = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_BIN_START ) );
+    unsigned int i_photon_end = 
+      boost::lexical_cast<unsigned int>( zone.getProperty( S_PHOTON_END ) );
+
+    Libnucnet__free( p_nucnet );
+
+    p_nucnet = Libnucnet__new();
+
+    add_molecules_to_nuc(
+      Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) ),
+      1, 
+      i_bin_start
+    );
+
+    add_reactions_to_net(
+      Libnucnet__getNet( p_nucnet ),
+      1,
+      i_photon_end
+    ); 
+  
+    add_forward_reactions_to_net(
+      Libnucnet__getNet( p_nucnet ),
+      i_photon_end,
+      i_bin_start
+    ); 
+
+    return 1;
+
+  }
+
+  return 0;
+
 }
+
+} // my_user

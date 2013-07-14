@@ -36,7 +36,7 @@ the atom fraction, i.e. number of atoms per baryon. Take pure $^{12}$C for
 example, $Y_{atom} = 1 / 12$. So Eq.\ref{eq:number_density} can be rewrite as
 \begin{equation}
 \frac{{\rm d}Y_1}{{\rm d}t} = 
-  -k n_{atom} =
+  -k n_{atom} Y_1 Y_2 + \lambda_\gamma Y_3 =
   -k \rho N_A Y_{atom} Y_1 Y_2 + \lambda_\gamma Y_3
 \label{eq:abundance}
 \end{equation}
@@ -149,15 +149,15 @@ The abundance change rates of $P_{begin}$, $P_{end}$ and $P_1$ due to
 reaction $P_{begin} + X P_1 \longleftrightarrow P_{end} + \gamma$ are
 \[
 \frac{{\rm d}Y_{begin}}{{\rm d}t} =
-  -k^{eff} Y_{atom} Y_{begin} Y_1 + \lambda_\gamma^{eff} Y_{end}  
+  -k^{eff} n_{atom} Y_{begin} Y_1 + \lambda_\gamma^{eff} Y_{end}  
 \]
 \[
 \frac{{\rm d}Y_{end}}{{\rm d}t} =
-  k^{eff} Y_{atom} Y_{begin} Y_1 - \lambda_\gamma^{eff} Y_{end}  
+  k^{eff} n_{atom} Y_{begin} Y_1 - \lambda_\gamma^{eff} Y_{end}  
 \]
 \[
 \frac{{\rm d}Y_1}{{\rm d}t} =
-  X( -k^{eff} Y_{atom} Y_{begin} Y_1 + \lambda_\gamma^{eff} Y_{end} )
+  X( -k^{eff} n_{atom} Y_{begin} Y_1 + \lambda_\gamma^{eff} Y_{end} )
 \]
 where $\lambda_\gamma^{eff}$ is the effective photodissociation rate which
 will be discussed later and $X$ is the factor to be determined that ensure
@@ -171,5 +171,109 @@ So we have
 \[
 X = N_{end} - N_{begin}
 \]
+
+\section{Network Matrix}
+Let's look at the reaction between the last species in the continuous network
+and the first bin, and neglect the photodissociation here:
+\[
+P_{last} + XP_1 \to P_{b1}
+\]
+The abundance change rates are then (using $n_a$ to denote $n_{atom}$)
+\[
+\frac{{\rm d}Y_{last}}{{\rm d}t} =
+  -k^{eff}_{last} \, n_a Y_{last} Y_1
+\]
+\[
+\frac{{\rm d}Y_{b1}}{{\rm d}t} =
+  k^{eff}_{last} \, n_a Y_{last} Y_1
+\]
+\[
+\frac{{\rm d}Y_1}{{\rm d}t} =
+  ( -k^{eff}_{last} \, n_a Y_{last} Y_1 )(N_{b1} - N_{last})
+\]
+Then the changes of the root-finding functions are (how to call them?)
+\[
+f_{last} \: +\!\!= \: k^{eff}_{last} \, n_a Y_{last} Y_1
+\]
+\[
+f_{1} \: +\!\!= \: (k^{eff}_{last} \, n_a Y_{last} Y_1) (N_{b1} - N_{last})
+\]
+To find the abundance changes in the continuous network, we need to solve the
+matrix
+\[
+AX=B
+\]
+The matrix element changes due to this reaction are
+\[
+A_{last,last} \: +\!\!= \: k^{eff}_{last} \, n_a Y_1
+\]
+\[
+A_{last,1} \: +\!\!= \: k^{eff}_{last} \, n_a Y_{last}
+\]
+\[
+A_{1,last} \: +\!\!= \: (k^{eff}_{last} \, n_a Y_1)(N_{b1} - N_{last})
+\]
+\[
+A_{1,1} \: +\!\!= \: (k^{eff}_{last} \, n_a Y_{last})(N_{b1} - N_{last})
+\]
+The right-hand-side vector changes are
+\[
+B_{last} \: +\!\!= \: -f_{last} = -k^{eff}_{last} \, n_a Y_{last} Y_1 
+\]
+\[
+B_1 \:+\!\!=\: -f_1 = -(k^{eff}_{last}\,n_a Y_{last} Y_1)(N_{b1}-N_{last})
+\]
+
+Now let's look at the reactions between bins. $P_{bi} + XP_1 \to P_{b(i+1)}$,
+where $i$ goes from 1 to $N-1$ with $N$ as the number of bins.
+\[
+\left( \frac{{\rm d}Y_1}{{\rm d}t}\right) _i =
+  ( -k^{eff}_{bi} \, n_a Y_{bi} Y_1 )(N_{b(i+1)} - N_{bi})
+\]
+\[
+(f_{1})_i \: +\!\!= \: 
+  (k^{eff}_{bi} \, n_a Y_{bi} Y_1) (N_{b(i+1)} - N_{bi})
+\]
+\[
+(A_{1,1})_i \: +\!\!= \: 
+  (k^{eff}_{bi} \, n_a Y_{bi}) (N_{b(i+1)} - N_{bi})
+\]
+\[
+(B_1)_i \:+\!\!=\: -(f_1)_i = 
+  -(k^{eff}_{bi} \, n_a Y_{bi} Y_1) (N_{b(i+1)} - N_{bi})
+\]
+We first solve the matrix equation for current $Y_{bi}$, and then compute
+the abundance changes in bins using the new abundances in the network.
+Then feed the new bin abundances back to the matrix. Iterate until converge. 
+
+\section{Bin Abundances Change}
+
+Now let's look at the abundance changes in bins for each reaction discussed
+above. We are going to solve these changes implicitly. For $Y_{b1}$,
+\[
+\frac {Y_{b1}(t+\Delta t) - Y_{b1}(t)} {\Delta t} =
+  k^{eff}_{last} \, n_a Y_{last}(t+\Delta t) Y_1(t+\Delta t) -
+  k^{eff}_{b1} \, n_a Y_{b1}(t+\Delta t) Y_1(t+\Delta t)
+\]
+\[
+Y_{b1}(t+\Delta t) = \frac
+  {k^{eff}_{last} \, n_a Y_{last}(t+\Delta t) Y_1(t+\Delta t) \Delta t +
+    Y_{b1}(t)}
+  {1 + k^{eff}_{b1} \, n_a Y_1(t+\Delta t) \Delta t}
+\]
+Similarly for $Y_{bi}$ as $i$ goes from 2 to $N-1$:
+\[
+Y_{bi}(t+\Delta t) = \frac
+  {k^{eff}_{b(i-1)} \, n_a Y_{b(i-1)}(t+\Delta t) Y_1(t+\Delta t) \Delta t +
+    Y_{bi}(t)}
+  {1 + k^{eff}_{bi} \, n_a Y_1(t+\Delta t) \Delta t}
+\]
+For $Y_{bN}$ we don't have any destructive terms for now,
+\[
+Y_{bN}(t+\Delta t) = 
+  k^{eff}_{b(N-1)} \, n_a Y_{b(N-1)}(t+\Delta t) Y_1(t+\Delta t) \Delta t +
+    Y_{bi}(t)
+\]
+
 
 \end{document}

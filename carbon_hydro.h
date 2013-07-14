@@ -34,8 +34,7 @@
 
 #include "user/network_utilities.h"
 
-#include "my_molecule_utilities.h"
-#include "my_reaction_utilities.h"
+#include "my_network_utilities.h"
 
 //##############################################################################
 // Defines.
@@ -43,12 +42,6 @@
 
 #define S_POWER                    "power"   // Temperature cooling power. 
 #define S_OUTPUT_XML_FILE          "output xml file"
-
-#define S_RUN_DECADE               "run decade"
-#define S_EXP_START                "exp start"
-#define S_BASE                     "base"
-#define S_EXP                      "exp"
-#define S_PHOTON_END               "photon end"
 
 //##############################################################################
 // Validation.  "no" = no validation, "yes" = validation.
@@ -69,5 +62,7 @@ void update_zone_properties( nnt::Zone& );
 int set_zone( Libnucnet *, nnt::Zone&, char ** );
 
 void get_trajectory_data( char * );
+
+double compute_carbon_k1( nnt::Zone & );
 
 #endif // CARBON_HYDRO

@@ -44,13 +44,22 @@
 #define D_Y_MIN_DT     1.e-10       // Smallest y for dt update
 #define S_SOLVER       nnt::s_ARROW // Solver type: ARROW or GSL
 
-#define S_IDL_PRINT    "idl print"
-
 void
 my_print_abundances( nnt::Zone & );
 
 int
 print_abundance( Libnucnet__Species *, Libnucnet__Zone * );
+
+int
+print_bin_abundances( nnt::Zone & ); 
+
+double
+compute_bin_sum( nnt::Zone & );
+
+void
+bin_update_timestep(
+  nnt::Zone &, double &, double, double, double
+);
 
 //##############################################################################
 // main().
@@ -117,12 +126,10 @@ int main( int argc, char * argv[] ) {
   else
   {
     d_t = 0;
-
     zone.updateProperty(
       nnt::s_TIME,
       boost::lexical_cast<std::string>( d_t )
     );
-
   }
 
   //============================================================================
@@ -185,14 +192,16 @@ int main( int argc, char * argv[] ) {
       )
     ) << std::endl;
 
-  while ( d_t < boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) ) )
+  while ( 
+    d_t < boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
+  )
   {
 
     d_t += d_dt;
 
-  //============================================================================
-  // Set dt and t.
-  //============================================================================
+    //==========================================================================
+    // Set dt and t.
+    //==========================================================================
 
     zone.updateProperty(
       nnt::s_DTIME,
@@ -204,36 +213,35 @@ int main( int argc, char * argv[] ) {
       boost::lexical_cast<std::string>( d_t )
     );
 
-  //============================================================================
-  // Update temperature and density.  Update dt and time again in case
-  // changed in update_zone_properties.
-  // Also update Ya, number of atoms per nucleon.
-  //============================================================================
+    //==========================================================================
+    // Update temperature and density.
+    //==========================================================================
 
     update_zone_properties( zone );
 
-    d_t = boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) );
+    double d_rho = 
+      boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) );
 
-    d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
+    if( d_rho < 0. )
+      std::cout << d_rho << std::endl;
 
-  //============================================================================
-  // Evolve abundances.
-  //============================================================================
+    //==========================================================================
+    // Evolve abundances.
+    //==========================================================================
 
-    my_user::evolve( zone );
+    evolve( zone );
 
-  //============================================================================
-  // Print out abundances.
-  //============================================================================
+    //==========================================================================
+    // Print out abundances.
+    //==========================================================================
 
     if(
-       (
-         i_step % 
-           boost::lexical_cast<int>( zone.getProperty( nnt::s_STEPS ) ) == 0 ||
-         d_t >= boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
-       )
+      i_step % 
+        boost::lexical_cast<int>( zone.getProperty( nnt::s_STEPS ) ) == 0 ||
+      d_t >= boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
     )
     {
+
       Libnucnet__relabelZone(
         p_my_nucnet,
         zone.getNucnetZone(),
@@ -241,26 +249,32 @@ int main( int argc, char * argv[] ) {
         NULL,
         NULL
       );
+
       if( 
-        zone.hasProperty( S_IDL_PRINT ) &&
-        zone.getProperty( S_IDL_PRINT ) == "yes"
+        zone.hasProperty( "idl print" ) &&
+        zone.getProperty( "idl print" ) == "yes"
       ) {
         my_print_abundances( zone );
       } else {
         zone.printAbundances();
       }
+
       zone.updateProperty(
         nnt::s_YE,
         boost::lexical_cast<std::string>(
           Libnucnet__Zone__computeZMoment( zone.getNucnetZone(), 1 )
         )
       );
+
       nnt::write_xml( p_my_output, zone.getNucnetZone() );
+
     }
 
-  //============================================================================
-  // Update timestep.
-  //============================================================================
+    //==========================================================================
+    // Update timestep.
+    //==========================================================================
+
+    d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
 
     Libnucnet__Zone__updateTimeStep(
       zone.getNucnetZone(),
@@ -269,6 +283,11 @@ int main( int argc, char * argv[] ) {
       D_REG_Y,
       D_Y_MIN_DT
     );
+
+    if( 
+      zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
+    )
+      bin_update_timestep( zone, d_dt, D_REG_T, D_REG_Y, D_Y_MIN_DT );
 
     if( boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) > 10. )
       zone.normalizeAbundances();
@@ -311,6 +330,10 @@ int main( int argc, char * argv[] ) {
 
 }
 
+//############################################################################
+// my_print_abundances()
+//############################################################################
+
 void
 my_print_abundances(
   nnt::Zone & zone
@@ -332,18 +355,18 @@ my_print_abundances(
     d_t, d_dt, d_t9, d_rho
   );
 
-    Libnucnet__Nuc__setSpeciesCompareFunction(
-      Libnucnet__Net__getNuc( 
-        Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
-      ),
-      (Libnucnet__Species__compare_function) nnt::species_sort_by_z_then_a
-    );
+  Libnucnet__Nuc__setSpeciesCompareFunction(
+    Libnucnet__Net__getNuc( 
+      Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
+    ),
+    (Libnucnet__Species__compare_function) nnt::species_sort_by_z_then_a
+  );
 
-    Libnucnet__Nuc__sortSpecies(
-      Libnucnet__Net__getNuc( 
-        Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
-      ) 
-    );
+  Libnucnet__Nuc__sortSpecies(
+    Libnucnet__Net__getNuc( 
+      Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
+    ) 
+  );
 
   Libnucnet__Nuc__iterateSpecies(
     Libnucnet__Net__getNuc(
@@ -353,30 +376,40 @@ my_print_abundances(
     zone.getNucnetZone()
   );
 
-  fprintf(
-    stdout,
-    "1 - xsum = %e\n",
-    1. - Libnucnet__Zone__computeAMoment( zone.getNucnetZone(), 1 )
+  if( 
+    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
+  ) {
+
+    print_bin_abundances( zone );
+
+    std::cout << "1 - Xsum = " <<
+      1. - 
+      Libnucnet__Zone__computeAMoment( zone.getNucnetZone(), 1 ) -
+      compute_bin_sum( zone ) <<
+      std::endl << std::endl;
+
+  } else {
+
+    std::cout << "1 - Xsum = " <<
+      1. - 
+      Libnucnet__Zone__computeAMoment( zone.getNucnetZone(), 1 ) -
+      compute_bin_sum( zone ) <<
+      std::endl << std::endl;
+
+  }
+
+  Libnucnet__Nuc__setSpeciesCompareFunction(
+    Libnucnet__Net__getNuc( 
+      Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
+    ),
+    (Libnucnet__Species__compare_function) nnt::species_sort_function
   );
 
-  fprintf(
-    stdout,
-    "Ye = %f\n\n",
-    Libnucnet__Zone__computeZMoment( zone.getNucnetZone(), 1 )
+  Libnucnet__Nuc__sortSpecies(
+    Libnucnet__Net__getNuc( 
+      Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
+    ) 
   );
-
-    Libnucnet__Nuc__setSpeciesCompareFunction(
-      Libnucnet__Net__getNuc( 
-        Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
-      ),
-      (Libnucnet__Species__compare_function) nnt::species_sort_function
-    );
-
-    Libnucnet__Nuc__sortSpecies(
-      Libnucnet__Net__getNuc( 
-        Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
-      ) 
-    );
 
 }
 
@@ -396,7 +429,7 @@ print_abundance(
   d_abund =
     Libnucnet__Zone__getSpeciesAbundance( p_zone, p_species );
   
-  printf( "%12lu%12lu%16.6e%16.6e\n",
+  printf( "%16lu%16lu%16.6e%16.6e\n",
     (unsigned long) Libnucnet__Species__getZ( p_species ),
     (unsigned long) Libnucnet__Species__getA( p_species ),
     d_abund,
@@ -406,6 +439,119 @@ print_abundance(
   );
 
   return 1;
+
+}
+
+//############################################################################
+// print_bin_abundances()
+//############################################################################
+
+int
+print_bin_abundances(
+  nnt::Zone & zone
+)
+{
+
+  for(
+    size_t i = 1;
+    i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) );
+    i++
+  )
+  {
+
+    printf( "%16lu%16lu%16.6e%16.6e\n",
+      (unsigned long)( 
+        boost::lexical_cast<size_t>( zone.getProperty( "bin start" ) ) *
+        pow(
+          boost::lexical_cast<size_t>( zone.getProperty( "bin size" ) ),
+          i
+        )
+      ),
+      (unsigned long)(
+        boost::lexical_cast<size_t>( zone.getProperty( "bin start" ) ) *
+        pow(
+          boost::lexical_cast<size_t>( zone.getProperty( "bin size" ) ),
+          i
+        )
+      ),
+      boost::lexical_cast<double>( 
+        zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+      ),
+      boost::lexical_cast<double>( 
+        zone.getProperty( "bin change", boost::lexical_cast<std::string>( i ) )
+      )
+    );
+
+  }
+
+  return 1;
+
+}
+
+//############################################################################
+// compute_bin_sum()
+//############################################################################
+
+double
+compute_bin_sum(
+  nnt::Zone & zone
+)
+{
+
+  double d_result = 0.;
+
+  for(
+    size_t i = 1;
+    i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) );
+    i++
+  )
+  {
+
+    d_result +=
+      boost::lexical_cast<double>( zone.getProperty( "bin start" ) ) *
+      pow(
+        boost::lexical_cast<double>( zone.getProperty( "bin size" ) ),
+        (double) i
+      ) *
+      boost::lexical_cast<double>( 
+        zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+      );
+
+  }
+
+  return d_result; 
+
+}
+
+//############################################################################
+// bin_update_timestep()
+//############################################################################
+
+void
+bin_update_timestep(
+  nnt::Zone & zone,
+  double & d_dt,
+  double d_regt,
+  double d_regy,
+  double d_ymin
+)
+{
+
+// need to fill this later.
+/*
+  if ( d_y > p_extra_data->dYmin && !WnMatrix__value_is_zero( d_dy ) ) {
+
+    d_check =
+      p_extra_data->dDt *
+      p_extra_data->dRegy *
+      fabs( d_y / ( d_dy + d_tiny) );
+
+    if ( d_check < p_extra_data->dDtnew ) {
+      p_extra_data->dDtnew = d_check;
+    }
+
+  }
+*/
 
 }
 

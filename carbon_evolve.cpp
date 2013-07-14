@@ -1,5 +1,5 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file was originally written by Bradley S. Meyer.
+////////////////////////////////////////////////////////////////////////////////
+// This file was originally written by Bradley S. Meyer and Tianhong Yu.
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -24,13 +24,6 @@
 
 #include "carbon_evolve.h"
 
-/**
- * @brief A namespace for user-defined functions.
- */
-
-namespace my_user
-{
-
 //##############################################################################
 // evolve()
 //##############################################################################
@@ -45,6 +38,7 @@ evolve(
   gsl_vector *p_y_old, *p_rhs, *p_sol, *p_work;
   double d_dt;
   std::pair<double,double> check;
+  double check_bin = 0;
   
   //==========================================================================
   // Evolve NSE + weak rates, if appropriate.
@@ -81,6 +75,17 @@ evolve(
 
   p_y_old = Libnucnet__Zone__getAbundances( zone.getNucnetZone() );
 
+  //==========================================================================
+  // Save the old bin abundances.
+  //==========================================================================
+    
+  std::vector<double> v_bin_old;
+
+  if( 
+    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
+  )
+    v_bin_old = get_bin_abundances( zone );
+
   //============================================================================
   // Newton-Raphson Iterations.
   //============================================================================
@@ -92,17 +97,7 @@ evolve(
     //--------------------------------------------------------------------------
 
     boost::tie( p_matrix, p_rhs ) = 
-      user::get_evolution_matrix_and_vector( zone );
-
-    //--------------------------------------------------------------------------
-    // Update decade rates. 
-    //--------------------------------------------------------------------------
-
-    if( 
-      zone.hasProperty( S_RUN_DECADE ) &&
-      zone.getProperty( S_RUN_DECADE ) == "yes"
-    ) 
-      update_decade_rates( p_matrix, p_rhs, zone );
+      get_evolution_matrix_and_vector( zone );
 
     //--------------------------------------------------------------------------
     // Add 1/dt to diagonal.
@@ -134,6 +129,16 @@ evolve(
     }
 
     //--------------------------------------------------------------------------
+    // Update bin rates. 
+    //--------------------------------------------------------------------------
+
+    if( 
+      zone.hasProperty( "run bin" ) &&
+      zone.getProperty( "run bin" ) == "yes"
+    ) 
+      update_bin_rates( zone, p_matrix, p_rhs );
+
+    //--------------------------------------------------------------------------
     // Solve matrix equation.
     //--------------------------------------------------------------------------
 
@@ -158,6 +163,22 @@ evolve(
     gsl_vector_free( p_work );
 
     //--------------------------------------------------------------------------
+    // Compute bin abundance changes.
+    //--------------------------------------------------------------------------
+
+    if( 
+      zone.hasProperty( "run bin" ) &&
+      zone.getProperty( "run bin" ) == "yes"
+    )
+    {
+ 
+      evolve_bin( zone, v_bin_old );
+
+      check_bin = check_bin_change( zone );
+
+    }
+
+    //--------------------------------------------------------------------------
     // Free matrix, p_rhs, and p_sol. Remember
     // Libnucnet__Zone__computeJacobianMatrix returns a new matrix and
     // Libnucnet__computeFlowVector and WnMatrix__solve return new gsl_vectors
@@ -172,9 +193,12 @@ evolve(
     // Exit iterations if converged.
     //--------------------------------------------------------------------------
 
-    if( check.first < D_MIN ) break;
+    if( check.first < D_MIN && check_bin < 1.e-8 ) break;
 
   }
+
+    if( i_iter > I_ITMAX )
+      std::cout << "check " << check.first << " " << check_bin << std::endl;
 
   //==========================================================================
   // Update abundance changes.
@@ -189,6 +213,35 @@ evolve(
   gsl_vector_free( p_work );
   
   //==========================================================================
+  // Update bin abundance changes.
+  //==========================================================================
+
+  if( 
+    zone.hasProperty( "run bin" ) &&
+    zone.getProperty( "run bin" ) == "yes"
+  )
+  {
+ 
+    std::vector<double> v_work = get_bin_abundances( zone );
+
+    for( 
+      size_t i = 1; 
+      i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) );
+      i++ 
+    ) 
+    {
+  
+      zone.updateProperty(
+        "bin change", 
+        boost::lexical_cast<std::string>( i ),
+        boost::lexical_cast<std::string>( v_work[i-1] - v_bin_old[i-1] )
+      );
+
+    }
+
+  }
+
+  //==========================================================================
   // Free allocated memory and return.
   //==========================================================================
 
@@ -199,35 +252,37 @@ evolve(
 }
 
 //##############################################################################
-// update_decade_rates().
+// update_bin_rates().
 //##############################################################################
 
 void
-update_decade_rates(
+update_bin_rates(
+  nnt::Zone & zone,
   WnMatrix * p_matrix,
-  gsl_vector * p_rhs,
-  nnt::Zone & zone
+  gsl_vector * p_rhs
 )
 {
 
-  if( 
-    !zone.hasProperty( S_EXP_START ) ||
-    !zone.hasProperty( S_BASE ) ||
-    !zone.hasProperty( S_EXP )
-  )
-  {
-    std::cerr << "not enough input in udpate decade rates" << std::endl;
+  if( zone.getProperty( nnt::s_SOLVER ) != nnt::s_ARROW ) {
+    std::cerr << "Only work for arrow solver for now" << std::endl;
     exit( EXIT_FAILURE );
   }
 
-  unsigned int i_start =
-    boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP_START ) ); 
-  unsigned int i_base = 
-    boost::lexical_cast<unsigned int>( zone.getProperty( S_BASE ) ); 
-  unsigned int i_exp =
-    boost::lexical_cast<unsigned int>( zone.getProperty( S_EXP ) ); 
+  double d_begin, d_end, d_rate;
 
-  double d_t9 = boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) );
+  //==========================================================================
+  // Get parameters.
+  //==========================================================================
+    
+  size_t i_bin_start =
+    boost::lexical_cast<size_t>( zone.getProperty( "bin start" ) ); 
+  size_t i_bin_size = 
+    boost::lexical_cast<size_t>( zone.getProperty( "bin size" ) ); 
+  size_t i_bin_number =
+    boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) ); 
+
+  if( i_bin_number == 0 )
+    return;
 
   gsl_vector * p_abunds =
     Libnucnet__Zone__getAbundances(
@@ -239,121 +294,117 @@ update_decade_rates(
     boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) ) *
     GSL_CONST_NUM_AVOGADRO;
 
-  unsigned int i_size = 
-    (unsigned int) WnMatrix__get_gsl_vector_size( p_rhs );
+  size_t i_size = WnMatrix__get_gsl_vector_size( p_rhs );
 
   //==========================================================================
-  // Loop from start to start + exp.
+  // bin_start + c -> b1 
   //==========================================================================
-
-  for( unsigned int m = 0; m < i_exp; m++ )
-  {
     
-    double d_lo = 
-      double( i_start * pow( i_base, m ) );
-    double d_hi = 
-      double( i_start * pow( i_base, m + 1 ) );
+  d_begin = 
+    double( i_bin_start * pow( i_bin_size, 0 ) );
+  d_end = 
+    double( i_bin_start * pow( i_bin_size, 1 ) );
 
-    double d_rate_m = 
+  d_rate = 
+    d_na *
+    compute_effective_rate( 
+      zone, d_begin, d_end
+    );
+
+  //--------------------------------------------------------------------------
+  // Matrix elements.
+  //--------------------------------------------------------------------------
+  
+  WnMatrix__assignElement(
+    p_matrix,
+    i_size - 1,
+    i_size - 1,
+    d_rate * gsl_vector_get( p_abunds, i_size - 1 )
+  );
+
+  WnMatrix__assignElement(
+    p_matrix,
+    i_size - 1,
+    i_size,
+    d_rate * gsl_vector_get( p_abunds, i_size - 2 )
+  );
+
+  WnMatrix__assignElement(
+    p_matrix,
+    i_size,
+    i_size - 1,
+    d_rate * gsl_vector_get( p_abunds, i_size - 1 ) * ( d_end - d_begin )
+  );
+
+  WnMatrix__assignElement(
+    p_matrix,
+    i_size,
+    i_size,
+    d_rate * gsl_vector_get( p_abunds, i_size - 2 ) * ( d_end - d_begin )
+  );
+
+  //--------------------------------------------------------------------------
+  // Rhs vector. 
+  //--------------------------------------------------------------------------
+  
+  gsl_vector_set( 
+    p_rhs,
+    i_size - 2,
+    gsl_vector_get( p_rhs, i_size - 2 ) -
+      d_rate *
+      gsl_vector_get( p_abunds, i_size - 2 ) *
+      gsl_vector_get( p_abunds, i_size - 1 )
+  );
+
+  gsl_vector_set( 
+    p_rhs,
+    i_size - 1,
+    gsl_vector_get( p_rhs, i_size - 1 ) -
+      d_rate *
+      gsl_vector_get( p_abunds, i_size - 2 ) *
+      gsl_vector_get( p_abunds, i_size - 1 ) * 
+      ( d_end - d_begin )
+  );
+
+  //==========================================================================
+  // Loop from b1 + c -> b2 to bN-1 + c -> bN.
+  //==========================================================================
+   
+  for( size_t i = 1; i < i_bin_number; i++ )
+  {
+
+    d_begin = 
+      double( i_bin_start * pow( i_bin_size, i ) );
+    d_end = 
+      double( i_bin_start * pow( i_bin_size, i + 1 ) );
+
+    d_rate = 
       d_na *
       compute_effective_rate( 
-        d_lo, d_hi, d_t9
+        zone, d_begin, d_end
       );
 
-    double d_rate_1 =
-      d_rate_m * ( d_hi - d_lo );
-
-    size_t i_vector_m =
-      get_gsl_vector_index_for_species( i_start, m );
-    size_t i_vector_m1 =
-      get_gsl_vector_index_for_species( i_start, m + 1 );
-
-    unsigned int i_matrix_m =
-      get_matrix_row_index_for_species( i_start, m );
-    unsigned int i_matrix_m1 =
-      get_matrix_row_index_for_species( i_start, m + 1 );
-      
-    //--------------------------------------------------------------------------
-    // Matrix elements.
-    //--------------------------------------------------------------------------
-    
     WnMatrix__assignElement(
       p_matrix,
       i_size,
       i_size,
-      d_rate_1 *
-        gsl_vector_get( p_abunds, i_vector_m )
+      d_rate * 
+        boost::lexical_cast<double>(
+          zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+        ) *
+        ( d_end - d_begin )
     );
 
-    WnMatrix__assignElement(
-      p_matrix,
-      i_size,
-      i_matrix_m,
-      d_rate_1 *
-        gsl_vector_get( p_abunds, i_size - 1 )
-    );
-
-    WnMatrix__assignElement(
-      p_matrix,
-      i_matrix_m,
-      i_size,
-      d_rate_m *
-        gsl_vector_get( p_abunds, i_vector_m )
-    );
-
-    WnMatrix__assignElement(
-      p_matrix,
-      i_matrix_m,
-      i_matrix_m,
-      d_rate_m *
-        gsl_vector_get( p_abunds, i_size - 1 )
-    );
-
-    WnMatrix__assignElement(
-      p_matrix,
-      i_matrix_m1,
-      i_size, 
-      -d_rate_m *
-        gsl_vector_get( p_abunds, i_vector_m )
-    );
-
-    WnMatrix__assignElement(
-      p_matrix,
-      i_matrix_m1,
-      i_matrix_m,
-      -d_rate_m *
-        gsl_vector_get( p_abunds, i_size - 1 )
-    );
-
-    //--------------------------------------------------------------------------
-    // Rhs vector. 
-    //--------------------------------------------------------------------------
-    
     gsl_vector_set( 
       p_rhs,
       i_size - 1,
-      gsl_vector_get( p_rhs, i_size - 1) -
-        d_rate_1 *
+      gsl_vector_get( p_rhs, i_size - 1 ) -
+        d_rate *
+        boost::lexical_cast<double>(
+          zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+        ) *
         gsl_vector_get( p_abunds, i_size - 1 ) *
-        gsl_vector_get( p_abunds, i_vector_m )
-    );
-
-    gsl_vector_set( 
-      p_rhs,
-      i_vector_m,
-      gsl_vector_get( p_rhs, i_vector_m ) -
-        d_rate_m *
-        gsl_vector_get( p_abunds, i_size - 1 ) *
-        gsl_vector_get( p_abunds, i_vector_m )
-    );
-
-    gsl_vector_set( 
-      p_rhs,
-      i_vector_m1,
-      gsl_vector_get( p_rhs, i_vector_m1 ) +
-        d_rate_m *
-        gsl_vector_get( p_abunds, i_size - 1 ) *
-        gsl_vector_get( p_abunds, i_vector_m )
+        ( d_end - d_begin )
     );
 
   }
@@ -367,71 +418,339 @@ update_decade_rates(
 }
 
 //##############################################################################
-// get_gsl_vector_index_for_species().
-//##############################################################################
-
-size_t
-get_gsl_vector_index_for_species(
-  unsigned int i_start,
-  unsigned int m
-)
-{
-
-  return
-    size_t(
-      i_start + m - 2
-    );
-
-}
-
-//##############################################################################
-// get_matrix_row_index_for_species().
-//##############################################################################
-
-unsigned int
-get_matrix_row_index_for_species(
-  unsigned int i_start,
-  unsigned int m
-)
-{
-
-  return 
-    i_start + m - 1;
-
-} 
-
-//##############################################################################
 // compute_effective_rate().
 //##############################################################################
 
 double
 compute_effective_rate(
-  double d_lo,
-  double d_hi, 
-  double d_t9
+  nnt::Zone & zone,
+  double d_begin,
+  double d_end 
 )
 {
 
-  double d_Rc = 1.7e-8;
-  double d_A = 12.;
+  if( zone.hasProperty( "k1" ) ) {
 
-  return
-    M_PI *
-    gsl_pow_2( d_Rc ) *
-    sqrt(
-      2. *
-      GSL_CONST_CGSM_BOLTZMANN *
-      d_t9 * GSL_CONST_NUM_GIGA /
+    return
+      boost::lexical_cast<double>( zone.getProperty( "k1" ) ) /
       (
-        d_A / GSL_CONST_NUM_AVOGADRO
-      )
-    )
-    /
-    (
-      3. *
-      ( pow( d_hi, 1./3. ) - pow( d_lo, 1./3. ) )
-    );
+        3. *
+        ( pow( d_end, 1./3. ) - pow( d_begin, 1./3. ) )
+      );
+
+  } else {
+
+    return
+      compute_carbon_k1( zone ) /    
+      (
+        3. *
+        ( pow( d_end, 1./3. ) - pow( d_begin, 1./3. ) )
+      );
+
+  }
 
 }
 
-} // namespace my_user
+//##############################################################################
+// evolve_bin().
+//##############################################################################
+
+void
+evolve_bin(
+  nnt::Zone & zone,
+  std::vector<double> & v_bin_old
+)
+{
+
+  if( zone.getProperty( nnt::s_SOLVER ) != nnt::s_ARROW ) {
+    std::cerr << "Only work for arrow solver for now" << std::endl;
+    exit( EXIT_FAILURE );
+  }
+
+  double d_begin, d_end, d_rate_last;
+
+  size_t i_bin_start =
+    boost::lexical_cast<size_t>( zone.getProperty( "bin start" ) ); 
+  size_t i_bin_size = 
+    boost::lexical_cast<size_t>( zone.getProperty( "bin size" ) ); 
+  size_t i_bin_number =
+    boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) ); 
+
+  if( i_bin_number == 0 )
+    return;
+
+  gsl_vector * p_abunds =
+    Libnucnet__Zone__getAbundances( zone.getNucnetZone() );
+
+  double d_na =
+    carbon_compute_Ya( zone ) *
+    boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) ) *
+    GSL_CONST_NUM_AVOGADRO;
+
+  size_t i_size = WnMatrix__get_gsl_vector_size( p_abunds );
+
+  //==========================================================================
+  // "Allocate" new abundance vector.
+  //==========================================================================
+    
+  std::vector<double> v_new( i_bin_number );
+
+  //==========================================================================
+  // Compute effective rates.
+  //==========================================================================
+    
+  d_begin = double( i_bin_start * pow( i_bin_size, 0 ) );
+  d_end = double( i_bin_start * pow( i_bin_size, 1 ) );
+
+  d_rate_last =
+    d_na *
+    compute_effective_rate( 
+      zone, d_begin, d_end
+    );
+
+  std::vector<double> v_rates;
+
+  for( size_t i = 1; i < i_bin_number; i++ ) {
+
+    d_begin = double( i_bin_start * pow( i_bin_size, i ) );
+    d_end = double( i_bin_start * pow( i_bin_size, i + 1 ) );
+
+    v_rates.push_back( 
+      d_na *
+      compute_effective_rate( 
+        zone, d_begin, d_end
+      )
+    );
+
+  }
+
+  if( i_bin_number == 1 ) {
+ 
+    v_new[0] =
+      d_rate_last *
+      gsl_vector_get( p_abunds, i_size - 2 ) *
+      gsl_vector_get( p_abunds, i_size - 1 ) *
+      boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+      +
+      v_bin_old[0];
+
+  } else {
+    
+    v_new[0] =
+      (
+        d_rate_last *
+        gsl_vector_get( p_abunds, i_size - 2 ) *
+        gsl_vector_get( p_abunds, i_size - 1 ) *
+        boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+        +
+        v_bin_old[0]
+      )
+      /
+      (
+        1. +
+        v_rates[0] *     
+        gsl_vector_get( p_abunds, i_size - 1 ) *
+        boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+      );
+      
+    for( size_t i = 1; i < i_bin_number - 1; i++ ) {
+  
+      v_new[i] = 
+        (
+          v_rates[i-1] *
+          v_new[i-1] *
+          gsl_vector_get( p_abunds, i_size - 1 ) *
+          boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+          +
+          v_bin_old[i]
+        )
+        /
+        (
+          1. +
+          v_rates[i] *     
+          gsl_vector_get( p_abunds, i_size - 1 ) *
+          boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+        );
+    
+    }
+  
+    v_new[i_bin_number - 1] =
+      v_rates[i_bin_number - 2] *
+      v_new[i_bin_number - 2] *
+      gsl_vector_get( p_abunds, i_size - 1 ) *
+      boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+      +
+      v_bin_old[i_bin_number - 1];
+
+   } // i_bin_number > 1
+
+  //==========================================================================
+  // Update bin abundances and abundance changes.
+  //==========================================================================
+  
+  std::vector<double> v_work = get_bin_abundances( zone );
+
+  for( size_t i = 1; i <= i_bin_number; i++ ) 
+  {
+
+    zone.updateProperty(
+      "bin", 
+      boost::lexical_cast<std::string>( i ),
+      boost::lexical_cast<std::string>( v_new[i-1] )
+    );
+
+    zone.updateProperty(
+      "bin change", 
+      boost::lexical_cast<std::string>( i ),
+      boost::lexical_cast<std::string>( v_new[i-1] - v_work[i-1] )
+    );
+
+  }
+
+  //==========================================================================
+  // Free. 
+  //==========================================================================
+  
+  gsl_vector_free( p_abunds );
+
+}
+
+//##############################################################################
+// check_bin_change().
+//##############################################################################
+
+double
+check_bin_change(
+  nnt::Zone & zone
+)
+{
+
+  double d_check = 0., d_checkT;
+
+  for(
+    size_t i = 1;
+    i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) );
+    i++
+  )
+  {
+
+    if(
+      boost::lexical_cast<double>( 
+        zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+      ) > 1.e-10
+    )
+    {
+
+      d_checkT = 
+        fabs(
+          boost::lexical_cast<double>( 
+            zone.getProperty( 
+              "bin change", 
+              boost::lexical_cast<std::string>( i ) 
+            )
+          ) /   
+          boost::lexical_cast<double>( 
+            zone.getProperty( 
+              "bin", 
+              boost::lexical_cast<std::string>( i ) 
+            )
+          ) 
+        ); 
+
+      if( d_checkT > d_check )
+        d_check = d_checkT;
+
+    }
+
+  }
+
+  return d_check;
+
+}
+
+//##############################################################################
+// get_bin_abundances().
+//##############################################################################
+
+std::vector<double>
+get_bin_abundances(
+  nnt::Zone & zone
+)
+{
+
+  std::vector<double> v_abunds;
+
+  for( 
+    size_t i = 1; 
+    i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) ); 
+    i++ 
+  ) 
+  {
+
+    v_abunds.push_back( 
+      boost::lexical_cast<double>(
+        zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+      )
+    );
+
+  }
+
+  return v_abunds;
+
+}
+
+//##############################################################################
+// get_evolution_matrix_and_vector().
+//##############################################################################
+
+std::pair< WnMatrix *, gsl_vector *>
+get_evolution_matrix_and_vector( nnt::Zone& zone )
+{
+
+  WnMatrix * p_matrix;
+  gsl_vector * p_rhs;
+
+  //--------------------------------------------------------------------------
+  // Compute rates.
+  //--------------------------------------------------------------------------
+
+  Libnucnet__Zone__computeRates(
+    zone.getNucnetZone(),
+    boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ),
+    boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) )
+  ); 
+
+  //--------------------------------------------------------------------------
+  // Zero out small rates.
+  //--------------------------------------------------------------------------
+
+  if( zone.hasProperty( nnt::s_SMALL_RATES_THRESHOLD ) )
+  {
+    user::zero_out_small_rates(
+      zone,
+      boost::lexical_cast<double>(
+        zone.getProperty( nnt::s_SMALL_RATES_THRESHOLD )
+      )
+    );
+  }
+
+  //--------------------------------------------------------------------------
+  // Get right hand side vector.
+  //--------------------------------------------------------------------------
+
+  p_rhs = Libnucnet__Zone__computeFlowVector( zone.getNucnetZone() );
+
+  //--------------------------------------------------------------------------
+  // Get Jacobian matrix.
+  //--------------------------------------------------------------------------
+
+  p_matrix = Libnucnet__Zone__computeJacobianMatrix( zone.getNucnetZone() );
+
+  //--------------------------------------------------------------------------
+  // Return.
+  //--------------------------------------------------------------------------
+
+  return std::make_pair( p_matrix, p_rhs );
+
+}
+
