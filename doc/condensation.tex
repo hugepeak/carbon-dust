@@ -11,10 +11,10 @@ For a reaction:
 we can write the number density change of species 1 as:
 \begin{equation}
 \frac{{\rm d}n_1}{{\rm d}t} = 
-  -k \, n_1 n_2 + \lambda_\gamma n_3
+  -\lambda_{12} \, n_1 n_2 + \lambda_\gamma n_3
 \label{eq:number_density}
 \end{equation}
-where $k$ is the reaction rate in the unit of $cm^3s^{-1}$ and 
+where $\lambda_{12}$ is the reaction rate in the unit of $cm^3s^{-1}$ and 
 $\lambda_\gamma$ is the photodissociation rate of species 3 with the unit of
 $s^{-1}$.
 
@@ -36,8 +36,8 @@ the atom fraction, i.e. number of atoms per baryon. Take pure $^{12}$C for
 example, $Y_{atom} = 1 / 12$. So Eq.\ref{eq:number_density} can be rewrite as
 \begin{equation}
 \frac{{\rm d}Y_1}{{\rm d}t} = 
-  -k n_{atom} Y_1 Y_2 + \lambda_\gamma Y_3 =
-  -k \rho N_A Y_{atom} Y_1 Y_2 + \lambda_\gamma Y_3
+  -\lambda_{12} n_{atom} Y_1 Y_2 + \lambda_\gamma Y_3 =
+  -\lambda_{12} \rho N_A Y_{atom} Y_1 Y_2 + \lambda_\gamma Y_3
 \label{eq:abundance}
 \end{equation}
 where $\rho$ is the mass density and $N_A$ is the Avogadro number. Then what
@@ -49,93 +49,68 @@ For a single kind of atom, we study the effective condensation rate here.
 The condensation here means one atom attaches to an existing multi-atom
 particle:
 \begin{equation}
-P_1 + P_i \longleftrightarrow P_{i+1} + \gamma
+P_1 + P_i \to P_{i+1} + \gamma
 \label{eq:reaction}
 \end{equation} 
-where $P_i$ denotes a particle with $i$ atoms in it.
+where $P_i$ denotes a particle with $i$ atoms in it. Here we are neglecting
+the photodissociation for large stable particles.
 
 Let's assume that the condensation rate is proportional to the surface area
-(or cross section) of the larger particle, which goes like $n^{2/3}$, i.e.
+(or cross section) of the larger particle, which goes like $N^{2/3}$, i.e.
 \[
-k \propto A \propto n^{2/3}
+\lambda \propto A \propto N^{2/3}
 \]
-where $k$ is the rate, $A$ is the surface area and $n$ is the number of atoms
-in the particle.
+or
+\[
+\lambda_i = \lambda_1 N_i^{2/3}
+\]
+where $\lambda$ is the rate, $A$ is the surface area and $N$ is the number 
+of atoms in the particle.
 
-To make the calculation of a large atom number particle possible, we introduce
-the ``bin" after a continuous size increment. In a bin we neglect the details 
-of the single particles and focus on the
-two ends of the bin. For example if we start the bin from size $a$ and the bin 
-size is 10, the particles we care about after size $a$
-are just $P_a$, $P_{10a}$, $P_{100a}$, etc. 
-And we just calculate the effective reaction rates between these particles.
-
-From graph theory we know that for a series of vertices 1, 2, ..., N, the
-effective rate between 1 and N is like:
+To make the calculation of particles with a large atom number possible, we 
+introduce
+the ``bin" after a continuous network. There will a number of particles in a 
+bin and we assume \textbf{steady state} within a bin.
+The rate out of a bin is like
 \[
-k_{1,N}^{eff} \Delta t = \frac 
-  { k_{1,2}k_{2,3}...k_{N-1,N}\Delta t^{N-1} }
-  { 
-    k_{2,3}k_{3,4}...k_{N-1,N}\Delta t^{N-2} +
-    k_{1,2}k_{3,4}...k_{N-1,N}\Delta t^{N-2} +
-    ...
-    k_{1,2}...k_{N-2,N-1}\Delta t^{N-2}
-  }
-\]
-
-\[
-k_{1,N}^{eff} = \frac {1}
-  { 
-    \frac{1}{k_{1,2}} +
-    \frac{1}{k_{2,3}} +
-    ...
-    \frac{1}{k_{N-1,N}}
-  }
-\]
-
-Back to the problem we are looking at(Eq.\ref{eq:reaction}), we can write
-\[
-k_{i,i+1} \equiv k_i = k_1 i^{2/3}
-\]
-If we start from $p_a$, for the bin size of $b$ we can write the effective
-reaction as:
-\[
-P_a + a\times (b-1) P_1 \to P_{a\times b}
-\]
-And the effective rate is
-\[
-k^{eff} = \frac {1}
-  {
-    \frac {1} {k_{a}} +
-    \frac {1} {k_{a+1}} +
-    ...
-    \frac {1} {k_{a\times b}}
-  }
+\lambda_{bin,last}Y_{bin,last} = \lambda^{eff}_{bin}Y_{bin}
 \]
 \[
-\frac {1} {k_{eff}} =
-  \sum_{i=a}^{a\times b} \frac {1} {k_i} =
-  \frac{1}{k_1} \sum_{i=a}^{a\times b} \frac {1} {i^{2/3}} \approx
-  \frac{1}{k_1} \int_a^{a\times b} x^{-2/3} {\rm d} x =
-  \frac{1}{k_1} \cdot 3 \cdot [(a\times b)^{1/3} - a^{1/3}]
+Y_{bin} = \sum_{i\in bin} Y_i
 \]
 \[
-k^{eff} = \frac{k_1}{3} 
-  \frac{1}{ (a\times b)^{1/3} - a^{1/3} }
+\lambda^{eff}_{bin} = \lambda_{bin,last} \left(
+  \frac{Y_{bin,last}}{Y_{bin}}
+  \right)_{ss}
+  = \lambda_{bin,last} \left(
+  \frac{1}{\sum_{i\in bin} \frac{Y_i}{Y_{bin,last}} }
+  \right)_{ss}
 \]
-
-If we denote the atom number at the beginning of a bin as $N_{begin}$ and
-the one at the end as $N_{end}$, then we can write the effective rate as:
+For steady state,
+\[
+\frac{Y_i}{Y_j} = \frac{\lambda_i}{\lambda_j}
+\]
+so,
+\[
+\lambda^{eff}_{bin} = \lambda_{bin,last} \left(
+  \frac{1}{\sum_{i\in bin} \frac{\lambda_{bin,last}}{\lambda_i} }
+  \right)
+  = \frac{1}{\sum_{i\in bin} \frac{1}{\lambda_i} }
+  = \lambda_1 \frac{1}{\sum_{i\in bin} N_i^{-2/3}}
+\]
+If we apply the integral approximation,
 \begin{equation}
-k^{eff} = \frac{k_1}{3} 
-  \frac{1}{ N_{end}^{1/3} - N_{begin}^{1/3} }
+\lambda^{eff}_{bin}
+  \approx \lambda_1 \left( \int_{bin,fist}^{bin,last} x^{-2/3} {\rm d} x
+  \right)^{-1}
+  = \lambda_1 \frac{1}{N_{bin,last}^{1/3} - N_{bin,first}^{1/3}}
 \label{eq:rate}
 \end{equation}
 
-We estimate $k_1$ as two single atoms collide together with thermal velocity
-and the transverse section.
+We estimate $\lambda_1$ as two single atoms collide together with thermal 
+velocity and the transverse section.
 \begin{equation}
-k_1 = \: <\! \sigma_1 v\! > \: = \pi R^2 \sqrt{3k_BT/m}
+\lambda_1 = \: <\! \sigma_1 v\! > \: = \pi R^2 \sqrt{3k_BT/m}
 \label{eq:k1}
 \end{equation}
 where $\sigma_1$ is the cross section for a single atom and $R$ is the radius
@@ -145,58 +120,60 @@ and $m$ is the mass of a single atom.
 
 \section{Atom Conservation}
 
-The abundance change rates of $P_{begin}$, $P_{end}$ and $P_1$ due to 
-reaction $P_{begin} + X P_1 \longleftrightarrow P_{end} + \gamma$ are
+The abundance change rates of $Y_{bin,i}$, $Y_{bin,i+1}$ and $Y_1$
+due to 
+reaction ${\rm Bin}_i + X P_1 \to {\rm Bin}_{i+1} + \gamma$ are
 \[
-\frac{{\rm d}Y_{begin}}{{\rm d}t} =
-  -k^{eff} n_{atom} Y_{begin} Y_1 + \lambda_\gamma^{eff} Y_{end}  
+\frac{{\rm d}Y_{bin,i}}{{\rm d}t} =
+  -\lambda_i^{eff} n_{atom} Y_{bin,i} Y_1
 \]
 \[
-\frac{{\rm d}Y_{end}}{{\rm d}t} =
-  k^{eff} n_{atom} Y_{begin} Y_1 - \lambda_\gamma^{eff} Y_{end}  
+\frac{{\rm d}Y_{bin,i+1}}{{\rm d}t} =
+  \lambda_i^{eff} n_{atom} Y_{bin,i} Y_1
 \]
 \[
 \frac{{\rm d}Y_1}{{\rm d}t} =
-  X( -k^{eff} n_{atom} Y_{begin} Y_1 + \lambda_\gamma^{eff} Y_{end} )
+  X( -\lambda_i^{eff} n_{atom} Y_{bin,i} Y_1 )
 \]
-where $\lambda_\gamma^{eff}$ is the effective photodissociation rate which
-will be discussed later and $X$ is the factor to be determined that ensure
+where $X$ is the factor to be determined that ensure
 the total atom number conserved. Atom conservation requires
 \[
-N_{begin} \times \frac{{\rm d}Y_{begin}}{{\rm d}t} +
-N_{end} \times \frac{{\rm d}Y_{end}}{{\rm d}t} +
+N_{bin,i} \times \frac{{\rm d}Y_{bin,i}}{{\rm d}t} +
+N_{bin,i+1} \times \frac{{\rm d}Y_{bin,i+1}}{{\rm d}t} +
 \frac{{\rm d}Y_1}{{\rm d}t} = 0.
 \] 
 So we have
 \[
-X = N_{end} - N_{begin}
+X = N_{bin,i+1} - N_{bin,i}
+\]
+
+Similarly the abundance change rates of $Y_{last}$, $Y_{bin,1}$ and 
+$Y_1$ due to reaction $P_{network,last} + X P_1 \to {\rm Bin}_1 + \gamma$ are
+\[
+\frac{{\rm d}Y_{last}}{{\rm d}t} =
+  -\lambda_{last} n_{atom} Y_{last} Y_1
+\]
+\[
+\frac{{\rm d}Y_{bin,1}}{{\rm d}t} =
+  \lambda_{last} n_{atom} Y_{last} Y_1
+\]
+\[
+\frac{{\rm d}Y_1}{{\rm d}t} =
+  (-\lambda_{last} n_{atom} Y_{last} Y_1) \times
+  (N_{bin,1} - N_{last})
 \]
 
 \section{Network Matrix}
 Let's look at the reaction between the last species in the continuous network
-and the first bin, and neglect the photodissociation here:
+and the first bin, 
+the changes of the root-finding functions are (how to call them?)
+(denoting $n_{atom}$ as $n_a$):
 \[
-P_{last} + XP_1 \to P_{b1}
-\]
-The abundance change rates are then (using $n_a$ to denote $n_{atom}$)
-\[
-\frac{{\rm d}Y_{last}}{{\rm d}t} =
-  -k^{eff}_{last} \, n_a Y_{last} Y_1
+f_{last} \: +\!\!= \: \lambda_{last} \, n_a Y_{last} Y_1
 \]
 \[
-\frac{{\rm d}Y_{b1}}{{\rm d}t} =
-  k^{eff}_{last} \, n_a Y_{last} Y_1
-\]
-\[
-\frac{{\rm d}Y_1}{{\rm d}t} =
-  ( -k^{eff}_{last} \, n_a Y_{last} Y_1 )(N_{b1} - N_{last})
-\]
-Then the changes of the root-finding functions are (how to call them?)
-\[
-f_{last} \: +\!\!= \: k^{eff}_{last} \, n_a Y_{last} Y_1
-\]
-\[
-f_{1} \: +\!\!= \: (k^{eff}_{last} \, n_a Y_{last} Y_1) (N_{b1} - N_{last})
+f_{1} \: +\!\!= \: (\lambda_{last} \, n_a Y_{last} Y_1) 
+  (N_{bin,1} - N_{last})
 \]
 To find the abundance changes in the continuous network, we need to solve the
 matrix
@@ -205,74 +182,78 @@ AX=B
 \]
 The matrix element changes due to this reaction are
 \[
-A_{last,last} \: +\!\!= \: k^{eff}_{last} \, n_a Y_1
+A_{last,last} \: +\!\!= \: \lambda_{last} \, n_a Y_1
 \]
 \[
-A_{last,1} \: +\!\!= \: k^{eff}_{last} \, n_a Y_{last}
+A_{last,1} \: +\!\!= \: \lambda_{last} \, n_a Y_{last}
 \]
 \[
-A_{1,last} \: +\!\!= \: (k^{eff}_{last} \, n_a Y_1)(N_{b1} - N_{last})
+A_{1,last} \: +\!\!= \: (\lambda_{last} \, n_a Y_1)(N_{bin,1} - N_{last})
 \]
 \[
-A_{1,1} \: +\!\!= \: (k^{eff}_{last} \, n_a Y_{last})(N_{b1} - N_{last})
+A_{1,1} \: +\!\!= \: (\lambda_{last} \, n_a Y_{last})(N_{bin,1} - N_{last})
 \]
 The right-hand-side vector changes are
 \[
-B_{last} \: +\!\!= \: -f_{last} = -k^{eff}_{last} \, n_a Y_{last} Y_1 
+B_{last} \: +\!\!= \: -f_{last} = -\lambda_{last} \, n_a Y_{last} Y_1 
 \]
 \[
-B_1 \:+\!\!=\: -f_1 = -(k^{eff}_{last}\,n_a Y_{last} Y_1)(N_{b1}-N_{last})
+B_1 \:+\!\!=\: -f_1 = -(\lambda_{last}\,n_a Y_{last} Y_1)(N_{bin,1}-N_{last})
 \]
 
-Now let's look at the reactions between bins. $P_{bi} + XP_1 \to P_{b(i+1)}$,
+Now let's look at the reactions between bins. 
+${\rm Bin}_i + (N_{bin,i+1}-N_{bin,i})P_1 \to {\rm Bin}_{i+1}$,
 where $i$ goes from 1 to $N-1$ with $N$ as the number of bins.
 \[
 \left( \frac{{\rm d}Y_1}{{\rm d}t}\right) _i =
-  ( -k^{eff}_{bi} \, n_a Y_{bi} Y_1 )(N_{b(i+1)} - N_{bi})
+  ( -\lambda^{eff}_{bin,i} \, n_a Y_{bin,i} Y_1 )(N_{bin,i+1} - N_{bin,i})
 \]
 \[
 (f_{1})_i \: +\!\!= \: 
-  (k^{eff}_{bi} \, n_a Y_{bi} Y_1) (N_{b(i+1)} - N_{bi})
+  (\lambda^{eff}_{bin,i} \, n_a Y_{bin,i} Y_1) (N_{bin,i+1} - N_{bin,i})
 \]
 \[
 (A_{1,1})_i \: +\!\!= \: 
-  (k^{eff}_{bi} \, n_a Y_{bi}) (N_{b(i+1)} - N_{bi})
+  (\lambda^{eff}_{bin,i} \, n_a Y_{bin,i}) (N_{bin,i+1} - N_{bin,i})
 \]
 \[
 (B_1)_i \:+\!\!=\: -(f_1)_i = 
-  -(k^{eff}_{bi} \, n_a Y_{bi} Y_1) (N_{b(i+1)} - N_{bi})
+  -(\lambda^{eff}_{bin,i} \, n_a Y_{bin,i} Y_1) (N_{bin,i+1} - N_{bin,i})
 \]
-We first solve the matrix equation for current $Y_{bi}$, and then compute
-the abundance changes in bins using the new abundances in the network.
+We first solve the matrix equation for current $Y_{bin,i}$, and then compute
+the abundance changes in bins using the new abundances in the network 
+(as showed below).
 Then feed the new bin abundances back to the matrix. Iterate until converge. 
 
 \section{Bin Abundances Change}
 
 Now let's look at the abundance changes in bins for each reaction discussed
-above. We are going to solve these changes implicitly. For $Y_{b1}$,
+above. We are going to solve these changes implicitly. For $Y_{bin,1}$,
 \[
-\frac {Y_{b1}(t+\Delta t) - Y_{b1}(t)} {\Delta t} =
-  k^{eff}_{last} \, n_a Y_{last}(t+\Delta t) Y_1(t+\Delta t) -
-  k^{eff}_{b1} \, n_a Y_{b1}(t+\Delta t) Y_1(t+\Delta t)
+\frac {Y_{bin,1}(t+\Delta t) - Y_{b1}(t)} {\Delta t} =
+  \lambda_{last} \, n_a Y_{last}(t+\Delta t) Y_1(t+\Delta t) -
+  \lambda^{eff}_{bin,1} \, n_a Y_{bin,1}(t+\Delta t) Y_1(t+\Delta t)
 \]
 \[
-Y_{b1}(t+\Delta t) = \frac
-  {k^{eff}_{last} \, n_a Y_{last}(t+\Delta t) Y_1(t+\Delta t) \Delta t +
-    Y_{b1}(t)}
-  {1 + k^{eff}_{b1} \, n_a Y_1(t+\Delta t) \Delta t}
+Y_{bin,1}(t+\Delta t) = \frac
+  {\lambda_{last} \, n_a Y_{last}(t+\Delta t) Y_1(t+\Delta t) \Delta t +
+    Y_{bin,1}(t)}
+  {1 + \lambda^{eff}_{bin,1} \, n_a Y_1(t+\Delta t) \Delta t}
 \]
-Similarly for $Y_{bi}$ as $i$ goes from 2 to $N-1$:
+Similarly for $Y_{bin,i}$ as $i$ goes from 2 to $N-1$:
 \[
-Y_{bi}(t+\Delta t) = \frac
-  {k^{eff}_{b(i-1)} \, n_a Y_{b(i-1)}(t+\Delta t) Y_1(t+\Delta t) \Delta t +
-    Y_{bi}(t)}
-  {1 + k^{eff}_{bi} \, n_a Y_1(t+\Delta t) \Delta t}
+Y_{bin,i}(t+\Delta t) = \frac
+  {\lambda^{eff}_{bin,i-1} \, n_a Y_{bin,i-1}(t+\Delta t) Y_1(t+\Delta t) 
+    \Delta t +
+    Y_{bin,i}(t)}
+  {1 + \lambda^{eff}_{bin,i} \, n_a Y_1(t+\Delta t) \Delta t}
 \]
-For $Y_{bN}$ we don't have any destructive terms for now,
+For $Y_{bin,N}$ we don't have any destructive terms for now,
 \[
-Y_{bN}(t+\Delta t) = 
-  k^{eff}_{b(N-1)} \, n_a Y_{b(N-1)}(t+\Delta t) Y_1(t+\Delta t) \Delta t +
-    Y_{bi}(t)
+Y_{bin,N}(t+\Delta t) = 
+  \lambda^{eff}_{bin,N-1} \, n_a Y_{bin,N-1}(t+\Delta t) Y_1(t+\Delta t) 
+    \Delta t +
+    Y_{bin,N}(t)
 \]
 
 
