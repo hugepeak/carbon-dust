@@ -33,7 +33,7 @@ add_default_molecules_to_nuc(
 )
 {
 
-  add_molecules_to_nuc( p_nuc, 1, 10 );
+  add_molecules_to_nuc( p_nuc, 1, (unsigned int) 1e1 );
 
 }
 
@@ -128,11 +128,21 @@ add_default_reactions_to_net(
   add_reactions_to_net(
     p_net,
     1,
+    10
+  );
+
+  add_forward_reactions_to_net( p_net, 10, 1e1 );
+
+/*
+  add_reactions_to_net(
+    p_net,
+    1,
     (unsigned int)
       Libnucnet__Nuc__getNumberOfSpecies(
         Libnucnet__Net__getNuc( p_net )
       )
   );
+*/
 
 }
 

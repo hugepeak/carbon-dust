@@ -251,6 +251,8 @@ int main( int argc, char * argv[] ) {
       );
 
       if( 
+        zone.hasProperty( "run bin" ) &&
+        zone.getProperty( "run bin" ) == "yes" &&
         zone.hasProperty( "idl print" ) &&
         zone.getProperty( "idl print" ) == "yes"
       ) {
@@ -382,10 +384,17 @@ my_print_abundances(
 
     print_bin_abundances( zone );
 
+    std::cout << "1 - Xsum_network = " <<
+      1. - 
+      Libnucnet__Zone__computeAMoment( zone.getNucnetZone(), 1 ) << "  ";
+
+    double d_bin_mass = compute_bin_sum( zone );
+
     std::cout << "1 - Xsum = " <<
       1. - 
       Libnucnet__Zone__computeAMoment( zone.getNucnetZone(), 1 ) -
-      compute_bin_sum( zone ) <<
+      //compute_bin_sum( zone ) <<
+      d_bin_mass <<
       std::endl << std::endl;
 
   } else {
@@ -453,32 +462,38 @@ print_bin_abundances(
 {
 
   for(
-    size_t i = 1;
-    i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) );
+    int i = 1;
+    i <= boost::lexical_cast<int>( zone.getProperty( "bin number" ) );
     i++
   )
   {
 
     printf( "%16lu%16lu%16.6e%16.6e\n",
       (unsigned long)( 
-        boost::lexical_cast<size_t>( zone.getProperty( "bin start" ) ) *
+        boost::lexical_cast<int>( zone.getProperty( "bin start" ) ) *
         pow(
-          boost::lexical_cast<size_t>( zone.getProperty( "bin size" ) ),
-          i
-        )
+          boost::lexical_cast<int>( zone.getProperty( "bin factor" ) ),
+          i - 1
+        ) + 1
       ),
       (unsigned long)(
-        boost::lexical_cast<size_t>( zone.getProperty( "bin start" ) ) *
+        boost::lexical_cast<int>( zone.getProperty( "bin start" ) ) *
         pow(
-          boost::lexical_cast<size_t>( zone.getProperty( "bin size" ) ),
+          boost::lexical_cast<int>( zone.getProperty( "bin factor" ) ),
           i
         )
       ),
       boost::lexical_cast<double>( 
-        zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+        zone.getProperty( 
+          "bin abundance", 
+          boost::lexical_cast<std::string>( i ) 
+        )
       ),
       boost::lexical_cast<double>( 
-        zone.getProperty( "bin change", boost::lexical_cast<std::string>( i ) )
+        zone.getProperty( 
+          "bin abundance change", 
+          boost::lexical_cast<std::string>( i ) 
+        )
       )
     );
 
@@ -507,15 +522,30 @@ compute_bin_sum(
   )
   {
 
-    d_result +=
+    double d_first, d_last;
+
+    d_first = 
       boost::lexical_cast<double>( zone.getProperty( "bin start" ) ) *
       pow(
-        boost::lexical_cast<double>( zone.getProperty( "bin size" ) ),
+        boost::lexical_cast<double>( zone.getProperty( "bin factor" ) ),
+        (double) i - 1
+      ) + 1.; 
+
+    d_last = 
+      boost::lexical_cast<double>( zone.getProperty( "bin start" ) ) *
+      pow(
+        boost::lexical_cast<double>( zone.getProperty( "bin factor" ) ),
         (double) i
-      ) *
+      ); 
+
+    d_result +=
       boost::lexical_cast<double>( 
-        zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
-      );
+        zone.getProperty( 
+          "bin abundance", 
+          boost::lexical_cast<std::string>( i ) 
+        )
+      ) *
+      ( d_last + d_first ) * ( d_last - d_first + 1. ) / 2.;
 
   }
 
@@ -537,21 +567,48 @@ bin_update_timestep(
 )
 {
 
-// need to fill this later.
-/*
-  if ( d_y > p_extra_data->dYmin && !WnMatrix__value_is_zero( d_dy ) ) {
+  double d_dtnew = ( 1. + d_regt ) * d_dt;
+  double d_check, d_y, d_dy, d_tiny = 1.e-300;
 
-    d_check =
-      p_extra_data->dDt *
-      p_extra_data->dRegy *
-      fabs( d_y / ( d_dy + d_tiny) );
+  int i_bin_number = 
+    boost::lexical_cast<int>( zone.getProperty( "bin number" ) );
 
-    if ( d_check < p_extra_data->dDtnew ) {
-      p_extra_data->dDtnew = d_check;
+  for( int i = 1; i <= i_bin_number; i++ ) {
+
+    d_y = 
+      boost::lexical_cast<double>( 
+        zone.getProperty( 
+          "bin abundance",
+          boost::lexical_cast<std::string>( i )
+        ) 
+      );
+
+    d_dy = 
+      boost::lexical_cast<double>( 
+        zone.getProperty( 
+          "bin abundance change",
+          boost::lexical_cast<std::string>( i )
+        ) 
+      );
+
+    if( d_y > d_ymin && !WnMatrix__value_is_zero( d_dy ) ) {
+
+      d_check =
+        d_dt *
+        d_regy *
+        fabs( d_y / ( d_dy + d_tiny ) );
+
+      if( d_check < d_dtnew ) {
+
+        d_dtnew = d_check;
+
+      }
+
     }
 
   }
-*/
+
+  d_dt = d_dtnew; 
 
 }
 

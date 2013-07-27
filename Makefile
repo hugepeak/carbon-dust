@@ -98,7 +98,7 @@ ifeq ($(USE_SPARSE_SOLVER), yes)
 	CFLAGS += -DSPARSE_SOLVER
 	CARBON_OBJS += $(SP_OBJ)
 	CARBON_DEP += sparse
-	FLIBS= -L$(SPARSKITDIR) -lskit
+	FLIBS= -L$(SPARSKITDIR) -lskit -lstdc++
 	MC = $(FF)
 else
 	MC = $(CC)
@@ -114,6 +114,8 @@ CARBON_EXEC = run_carbon               \
               compute_carbon_flows     \
               create_carbon_network    \
               create_my_network    \
+              print_histogram        \
+              my_print_zone_abundances        \
               print_carbon_flows
 
 $(CARBON_EXEC): $(CARBON_DEP)

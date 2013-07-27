@@ -148,6 +148,13 @@ get_nucnet( int argc, char **argv )
 
   Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
 
+  //============================================================================
+  // Create bin molecules and reactions if desired. 
+  //============================================================================
+
+  if( my_user::update_bin_net( p_nucnet ) )
+    Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
+
   return p_nucnet;
 
 }
@@ -185,6 +192,8 @@ initialize_zone( nnt::Zone& zone, char ** argv )
     nnt::s_T9,
     zone.getProperty( nnt::s_T9_0 )
   );
+
+  initialize_bin( zone );
 
 }
 
@@ -254,6 +263,8 @@ update_zone_properties( nnt::Zone& zone )
       nnt::s_RHO,
       boost::lexical_cast<std::string>( 1.e-30 )
     );
+
+  update_bin( zone );
 
 }
 
@@ -378,6 +389,10 @@ get_nucnet( int argc, char **argv )
     Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) )
   );
 
+  my_user::add_default_reactions_to_net(
+    Libnucnet__getNet( p_nucnet )
+  );
+
   //============================================================================
   // Get zone data.
   //============================================================================
@@ -479,36 +494,7 @@ initialize_zone( nnt::Zone& zone, char ** argv )
   // Initialize bin abundances.
   //============================================================================
 
-  if( 
-    zone.hasProperty( "run bin" ) && 
-    zone.getProperty( "run bin" ) == "yes"
-  )
-  {
-
-    for(
-      unsigned i = 1;
-      i <= boost::lexical_cast<unsigned>( zone.getProperty( "bin number" ) );
-      i++
-    )
-    {
-
-      zone.updateProperty( 
-        "bin", 
-        boost::lexical_cast<std::string>( i ), 
-        "0." 
-      );
-
-      zone.updateProperty( 
-        "bin change", 
-        boost::lexical_cast<std::string>( i ), 
-        "0." 
-      );
-
-    }
-
-  }
-   
-  return;
+  initialize_bin( zone );
 
 }
 
@@ -530,12 +516,7 @@ update_zone_properties(
     v_log10_rho
   );
 
-  if(
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
-  )
-    compute_carbon_k1( zone );
-
-  return;
+  update_bin( zone );
 
 } 
 
@@ -570,6 +551,10 @@ set_zone( Libnucnet * p_nucnet, nnt::Zone& zone, char ** argv )
 #endif // HYDRO_TRAJ
 
 //##############################################################################
+// Shared code.
+//##############################################################################
+
+//##############################################################################
 // compute_carbon_k1().
 //##############################################################################
 
@@ -598,6 +583,68 @@ compute_carbon_k1(
   zone.updateProperty( "k1", boost::lexical_cast<std::string>( d_result ) );
 
   return d_result;
+
+}
+
+//##############################################################################
+// initialize_bin().
+//##############################################################################
+
+void
+initialize_bin(
+  nnt::Zone & zone
+)
+{
+
+  if( 
+    zone.hasProperty( "run bin" ) && 
+    zone.getProperty( "run bin" ) == "yes"
+  )
+  {
+
+    for(
+      unsigned i = 1;
+      i <= boost::lexical_cast<unsigned>( zone.getProperty( "bin number" ) );
+      i++
+    )
+    {
+
+      zone.updateProperty( 
+        "bin abundance", 
+        boost::lexical_cast<std::string>( i ), 
+        "0." 
+      );
+
+      zone.updateProperty( 
+        "bin abundance change", 
+        boost::lexical_cast<std::string>( i ), 
+        "0." 
+      );
+
+    }
+
+  }
+   
+  return;
+
+}
+
+//##############################################################################
+// update_bin().
+//##############################################################################
+
+void
+update_bin(
+  nnt::Zone & zone
+)
+{
+
+  if(
+    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
+  )
+    compute_carbon_k1( zone );
+
+  return;
 
 }
 

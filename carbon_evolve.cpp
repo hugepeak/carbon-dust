@@ -38,7 +38,7 @@ evolve(
   gsl_vector *p_y_old, *p_rhs, *p_sol, *p_work;
   double d_dt;
   std::pair<double,double> check;
-  double check_bin = 0;
+  double check_bin = 0.;
   
   //==========================================================================
   // Evolve NSE + weak rates, if appropriate.
@@ -163,7 +163,7 @@ evolve(
     gsl_vector_free( p_work );
 
     //--------------------------------------------------------------------------
-    // Compute bin abundance changes.
+    // Evolve bins. 
     //--------------------------------------------------------------------------
 
     if( 
@@ -171,13 +171,13 @@ evolve(
       zone.getProperty( "run bin" ) == "yes"
     )
     {
- 
+     
       evolve_bin( zone, v_bin_old );
-
+    
       check_bin = check_bin_change( zone );
-
+    
     }
-
+    
     //--------------------------------------------------------------------------
     // Free matrix, p_rhs, and p_sol. Remember
     // Libnucnet__Zone__computeJacobianMatrix returns a new matrix and
@@ -193,7 +193,7 @@ evolve(
     // Exit iterations if converged.
     //--------------------------------------------------------------------------
 
-    if( check.first < D_MIN && check_bin < 1.e-8 ) break;
+    if( check.first < D_MIN && check_bin < D_MIN ) break;
 
   }
 
@@ -232,7 +232,7 @@ evolve(
     {
   
       zone.updateProperty(
-        "bin change", 
+        "bin abundance change", 
         boost::lexical_cast<std::string>( i ),
         boost::lexical_cast<std::string>( v_work[i-1] - v_bin_old[i-1] )
       );
@@ -268,18 +268,20 @@ update_bin_rates(
     exit( EXIT_FAILURE );
   }
 
-  double d_begin, d_end, d_rate;
+  double d_rate;
+  int i_begin, i_end;
+  int i_atom_number_diff;
 
   //==========================================================================
   // Get parameters.
   //==========================================================================
     
-  size_t i_bin_start =
-    boost::lexical_cast<size_t>( zone.getProperty( "bin start" ) ); 
-  size_t i_bin_size = 
-    boost::lexical_cast<size_t>( zone.getProperty( "bin size" ) ); 
-  size_t i_bin_number =
-    boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) ); 
+  int i_bin_start =
+    boost::lexical_cast<int>( zone.getProperty( "bin start" ) ); 
+  int i_bin_factor = 
+    boost::lexical_cast<int>( zone.getProperty( "bin factor" ) ); 
+  int i_bin_number =
+    boost::lexical_cast<int>( zone.getProperty( "bin number" ) ); 
 
   if( i_bin_number == 0 )
     return;
@@ -300,15 +302,20 @@ update_bin_rates(
   // bin_start + c -> b1 
   //==========================================================================
     
-  d_begin = 
-    double( i_bin_start * pow( i_bin_size, 0 ) );
-  d_end = 
-    double( i_bin_start * pow( i_bin_size, 1 ) );
+  i_begin = i_bin_start + 1;
+  i_end  = i_bin_start * i_bin_factor;
+
+  i_atom_number_diff =
+    compute_atom_numbers_in_bin( 
+      i_begin,
+      i_end
+    ) -
+    i_bin_start;
 
   d_rate = 
     d_na *
     compute_effective_rate( 
-      zone, d_begin, d_end
+      zone, i_bin_start
     );
 
   //--------------------------------------------------------------------------
@@ -333,14 +340,14 @@ update_bin_rates(
     p_matrix,
     i_size,
     i_size - 1,
-    d_rate * gsl_vector_get( p_abunds, i_size - 1 ) * ( d_end - d_begin )
+    d_rate * gsl_vector_get( p_abunds, i_size - 1 ) * i_atom_number_diff
   );
 
   WnMatrix__assignElement(
     p_matrix,
     i_size,
     i_size,
-    d_rate * gsl_vector_get( p_abunds, i_size - 2 ) * ( d_end - d_begin )
+    d_rate * gsl_vector_get( p_abunds, i_size - 2 ) * i_atom_number_diff
   );
 
   //--------------------------------------------------------------------------
@@ -363,25 +370,33 @@ update_bin_rates(
       d_rate *
       gsl_vector_get( p_abunds, i_size - 2 ) *
       gsl_vector_get( p_abunds, i_size - 1 ) * 
-      ( d_end - d_begin )
+      i_atom_number_diff
   );
 
   //==========================================================================
   // Loop from b1 + c -> b2 to bN-1 + c -> bN.
   //==========================================================================
    
-  for( size_t i = 1; i < i_bin_number; i++ )
+  for( int i = 1; i < i_bin_number; i++ )
   {
 
-    d_begin = 
-      double( i_bin_start * pow( i_bin_size, i ) );
-    d_end = 
-      double( i_bin_start * pow( i_bin_size, i + 1 ) );
+    i_begin = i_bin_start * (int)pow( i_bin_factor, i - 1 ) + 1;
+    i_end = i_bin_start * (int)pow( i_bin_factor, i );
 
     d_rate = 
       d_na *
       compute_effective_rate( 
-        zone, d_begin, d_end
+        zone, i_begin, i_end
+      );
+
+    i_atom_number_diff =
+      compute_atom_numbers_in_bin(
+        i_end + 1,
+        i_end * i_bin_factor
+      ) -
+      compute_atom_numbers_in_bin(
+        i_begin,
+        i_end
       );
 
     WnMatrix__assignElement(
@@ -390,9 +405,12 @@ update_bin_rates(
       i_size,
       d_rate * 
         boost::lexical_cast<double>(
-          zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+          zone.getProperty( 
+            "bin abundance", 
+            boost::lexical_cast<std::string>( i )
+          )
         ) *
-        ( d_end - d_begin )
+        i_atom_number_diff
     );
 
     gsl_vector_set( 
@@ -401,10 +419,13 @@ update_bin_rates(
       gsl_vector_get( p_rhs, i_size - 1 ) -
         d_rate *
         boost::lexical_cast<double>(
-          zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+          zone.getProperty( 
+            "bin abundance", 
+            boost::lexical_cast<std::string>( i )
+          )
         ) *
         gsl_vector_get( p_abunds, i_size - 1 ) *
-        ( d_end - d_begin )
+        i_atom_number_diff
     );
 
   }
@@ -424,27 +445,66 @@ update_bin_rates(
 double
 compute_effective_rate(
   nnt::Zone & zone,
-  double d_begin,
-  double d_end 
+  int i_begin
 )
 {
 
   if( zone.hasProperty( "k1" ) ) {
 
     return
-      boost::lexical_cast<double>( zone.getProperty( "k1" ) ) /
-      (
-        3. *
-        ( pow( d_end, 1./3. ) - pow( d_begin, 1./3. ) )
-      );
+      boost::lexical_cast<double>( zone.getProperty( "k1" ) ) *
+      pow( (double) i_begin, 2./3. );
 
   } else {
 
     return
+      compute_carbon_k1( zone ) *
+      pow( (double) i_begin, 2./3. );
+  }
+
+}
+
+double
+compute_effective_rate(
+  nnt::Zone & zone,
+  int i_begin,
+  int i_end 
+)
+{
+
+  if( zone.hasProperty( "k1" ) ) {
+
+/*
+    return
+      boost::lexical_cast<double>( zone.getProperty( "k1" ) ) /
+      (
+        3. *
+        ( pow( i_end, 1./3. ) - pow( i_begin, 1./3. ) )
+      );
+*/
+    return
+      boost::lexical_cast<double>( zone.getProperty( "k1" ) ) *
+      pow( i_end, 2./3. ) * i_end /
+      (
+        ( i_end + i_begin ) * ( i_end - i_begin + 1 ) / 2.
+      );
+
+  } else {
+
+/*
+    return
       compute_carbon_k1( zone ) /    
       (
         3. *
-        ( pow( d_end, 1./3. ) - pow( d_begin, 1./3. ) )
+        ( pow( i_end, 1./3. ) - pow( i_begin, 1./3. ) )
+      );
+*/
+
+    return
+      compute_carbon_k1( zone ) *
+      pow( i_end, 2./3. ) * i_end /
+      (
+        ( i_end + i_begin ) * ( i_end - i_begin + 1 ) / 2.
       );
 
   }
@@ -458,7 +518,7 @@ compute_effective_rate(
 void
 evolve_bin(
   nnt::Zone & zone,
-  std::vector<double> & v_bin_old
+  std::vector<double> & v_old
 )
 {
 
@@ -467,14 +527,14 @@ evolve_bin(
     exit( EXIT_FAILURE );
   }
 
-  double d_begin, d_end, d_rate_last;
+  int i_begin, i_end;
 
-  size_t i_bin_start =
-    boost::lexical_cast<size_t>( zone.getProperty( "bin start" ) ); 
-  size_t i_bin_size = 
-    boost::lexical_cast<size_t>( zone.getProperty( "bin size" ) ); 
-  size_t i_bin_number =
-    boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) ); 
+  int i_bin_start =
+    boost::lexical_cast<int>( zone.getProperty( "bin start" ) ); 
+  int i_bin_factor = 
+    boost::lexical_cast<int>( zone.getProperty( "bin factor" ) ); 
+  int i_bin_number =
+    boost::lexical_cast<int>( zone.getProperty( "bin number" ) ); 
 
   if( i_bin_number == 0 )
     return;
@@ -499,26 +559,23 @@ evolve_bin(
   // Compute effective rates.
   //==========================================================================
     
-  d_begin = double( i_bin_start * pow( i_bin_size, 0 ) );
-  d_end = double( i_bin_start * pow( i_bin_size, 1 ) );
-
-  d_rate_last =
+  double d_rate_last =
     d_na *
     compute_effective_rate( 
-      zone, d_begin, d_end
+      zone, i_bin_start
     );
 
   std::vector<double> v_rates;
 
-  for( size_t i = 1; i < i_bin_number; i++ ) {
+  for( int i = 1; i < i_bin_number; i++ ) {
 
-    d_begin = double( i_bin_start * pow( i_bin_size, i ) );
-    d_end = double( i_bin_start * pow( i_bin_size, i + 1 ) );
+    i_begin = i_bin_start * (int)pow( i_bin_factor, i - 1 ) + 1;
+    i_end = i_bin_start * (int)pow( i_bin_factor, i );
 
     v_rates.push_back( 
       d_na *
       compute_effective_rate( 
-        zone, d_begin, d_end
+        zone, i_begin, i_end
       )
     );
 
@@ -532,7 +589,7 @@ evolve_bin(
       gsl_vector_get( p_abunds, i_size - 1 ) *
       boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
       +
-      v_bin_old[0];
+      v_old[0];
 
   } else {
     
@@ -543,7 +600,7 @@ evolve_bin(
         gsl_vector_get( p_abunds, i_size - 1 ) *
         boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
         +
-        v_bin_old[0]
+        v_old[0]
       )
       /
       (
@@ -553,7 +610,7 @@ evolve_bin(
         boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
       );
       
-    for( size_t i = 1; i < i_bin_number - 1; i++ ) {
+    for( int i = 1; i < i_bin_number - 1; i++ ) {
   
       v_new[i] = 
         (
@@ -562,7 +619,7 @@ evolve_bin(
           gsl_vector_get( p_abunds, i_size - 1 ) *
           boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
           +
-          v_bin_old[i]
+          v_old[i]
         )
         /
         (
@@ -580,7 +637,7 @@ evolve_bin(
       gsl_vector_get( p_abunds, i_size - 1 ) *
       boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
       +
-      v_bin_old[i_bin_number - 1];
+      v_old[i_bin_number - 1];
 
    } // i_bin_number > 1
 
@@ -590,17 +647,17 @@ evolve_bin(
   
   std::vector<double> v_work = get_bin_abundances( zone );
 
-  for( size_t i = 1; i <= i_bin_number; i++ ) 
+  for( int i = 1; i <= i_bin_number; i++ ) 
   {
 
     zone.updateProperty(
-      "bin", 
+      "bin abundance", 
       boost::lexical_cast<std::string>( i ),
       boost::lexical_cast<std::string>( v_new[i-1] )
     );
 
     zone.updateProperty(
-      "bin change", 
+      "bin abundance change", 
       boost::lexical_cast<std::string>( i ),
       boost::lexical_cast<std::string>( v_new[i-1] - v_work[i-1] )
     );
@@ -636,7 +693,10 @@ check_bin_change(
 
     if(
       boost::lexical_cast<double>( 
-        zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+        zone.getProperty( 
+          "bin abundance", 
+          boost::lexical_cast<std::string>( i ) 
+        )
       ) > 1.e-10
     )
     {
@@ -645,13 +705,13 @@ check_bin_change(
         fabs(
           boost::lexical_cast<double>( 
             zone.getProperty( 
-              "bin change", 
+              "bin abundance change", 
               boost::lexical_cast<std::string>( i ) 
             )
           ) /   
           boost::lexical_cast<double>( 
             zone.getProperty( 
-              "bin", 
+              "bin abundance", 
               boost::lexical_cast<std::string>( i ) 
             )
           ) 
@@ -689,7 +749,10 @@ get_bin_abundances(
 
     v_abunds.push_back( 
       boost::lexical_cast<double>(
-        zone.getProperty( "bin", boost::lexical_cast<std::string>( i ) )
+        zone.getProperty( 
+          "bin abundance", 
+          boost::lexical_cast<std::string>( i ) 
+        )
       )
     );
 
@@ -751,6 +814,21 @@ get_evolution_matrix_and_vector( nnt::Zone& zone )
   //--------------------------------------------------------------------------
 
   return std::make_pair( p_matrix, p_rhs );
+
+}
+
+//##############################################################################
+// compute_atom_numbers_in_bin().
+//##############################################################################
+
+int
+compute_atom_numbers_in_bin(
+  int i_begin,
+  int i_end
+)
+{
+
+  return ( i_end + i_begin ) * ( i_end - i_begin + 1 ) / 2;
 
 }
 

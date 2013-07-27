@@ -65,4 +65,8 @@ void get_trajectory_data( char * );
 
 double compute_carbon_k1( nnt::Zone & );
 
+void initialize_bin( nnt::Zone & );
+
+void update_bin( nnt::Zone & );
+
 #endif // CARBON_HYDRO

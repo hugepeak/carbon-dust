@@ -32,7 +32,12 @@ evolve( nnt::Zone& );
 
 double
 compute_effective_rate(
-  nnt::Zone &, double, double
+  nnt::Zone &, int
+);
+
+double
+compute_effective_rate(
+  nnt::Zone &, int, int
 );
 
 void
@@ -59,3 +64,9 @@ std::pair<WnMatrix *, gsl_vector *>
 get_evolution_matrix_and_vector( 
   nnt::Zone &
 );
+
+int
+compute_atom_numbers_in_bin(
+  int, int
+);
+
