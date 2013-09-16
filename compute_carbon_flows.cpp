@@ -72,11 +72,13 @@ int main( int argc, char * argv[] ) {
   // Register rate functions.
   //============================================================================
 
+/*
   user::register_my_rate_functions(
     Libnucnet__Net__getReac(
       Libnucnet__getNet( p_my_nucnet )
     )
   );
+*/
 
   register_my_rate_functions(
     Libnucnet__Net__getReac(

@@ -34,13 +34,10 @@
 
 #include "user/network_utilities.h"
 
-#include "my_network_utilities.h"
-
 //##############################################################################
 // Defines.
 //##############################################################################
 
-#define S_POWER                    "power"   // Temperature cooling power. 
 #define S_OUTPUT_XML_FILE          "output xml file"
 
 //##############################################################################
@@ -62,11 +59,5 @@ void update_zone_properties( nnt::Zone& );
 int set_zone( Libnucnet *, nnt::Zone&, char ** );
 
 void get_trajectory_data( char * );
-
-double compute_carbon_k1( nnt::Zone & );
-
-void initialize_bin( nnt::Zone & );
-
-void update_bin( nnt::Zone & );
 
 #endif // CARBON_HYDRO

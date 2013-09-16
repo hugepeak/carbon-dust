@@ -341,6 +341,46 @@ compute_reduced_mass(
 }
   
 //##############################################################################
+// compute_bond_energy()
+//##############################################################################
+
+int
+compute_bond_energy(
+  Libnucnet__Reaction__Element *p_reactant,
+  void *p_data
+)
+{
+
+  nnt::Zone zone = *(nnt::Zone *) p_data;
+
+  double d_bond_energy =
+    boost::lexical_cast<double>( zone.getProperty( "bond energy" ) );
+
+  d_bond_energy *=
+    ( 
+      1. +
+      boost::lexical_cast<double>(
+        Libnucnet__Species__getA(
+          Libnucnet__Nuc__getSpeciesByName(
+            Libnucnet__Net__getNuc(
+              Libnucnet__Zone__getNet( zone.getNucnetZone() )
+            ),
+            Libnucnet__Reaction__Element__getName( p_reactant )
+          )
+        )
+      ) * 1.e-1 
+    );
+
+  zone.updateProperty( 
+    "bond energy", 
+    boost::lexical_cast<std::string>( d_bond_energy )
+  );
+
+  return 1;
+
+}
+  
+//##############################################################################
 // carbon_condensation_rate_function()
 //##############################################################################
 
@@ -396,7 +436,7 @@ carbon_condensation_rate_function(
     M_PI *
     gsl_pow_2( d_Rc ) *
     sqrt(
-      2. *
+      3. *
       GSL_CONST_CGSM_BOLTZMANN *
       d_t9 * GSL_CONST_NUM_GIGA /
       (
@@ -492,6 +532,18 @@ carbon_condensation_inverse_rate_function(
       NULL
     );
 
+  zone.updateProperty( "bond energy", s_value );
+
+  Libnucnet__Reaction__iterateNuclideReactants(
+    p_reaction,
+    (Libnucnet__Reaction__Element__iterateFunction) 
+      compute_bond_energy,
+    &zone
+  );
+
+  double d_bond_energy = 
+    boost::lexical_cast<double>( zone.getProperty( "bond energy" ) );
+
   double d_condense_rate =
     carbon_condensation_rate_function( p_reaction, d_t9, p_data );
 
@@ -530,7 +582,7 @@ carbon_condensation_inverse_rate_function(
       1.5
     ) *
     exp(
-      atof( s_value ) * GSL_CONST_CGSM_ELECTRON_VOLT /
+      d_bond_energy * GSL_CONST_CGSM_ELECTRON_VOLT /
       (
         GSL_CONST_CGSM_BOLTZMANN *
         d_t9 * GSL_CONST_NUM_GIGA

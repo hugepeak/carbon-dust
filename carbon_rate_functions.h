@@ -94,3 +94,6 @@ double carbon_compute_Ya( nnt::Zone& );
 int carbon_compute_Ya_callback( Libnucnet__Species *, void * );
 
 int compute_reduced_mass( Libnucnet__Reaction__Element *, void * );
+
+int compute_bond_energy( Libnucnet__Reaction__Element *, void * );
+

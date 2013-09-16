@@ -13,7 +13,7 @@
         <property name="idl print">yes</property>
         <property name="run bin">yes</property>
         <property name="photon end">100</property>
-        <property name="netowrk end">100</property>
+        <property name="network end">100</property>
         <property name="bin factor">2</property>
         <property name="bin number">40</property>
       </optional_properties>

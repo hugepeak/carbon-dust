@@ -27,12 +27,15 @@
 #//!
 #///////////////////////////////////////////////////////////////////////////////
 
-ifndef NUCNET_TARGET
-NUCNET_TARGET = ../..
-endif
+SVNURL = http://svn.code.sf.net/p/nucnet-tools/code/trunk
+
+NUCNET_TARGET = ../nucnet-tools-code
+VENDORDIR = $(NUCNET_TARGET)/vendor
+OBJDIR = $(NUCNET_TARGET)/obj
 
 NNT_DIR = $(NUCNET_TARGET)/nnt
 USER_DIR = $(NUCNET_TARGET)/user
+MY_USER_DIR = $(NUCNET_TARGET)/my_user
 BUILD_DIR = $(NUCNET_TARGET)/build
 
 USE_SPARSE_SOLVER = no
@@ -41,13 +44,21 @@ USE_SPARSE_SOLVER = no
 # End of lines to be edited.
 #///////////////////////////////////////////////////////////////////////////////
 
+#===============================================================================
+# Svn.
+#===============================================================================
+
+SVN_CHECKOUT := $(shell if [ ! -d $(NUCNET_TARGET) ]; then svn co $(SVNURL) $(NUCNET_TARGET); else svn update $(NUCNET_TARGET); fi )
+
+#===============================================================================
+# Includes.
+#===============================================================================
+
 include $(BUILD_DIR)/Makefile
-
 include $(BUILD_DIR)/Makefile.sparse
-
 include $(USER_DIR)/Makefile.inc
 
-VPATH = $(BUILD_DIR):$(NNT_DIR):$(USER_DIR)
+VPATH = $(BUILD_DIR):$(NNT_DIR):$(USER_DIR):$(MY_USER_DIR)
 
 #===============================================================================
 # Set the hydro.  CARBON_HYDRO_CODE is an environment variable.  In a bash 
@@ -68,15 +79,27 @@ else
 endif
 
 #===============================================================================
+# Set the user hydro. NNT_HYDRO_CODE is an environment variable.  In a bash 
+# shell, set this by typing at the command line, for example,
+# 'export NNT_HYDRO_CODE=traj'.  This approach replaces the deprecated
+# approach in which you set, for example, NNT_HYDRO_CODE=traj within this 
+# Makefile.
+#===============================================================================
+
+#ifndef NNT_HYDRO_CODE
+  #NNT_HYDRO_CODE=traj
+#endif
+
+#===============================================================================
 # Carbon object. 
 #===============================================================================
 
 CARBON_OBJ = $(OBJDIR)/carbon_hydro.o              \
              $(OBJDIR)/carbon_rate_functions.o     \
              $(OBJDIR)/carbon_evolve.o             \
+             $(OBJDIR)/carbon_flow_utilities.o     \
+             $(OBJDIR)/my_bin_utilities.o          \
              $(OBJDIR)/carbon_molecule_utilities.o \
-             $(OBJDIR)/carbon_flow_utilities.o \
-             $(OBJDIR)/my_network_utilities.o     \
              $(OBJDIR)/carbon_reaction_utilities.o 
 
 $(CARBON_OBJ): $(OBJDIR)/%.o: %.cpp
@@ -111,11 +134,9 @@ CARBON_DEP += $(CARBON_OBJS)
 #===============================================================================
 
 CARBON_EXEC = run_carbon               \
+              run_generic              \
               compute_carbon_flows     \
               create_carbon_network    \
-              create_my_network    \
-              print_histogram        \
-              my_print_zone_abundances        \
               print_carbon_flows
 
 $(CARBON_EXEC): $(CARBON_DEP)

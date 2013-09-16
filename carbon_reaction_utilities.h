@@ -25,16 +25,14 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-//#include <string>
 #include <Libnucnet.h>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
-//#include <nnt/wrappers.h>
-//#include <nnt/string_defs.h>
 
 struct ReactionData {
 
   ~ReactionData();
+  void clear();
   std::vector<std::string> vReactants;
   std::vector<std::string> vProducts;
   std::string sSource;
@@ -51,16 +49,22 @@ void
 add_default_reactions_to_net( Libnucnet__Net * );
 
 void
-add_carbon_carbon_reactions_to_net( Libnucnet__Net * );
+add_default_carbon_carbon_reactions_to_net( Libnucnet__Net * );
 
 void
-add_carbon_oxygen_reactions_to_net( Libnucnet__Net * );
+add_default_carbon_oxygen_reactions_to_net( Libnucnet__Net * );
 
 void
-add_ion_molecule_reactions_to_net( Libnucnet__Net * );
+add_default_co_reactions_to_net( Libnucnet__Net * );
 
 void
-add_electronic_recombination_reactions_to_net( Libnucnet__Net * );
+add_default_oxygen_reactions_to_net( Libnucnet__Net * );
+
+void
+add_default_ion_molecule_reactions_to_net( Libnucnet__Net * );
+
+void
+add_default_electronic_recombination_reactions_to_net( Libnucnet__Net * );
 
 void
 add_arrhenius_rate_to_net( 
@@ -122,7 +126,12 @@ add_compton_electron_rate_to_net(
 );
 
 void
-add_isomer_rate_to_net( 
+add_default_isomer_reactions_to_net(
+  Libnucnet__Net *
+);
+
+void
+add_isomer_reaction_to_net( 
   Libnucnet__Net *,
   std::string,
   std::string,
@@ -133,5 +142,34 @@ void
 add_reaction_to_net(
   Libnucnet__Net *,
   ReactionData &
+);
+
+void
+add_default_carbon_condensation_reactions_to_net(
+  Libnucnet__Net *
+);
+
+void
+add_carbon_condensation_reaction_to_net(
+  Libnucnet__Net *,
+  unsigned int
+);
+
+void
+add_default_generic_reactions_to_net( Libnucnet__Net * );
+
+void
+add_generic_reactions_to_net( 
+  Libnucnet__Net *, unsigned int, unsigned int
+);
+
+void
+add_forward_generic_reactions_to_net( 
+  Libnucnet__Net *, unsigned int, unsigned int
+);
+
+void
+add_reverse_generic_reactions_to_net( 
+  Libnucnet__Net *, unsigned int, unsigned int
 );
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nuclear_network>
+  <nuclear_data>
+    <!--h1-->
+    <nuclide>
+      <z>1</z>
+      <a>1</a>
+      <mass_excess>0</mass_excess>
+      <spin>0</spin>
+      <partf_table>
+        <point>
+          <t9>1</t9>
+          <log10_partf>0</log10_partf>
+        </point>
+      </partf_table>
+    </nuclide>
+  </nuclear_data>
+</nuclear_network>

@@ -15,55 +15,75 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \file
-//! \brief A header file for the carbon molecule utilities file.
+//! \brief A header file for the bin evolution.
 ////////////////////////////////////////////////////////////////////////////////
+
+#ifndef BIN_UTILITIES
+#define BIN_UTILITIES
 
 //##############################################################################
 // Includes.
 //##############################################################################
 
 #include <iostream>
-#include <Libnucnet.h>
+#include <fstream>
+
+#include "nnt/auxiliary.h"
+#include "nnt/string_defs.h"
+#include "nnt/math.h"
+
+#include "user/network_utilities.h"
+
+//#include "my_network_utilities.h"
+#include "carbon_rate_functions.h"
 
 //##############################################################################
 // Prototypes.
 //##############################################################################
 
+void initialize_bin( nnt::Zone & );
+
+void update_bin_properties( nnt::Zone & );
+
+double compute_k1( nnt::Zone &, double );
+
 void
-add_default_molecules_to_nuc(
-  Libnucnet__Nuc *
+bin_update_timestep(
+  nnt::Zone &, double &, double, double, double
+);
+
+int print_bin_abundances( nnt::Zone & ); 
+
+double compute_bin_sum( nnt::Zone & );
+
+void
+update_bin_rates(
+  nnt::Zone &, WnMatrix *, gsl_vector *
 );
 
 void
-add_carbon_molecules_to_nuc(
-  Libnucnet__Nuc *, unsigned int, unsigned int, std::string
+evolve_bin( 
+  nnt::Zone &, std::vector<double> &
 );
 
-void
-add_oxygen_molecules_to_nuc( Libnucnet__Nuc * );
-
-void
-add_carbon_ion_molecules_to_nuc( Libnucnet__Nuc * );
-
-void
-add_helium_molecules_to_nuc( Libnucnet__Nuc * );
-
-void
-add_molecule_to_nuc(
-  Libnucnet__Nuc *, 
-  unsigned int, 
-  unsigned int, 
-  int,
-  std::string
+double
+check_bin_change(
+  nnt::Zone &
 );
 
-void
-add_default_generic_molecules_to_nuc(
-  Libnucnet__Nuc *
+std::vector<double>
+get_bin_abundances(
+  nnt::Zone &
 );
 
-void
-add_generic_molecules_to_nuc(
-  Libnucnet__Nuc *, unsigned int, unsigned int
+int
+compute_atom_numbers_in_bin(
+  int, int
 );
 
+double
+compute_effective_rate(
+  nnt::Zone &, double, double
+);
+
+#endif // BIN_UTILITIES

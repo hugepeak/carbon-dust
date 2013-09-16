@@ -148,13 +148,6 @@ get_nucnet( int argc, char **argv )
 
   Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
 
-  //============================================================================
-  // Create bin molecules and reactions if desired. 
-  //============================================================================
-
-  if( my_user::update_bin_net( p_nucnet ) )
-    Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
-
   return p_nucnet;
 
 }
@@ -192,8 +185,6 @@ initialize_zone( nnt::Zone& zone, char ** argv )
     nnt::s_T9,
     zone.getProperty( nnt::s_T9_0 )
   );
-
-  initialize_bin( zone );
 
 }
 
@@ -241,10 +232,7 @@ update_zone_properties( nnt::Zone& zone )
       boost::lexical_cast<double>(
         zone.getProperty( nnt::s_T9_0 ) 
       ) * 
-      pow( 
-        d_tau / d_t, 
-        boost::lexical_cast<double>( zone.getProperty( S_POWER ) )
-      )
+      pow( d_tau / d_t, 1. )
     )
   );
 
@@ -263,8 +251,6 @@ update_zone_properties( nnt::Zone& zone )
       nnt::s_RHO,
       boost::lexical_cast<std::string>( 1.e-30 )
     );
-
-  update_bin( zone );
 
 }
 
@@ -348,12 +334,15 @@ get_nucnet( int argc, char **argv )
     exit( EXIT_FAILURE );
   }
 
-  if( argc != 4 || strcmp( argv[1], "--usage" ) == 0 )
+  if( argc < 5 || argc > 7 || strcmp( argv[1], "--usage" ) == 0 )
   {
     fprintf(
       stderr,
-      "\nUsage: %s zone_file traj_file out_file \n\n",
+      "\nUsage: %s net_file zone_file traj_file out_file xpath_nuc xpath_reac\n\n",
       argv[0]
+    );
+    fprintf(
+      stderr, "  net_file = input network data xml filename\n\n"
     );
     fprintf(
       stderr, "  zone_file = input single zone data xml filename\n\n"
@@ -364,7 +353,26 @@ get_nucnet( int argc, char **argv )
     fprintf(
       stderr, "  out_file = output data xml filename\n\n"
     );
+    fprintf(
+      stderr,
+      "  xpath_nuc = nuclear xpath expression (optional--required if xpath_reac specified)\n\n"
+    );
+    fprintf(
+      stderr, "  xpath_reac = reaction xpath expression (optional)\n\n"
+    );
     exit( EXIT_FAILURE );
+  }
+
+  //============================================================================
+  // Validate input net file.
+  //============================================================================
+
+  if( strcmp( VALIDATE, "yes" ) == 0 )
+  {
+    if( !Libnucnet__Net__is_valid_input_xml( argv[1] ) ) {
+      fprintf( stderr, "Not valid libnucnet net input!\n" );
+      exit( EXIT_FAILURE );
+    }
   }
 
   //============================================================================
@@ -373,44 +381,57 @@ get_nucnet( int argc, char **argv )
 
   if( strcmp( VALIDATE, "yes" ) == 0 )
   {
-    if( !Libnucnet__is_valid_zone_data_xml( argv[1] ) ) {
+    if( !Libnucnet__is_valid_zone_data_xml( argv[2] ) ) {
       fprintf( stderr, "Not valid libnucnet zone data input!\n" );
       exit( EXIT_FAILURE );
     }
   }
 
   //============================================================================
-  // Create nucnet. 
+  // Read and store input.
   //============================================================================
 
   p_nucnet = Libnucnet__new();
 
-  my_user::add_default_molecules_to_nuc(
-    Libnucnet__Net__getNuc( Libnucnet__getNet( p_nucnet ) )
-  );
-
-  my_user::add_default_reactions_to_net(
-    Libnucnet__getNet( p_nucnet )
-  );
+  if( argc == 5 )
+  {
+    Libnucnet__Net__updateFromXml(
+      Libnucnet__getNet( p_nucnet ),
+      argv[1],
+      NULL,
+      NULL
+    );
+  }
+  else if( argc == 6 )
+  {
+    Libnucnet__Net__updateFromXml(
+      Libnucnet__getNet( p_nucnet ),
+      argv[1],
+      argv[5],
+      NULL
+    );
+  }
+  else
+  {
+    Libnucnet__Net__updateFromXml(
+      Libnucnet__getNet( p_nucnet ),
+      argv[1],
+      argv[5],
+      argv[6]
+    );
+  }
 
   //============================================================================
   // Get zone data.
   //============================================================================
 
-  Libnucnet__assignZoneDataFromXml( p_nucnet, argv[1], NULL );
+  Libnucnet__assignZoneDataFromXml( p_nucnet, argv[2], NULL );
 
   //============================================================================
   // Get trajectory data.
   //============================================================================
 
-  get_trajectory_data( argv[2] );
-
-  //============================================================================
-  // Create bin molecules and reactions if desired. 
-  //============================================================================
-
-  if( my_user::update_bin_net( p_nucnet ) )
-    Libnucnet__assignZoneDataFromXml( p_nucnet, argv[1], NULL );
+  get_trajectory_data( argv[3] );
 
   //============================================================================
   // Done.
@@ -479,7 +500,7 @@ initialize_zone( nnt::Zone& zone, char ** argv )
     S_OUTPUT_XML_FILE,
     NULL,
     NULL,
-    argv[3]
+    argv[4]
   );
 
   user::update_t9_rho_in_zone_by_interpolation(
@@ -489,12 +510,6 @@ initialize_zone( nnt::Zone& zone, char ** argv )
     v_t9,
     v_log10_rho
   );
-
-  //============================================================================
-  // Initialize bin abundances.
-  //============================================================================
-
-  initialize_bin( zone );
 
 }
 
@@ -515,8 +530,6 @@ update_zone_properties(
     v_t9,
     v_log10_rho
   );
-
-  update_bin( zone );
 
 } 
 
@@ -550,101 +563,4 @@ set_zone( Libnucnet * p_nucnet, nnt::Zone& zone, char ** argv )
 
 #endif // HYDRO_TRAJ
 
-//##############################################################################
-// Shared code.
-//##############################################################################
-
-//##############################################################################
-// compute_carbon_k1().
-//##############################################################################
-
-double
-compute_carbon_k1(
-  nnt::Zone & zone
-)
-{
-
-  double d_Rc = 1.7e-8;
-  double d_A = 12.;
-
-  double d_result =
-    M_PI *
-    gsl_pow_2( d_Rc ) *
-    sqrt(
-      3. *
-      GSL_CONST_CGSM_BOLTZMANN *
-      boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) *
-      GSL_CONST_NUM_GIGA /
-      (
-        d_A / GSL_CONST_NUM_AVOGADRO
-      )
-    );
-
-  zone.updateProperty( "k1", boost::lexical_cast<std::string>( d_result ) );
-
-  return d_result;
-
-}
-
-//##############################################################################
-// initialize_bin().
-//##############################################################################
-
-void
-initialize_bin(
-  nnt::Zone & zone
-)
-{
-
-  if( 
-    zone.hasProperty( "run bin" ) && 
-    zone.getProperty( "run bin" ) == "yes"
-  )
-  {
-
-    for(
-      unsigned i = 1;
-      i <= boost::lexical_cast<unsigned>( zone.getProperty( "bin number" ) );
-      i++
-    )
-    {
-
-      zone.updateProperty( 
-        "bin abundance", 
-        boost::lexical_cast<std::string>( i ), 
-        "0." 
-      );
-
-      zone.updateProperty( 
-        "bin abundance change", 
-        boost::lexical_cast<std::string>( i ), 
-        "0." 
-      );
-
-    }
-
-  }
-   
-  return;
-
-}
-
-//##############################################################################
-// update_bin().
-//##############################################################################
-
-void
-update_bin(
-  nnt::Zone & zone
-)
-{
-
-  if(
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
-  )
-    compute_carbon_k1( zone );
-
-  return;
-
-}
 

@@ -30,13 +30,33 @@ add_default_reactions_to_net(
 )
 {
 
-  add_carbon_carbon_reactions_to_net( p_net );
+  add_default_carbon_carbon_reactions_to_net( p_net );
 
-  add_carbon_oxygen_reactions_to_net( p_net );
+  add_default_carbon_oxygen_reactions_to_net( p_net );
 
-  add_ion_molecule_reactions_to_net( p_net );
+  add_default_ion_molecule_reactions_to_net( p_net );
 
-  add_electronic_recombination_reactions_to_net( p_net );
+  add_default_electronic_recombination_reactions_to_net( p_net );
+
+  add_default_oxygen_reactions_to_net( p_net );
+
+  add_default_co_reactions_to_net( p_net );
+
+  add_default_isomer_reactions_to_net( p_net );
+
+  add_default_carbon_condensation_reactions_to_net( p_net );
+
+}
+
+//##############################################################################
+// add_default_oxygen_reactions_to_net(). 
+//##############################################################################
+
+void
+add_default_oxygen_reactions_to_net(
+  Libnucnet__Net * p_net
+)
+{
 
   //============================================================================
   // Add O + O -> O2 + gamma (n + n -> nn + gamma) and inverse. RA3.
@@ -55,6 +75,29 @@ add_default_reactions_to_net(
     "n", "n", 
     1.e-19, 0., 0., 5.15
   );
+
+  //============================================================================
+  // Add O2 + e -> O + O + e (nn + electron -> n + n + electron). Clayton 2013.
+  //============================================================================
+ 
+  add_compton_electron_rate_to_net(
+    p_net,
+    "nn", "electron", 
+    "n", "n", "electron",
+    5.e4 
+  );
+
+}
+
+//##############################################################################
+// add_default_co_reactions_to_net(). 
+//##############################################################################
+
+void
+add_default_co_reactions_to_net(
+  Libnucnet__Net * p_net
+)
+{
 
   //============================================================================
   // Add C + O2 -> CO + O (h1g + nn -> h2 + n) and inverse. NN56 and NN37.
@@ -108,36 +151,138 @@ add_default_reactions_to_net(
     1.e5 
   );
 
-  //============================================================================
-  // Add O2 + e -> O + O + e (nn + electron -> n + n + electron). Clayton 2013.
-  //============================================================================
- 
-  add_compton_electron_rate_to_net(
-    p_net,
-    "nn", "electron", 
-    "n", "n", "electron",
-    5.e4 
-  );
+}
+
+//##############################################################################
+// add_default_isomer_reactions_to_net(). 
+//##############################################################################
+
+void
+add_default_isomer_reactions_to_net(
+  Libnucnet__Net * p_net
+)
+{
 
   //============================================================================
   // Add C8c -> C8r (o8c -> o8r). Clayton 2012.
   //============================================================================
  
-  add_isomer_rate_to_net(
+  add_isomer_reaction_to_net(
     p_net,
     "o8c",
     "o8r",
     10.
   );
-    
-}
 
+}
+    
 //##############################################################################
-// add_carbon_carbon_reactions_to_net(). 
+// add_isomer_reaction_to_net().
 //##############################################################################
 
 void
-add_carbon_carbon_reactions_to_net(
+add_isomer_reaction_to_net(
+  Libnucnet__Net * p_net,
+  std::string s_reactant,
+  std::string s_product,
+  double d_tau
+)
+{
+
+  ReactionData reaction_data;
+
+  reaction_data.sSource = "Clayton suggestion (2012)";
+  reaction_data.sUserRateFunctionKey = "isomer rate";
+
+  reaction_data.vReactants.push_back( s_reactant );
+  reaction_data.vProducts.push_back( s_product );
+
+  reaction_data.vUserRateData.push_back( 
+    std::make_pair( "tau", boost::lexical_cast<std::string>( d_tau) ) 
+  ); 
+
+  add_reaction_to_net( p_net, reaction_data );
+
+}
+
+//##############################################################################
+// add_default_carbon_condensation_reactions_to_net(). 
+//##############################################################################
+
+void
+add_default_carbon_condensation_reactions_to_net(
+  Libnucnet__Net * p_net
+)
+{
+
+  //============================================================================
+  // Add carbon condensation reactions up to 100.
+  //============================================================================
+ 
+  unsigned i_begin, i_end;
+
+  i_begin = 8;
+  i_end = 100;
+
+  for( unsigned int i = i_begin; i < i_end; i++ )
+    add_carbon_condensation_reaction_to_net( p_net, i );
+
+}
+
+//##############################################################################
+// add_carbon_condensation_reaction_to_net(). 
+//##############################################################################
+
+void
+add_carbon_condensation_reaction_to_net(
+  Libnucnet__Net * p_net,
+  unsigned int i_start
+)
+{
+
+  ReactionData reaction_data;
+
+  reaction_data.sSource = "Meyer 2013";
+  reaction_data.sUserRateFunctionKey = "carbon condensation rate";
+
+  reaction_data.vReactants.push_back( 
+    boost::lexical_cast<std::string>(
+      Libnucnet__Species__getName(
+        Libnucnet__Nuc__getSpeciesByZA(
+          Libnucnet__Net__getNuc( p_net ),
+          i_start,
+          i_start,
+          "r"
+        )
+      )
+    )
+  );
+
+  reaction_data.vReactants.push_back( "h1g" );
+
+  reaction_data.vProducts.push_back(
+    boost::lexical_cast<std::string>(
+      Libnucnet__Species__getName(
+        Libnucnet__Nuc__getSpeciesByZA(
+          Libnucnet__Net__getNuc( p_net ),
+          i_start + 1,
+          i_start + 1,
+          "r"
+        )
+      )
+    )
+  );
+
+  add_reaction_to_net( p_net, reaction_data );
+
+}
+ 
+//##############################################################################
+// add_default_carbon_carbon_reactions_to_net(). 
+//##############################################################################
+
+void
+add_default_carbon_carbon_reactions_to_net(
   Libnucnet__Net * p_net
 )
 {
@@ -271,11 +416,11 @@ add_carbon_carbon_reactions_to_net(
 }
 
 //##############################################################################
-// add_carbon_oxygen_reactions_to_net(). 
+// add_default_carbon_oxygen_reactions_to_net(). 
 //##############################################################################
 
 void
-add_carbon_oxygen_reactions_to_net(
+add_default_carbon_oxygen_reactions_to_net(
   Libnucnet__Net * p_net 
 )
 {
@@ -371,11 +516,11 @@ add_carbon_oxygen_reactions_to_net(
 }
 
 //##############################################################################
-// add_ion_molecule_reactions_to_net(). 
+// add_default_ion_molecule_reactions_to_net(). 
 //##############################################################################
 
 void
-add_ion_molecule_reactions_to_net(
+add_default_ion_molecule_reactions_to_net(
   Libnucnet__Net * p_net
 )
 {
@@ -394,11 +539,11 @@ add_ion_molecule_reactions_to_net(
 }
 
 //##############################################################################
-// add_electronic_recombination_reactions_to_net(). 
+// add_default_electronic_recombination_reactions_to_net(). 
 //##############################################################################
 
 void
-add_electronic_recombination_reactions_to_net(
+add_default_electronic_recombination_reactions_to_net(
   Libnucnet__Net * p_net
 )
 {
@@ -451,35 +596,6 @@ add_compton_electron_rate_to_net(
 
 }
   
-//##############################################################################
-// add_isomer_rate_to_net().
-//##############################################################################
-
-void
-add_isomer_rate_to_net(
-  Libnucnet__Net * p_net,
-  std::string s_reactant,
-  std::string s_product,
-  double d_tau
-)
-{
-
-  ReactionData reaction_data;
-
-  reaction_data.sSource = "Clayton suggestion (2012)";
-  reaction_data.sUserRateFunctionKey = "isomer rate";
-
-  reaction_data.vReactants.push_back( s_reactant );
-  reaction_data.vProducts.push_back( s_product );
-
-  reaction_data.vUserRateData.push_back( 
-    std::make_pair( "tau", boost::lexical_cast<std::string>( d_tau) ) 
-  ); 
-
-  add_reaction_to_net( p_net, reaction_data );
-
-}
-
 //##############################################################################
 // add_arrhenius_rate_to_net().
 //##############################################################################
@@ -732,10 +848,227 @@ add_reaction_to_net(
 }
 
 //##############################################################################
+// add_default_generic_reactions_to_net().
+//##############################################################################
+
+void
+add_default_generic_reactions_to_net(
+  Libnucnet__Net * p_net
+)
+{
+
+  add_generic_reactions_to_net(
+    p_net,
+    1,
+    (unsigned int)
+      Libnucnet__Nuc__getNumberOfSpecies(
+        Libnucnet__Net__getNuc( p_net )
+      )
+  );
+
+}
+
+//##############################################################################
+// add_generic_reactions_to_net().
+//##############################################################################
+
+void
+add_generic_reactions_to_net(
+  Libnucnet__Net * p_net,
+  unsigned int i_lo,
+  unsigned int i_hi
+)
+{ 
+    
+  add_forward_generic_reactions_to_net( p_net, i_lo, i_hi );
+  add_reverse_generic_reactions_to_net( p_net, i_lo, i_hi );
+
+}
+
+//##############################################################################
+// add_forward_generic_reactions_to_net().
+//##############################################################################
+
+void
+add_forward_generic_reactions_to_net(
+  Libnucnet__Net * p_net,
+  unsigned int i_lo,
+  unsigned int i_hi
+)
+{
+
+  ReactionData reaction_data;
+
+  std::string s_element;
+
+  for( unsigned int i = i_lo; i < i_hi; i++ )
+  {
+
+    reaction_data.sSource = "Meyer notes 2013";
+    reaction_data.sUserRateFunctionKey = "carbon condensation rate";
+
+    reaction_data.vReactants.push_back( "h1" );
+
+    if( 
+      Libnucnet__Nuc__getSpeciesByZA(
+        Libnucnet__Net__getNuc( p_net ),
+        i,
+        i,
+        NULL 
+      )
+    ) 
+      s_element =
+        Libnucnet__Species__getName(
+          Libnucnet__Nuc__getSpeciesByZA(
+            Libnucnet__Net__getNuc( p_net ),
+            i,
+            i,
+            NULL 
+          )
+        );
+    else
+    {
+      std::cerr << "No number " << i << " atom in network!" << std::endl;
+      exit( EXIT_FAILURE );
+    }
+  
+    reaction_data.vReactants.push_back( s_element );
+
+    if( 
+      Libnucnet__Nuc__getSpeciesByZA(
+        Libnucnet__Net__getNuc( p_net ),
+        i + 1,
+        i + 1,
+        NULL 
+      )
+    ) 
+      s_element =
+        Libnucnet__Species__getName(
+          Libnucnet__Nuc__getSpeciesByZA(
+            Libnucnet__Net__getNuc( p_net ),
+            i + 1,
+            i + 1,
+            NULL 
+          )
+        );
+    else
+    {
+      std::cerr << "No number " << i << " atom in network!" << std::endl;
+      exit( EXIT_FAILURE );
+    }
+  
+    reaction_data.vProducts.push_back( s_element );
+
+    add_reaction_to_net( p_net, reaction_data );
+
+    reaction_data.clear();
+
+  }
+
+}
+    
+//##############################################################################
+// add_reverse_generic_reactions_to_net().
+//##############################################################################
+
+void
+add_reverse_generic_reactions_to_net(
+  Libnucnet__Net * p_net,
+  unsigned int i_lo,
+  unsigned int i_hi
+)
+{
+
+  ReactionData reaction_data;
+
+  std::string s_element;
+
+  for( unsigned int i = i_lo; i < i_hi; i++ )
+  {
+
+    reaction_data.sSource = "Meyer notes 2013";
+    reaction_data.sUserRateFunctionKey = "carbon condensation inverse rate";
+    reaction_data.vUserRateData.push_back(
+      std::make_pair( "BondEnergy", "5.0" )
+    );
+
+    if( 
+      Libnucnet__Nuc__getSpeciesByZA(
+        Libnucnet__Net__getNuc( p_net ),
+        i + 1,
+        i + 1,
+        NULL 
+      )
+    ) 
+      s_element =
+        Libnucnet__Species__getName(
+          Libnucnet__Nuc__getSpeciesByZA(
+            Libnucnet__Net__getNuc( p_net ),
+            i + 1,
+            i + 1,
+            NULL 
+          )
+        );
+    else
+    {
+      std::cerr << "No number " << i << " atom in network!" << std::endl;
+      exit( EXIT_FAILURE );
+    }
+  
+    reaction_data.vReactants.push_back( s_element );
+
+    if( 
+      Libnucnet__Nuc__getSpeciesByZA(
+        Libnucnet__Net__getNuc( p_net ),
+        i,
+        i,
+        NULL 
+      )
+    ) 
+      s_element =
+        Libnucnet__Species__getName(
+          Libnucnet__Nuc__getSpeciesByZA(
+            Libnucnet__Net__getNuc( p_net ),
+            i,
+            i,
+            NULL 
+          )
+        );
+    else
+    {
+      std::cerr << "No number " << i << " atom in network!" << std::endl;
+      exit( EXIT_FAILURE );
+    }
+  
+    reaction_data.vProducts.push_back( s_element );
+
+    reaction_data.vProducts.push_back( "h1" );
+
+    add_reaction_to_net( p_net, reaction_data );
+
+    reaction_data.clear();
+    
+  }
+
+}
+
+//##############################################################################
 // ReactionData::~ReactionData(). 
 //##############################################################################
 
 ReactionData::~ReactionData()
+{
+
+  this->clear();
+
+}
+
+//##############################################################################
+// ReactionData::clear(). 
+//##############################################################################
+
+void
+ReactionData::clear()
 {
 
   this->vReactants.clear();
@@ -745,4 +1078,4 @@ ReactionData::~ReactionData()
   this->vUserRateData.clear();
 
 }
-  
+ 

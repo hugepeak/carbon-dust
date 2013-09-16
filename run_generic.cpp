@@ -15,7 +15,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \file
-//! \brief Example code for running a network calculation of carbon and oxygen.
+//! \brief Example code for running a network calculation for a single type
+//!        of particle.
 ////////////////////////////////////////////////////////////////////////////////
 
 //##############################################################################
@@ -34,6 +35,8 @@
 #include "carbon_rate_functions.h"
 #include "carbon_hydro.h"
 #include "my_bin_utilities.h"
+#include "carbon_molecule_utilities.h"
+#include "carbon_reaction_utilities.h"
 
 //##############################################################################
 // Define some parameters.
@@ -44,6 +47,12 @@
 #define D_REG_Y        0.15         // Abundance change regulator for dt update 
 #define D_Y_MIN_DT     1.e-10       // Smallest y for dt update
 #define S_SOLVER       nnt::s_ARROW // Solver type: ARROW or GSL
+
+#define S_NETWORK_END  "network end"
+#define S_PHOTON_END   "photon end"
+
+int
+create_generic_net( nnt::Zone & );
 
 void
 my_print_abundances( nnt::Zone & );
@@ -82,6 +91,12 @@ int main( int argc, char * argv[] ) {
     std::cerr << "Couldn't set zone."  << std::endl;
     return EXIT_FAILURE;
   }
+
+  //============================================================================
+  // Create generic network.
+  //============================================================================
+
+  create_generic_net( zone );
 
   //============================================================================
   // Register rate functions.
@@ -176,20 +191,10 @@ int main( int argc, char * argv[] ) {
   );
 
   //============================================================================
-  // Limit evolution network.
-  //============================================================================
-
-  user::limit_evolution_network( zone );
-
-  //============================================================================
   // Evolve network while t < final t.
   //============================================================================
 
   i_step = 0;
-
-  if( 
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
-  ) {
 
     std::cout << "species number = " <<
       Libnucnet__Nuc__getNumberOfSpecies(
@@ -199,8 +204,6 @@ int main( int argc, char * argv[] ) {
       ) +
       boost::lexical_cast<int>( zone.getProperty( "bin number" ) )
       << std::endl;
-
-  }
 
   while ( 
     d_t < boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
@@ -317,8 +320,6 @@ int main( int argc, char * argv[] ) {
       d_dt =
         boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) ) - d_t;
     }
-
-    user::limit_evolution_network( zone );
 
     i_step++;
 
@@ -515,6 +516,49 @@ my_species_sort_function(
   } else {
     return GSL_SIGN( i );
   }
+
+}
+
+//##############################################################################
+// create_generic_net(). 
+//##############################################################################
+
+int
+create_generic_net(
+  nnt::Zone & zone
+)
+{
+
+  unsigned i_network_end;
+  unsigned i_photon_end;
+
+  i_network_end = 
+    boost::lexical_cast<unsigned>( zone.getProperty( S_NETWORK_END ) ); 
+  i_photon_end = 
+    boost::lexical_cast<unsigned>( zone.getProperty( S_PHOTON_END ) ); 
+
+  add_generic_molecules_to_nuc(
+    Libnucnet__Net__getNuc( 
+      Libnucnet__Zone__getNet( zone.getNucnetZone() )
+    ),
+    1, 
+    i_network_end
+  );
+
+  add_generic_reactions_to_net(
+    Libnucnet__Zone__getNet( zone.getNucnetZone() ),
+    1,
+    i_photon_end
+  ); 
+
+  if( i_network_end > i_photon_end )
+    add_forward_generic_reactions_to_net(
+      Libnucnet__Zone__getNet( zone.getNucnetZone() ),
+      i_photon_end,
+      i_network_end
+    ); 
+
+  return 1;
 
 }
 

@@ -24,49 +24,15 @@
 
 #include "user/evolve.h"
 
-#include "carbon_rate_functions.h"
-#include "carbon_hydro.h"
+//#include "carbon_rate_functions.h"
+
+#include "my_bin_utilities.h"
 
 int
 evolve( nnt::Zone& );
 
-double
-compute_effective_rate(
-  nnt::Zone &, int
-);
-
-double
-compute_effective_rate(
-  nnt::Zone &, int, int
-);
-
-void
-update_bin_rates(
-  nnt::Zone &, WnMatrix *, gsl_vector *
-);
-
-void
-evolve_bin( 
-  nnt::Zone &, std::vector<double> &
-);
-
-double
-check_bin_change(
-  nnt::Zone &
-);
-
-std::vector<double>
-get_bin_abundances(
-  nnt::Zone &
-);
-
 std::pair<WnMatrix *, gsl_vector *>
 get_evolution_matrix_and_vector( 
   nnt::Zone &
-);
-
-int
-compute_atom_numbers_in_bin(
-  int, int
 );
 
