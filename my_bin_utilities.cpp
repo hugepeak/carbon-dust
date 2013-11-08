@@ -203,26 +203,86 @@ compute_effective_rate(
 )
 {
 
-  if( zone.hasProperty( "k1" ) ) {
 
-    return
-      boost::lexical_cast<double>( zone.getProperty( "k1" ) ) /
-      (
-        3. *
-        ( pow( d_end, 1./3. ) - pow( d_begin, 1./3. ) )
-      );
+  if( 
+    zone.hasProperty( S_BIN_EFFECTIVE_REVERSE ) &&
+    ( zone.getProperty( S_BIN_EFFECTIVE_REVERSE ) == "yes" )
+  )
+  {
 
-  } else {
-
-    return
+    double d_forward, d_reverse, d_rate;
+  
+    d_forward = 
       compute_k1( zone, 12. ) /    
       (
         3. *
         ( pow( d_end, 1./3. ) - pow( d_begin, 1./3. ) )
       );
+  
+    double d_reduced_mass;
+  
+    d_reduced_mass = 
+      1. /
+      (
+        1. / ( 12. * d_begin ) + 
+        1. / 12. 
+      ) *
+      GSL_CONST_CGSM_UNIFIED_ATOMIC_MASS;
+  
+    d_reverse =
+      d_forward *
+      pow(
+        gsl_pow_2( GSL_CONST_CGSM_PLANCKS_CONSTANT_H ) /
+        (
+          2. * M_PI * d_reduced_mass *
+          GSL_CONST_CGSM_BOLTZMANN *
+          boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) *
+          GSL_CONST_NUM_GIGA
+        ),
+        -1.5
+      ) *
+      exp(
+        -5. * GSL_CONST_CGSM_ELECTRON_VOLT /
+        (
+          GSL_CONST_CGSM_BOLTZMANN *
+          boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) *
+          GSL_CONST_NUM_GIGA
+        )
+      );
+  
+    d_rate = 
+      d_forward / 
+      (
+        1. +
+        d_reverse / d_forward
+      );
+  
+    return d_rate;
+
+  } else {
+        
+    if( zone.hasProperty( "k1" ) ) {
+  
+      return
+        boost::lexical_cast<double>( zone.getProperty( "k1" ) ) /
+        (
+          3. *
+          ( pow( d_end, 1./3. ) - pow( d_begin, 1./3. ) )
+        );
+  
+    } else {
+  
+      return
+        compute_k1( zone, 12. ) /    
+        (
+          3. *
+          ( pow( d_end, 1./3. ) - pow( d_begin, 1./3. ) )
+        );
+  
+    }
 
   }
-
+  
 }
 
 //##############################################################################

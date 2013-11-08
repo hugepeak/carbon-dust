@@ -16,6 +16,7 @@
         <property name="network end">100</property>
         <property name="bin factor">2</property>
         <property name="bin number">40</property>
+        <property name="bin effective reverse">yes</property>
       </optional_properties>
       <mass_fractions>
         <nuclide name="h1">
