@@ -32,7 +32,7 @@
 #include "nnt/iter.h"
 #include "nnt/weak_detailed_balance.h"
 
-#include "user/my_rate_modifiers.h"
+#include "user/flow_utilities.h"
 #include "user/coul_corr.h"
 
 std::pair<double,double>

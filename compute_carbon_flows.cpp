@@ -25,9 +25,8 @@
 #include "nnt/string_defs.h"
 #include "nnt/two_d_weak_rates.h"
 #include "nnt/weak_detailed_balance.h"
+#include "user/network_utilities.h"
 
-#include "user/my_user_rate_functions.h"
-#include "user/my_flow_utilities.h"
 #include "carbon_flow_utilities.h"
 #include "carbon_rate_functions.h"
 

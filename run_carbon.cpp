@@ -26,9 +26,6 @@
 
 #include "nnt/write_output_xml.h"
 #include "user/remove_duplicate.h"
-#include "user/my_network_limiter.h"
-#include "user/my_rate_modifiers.h"
-#include "user/my_user_rate_functions.h"
 
 #include "carbon_evolve.h"
 #include "carbon_rate_functions.h"

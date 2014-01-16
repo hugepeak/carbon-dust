@@ -125,7 +125,7 @@ evolve(
 
     if( zone.hasProperty( nnt::s_SPECIFIC_SPECIES ) )
     {
-      user::set_specific_species( zone, p_matrix, p_rhs, d_dt );
+      user::set_specific_species( p_matrix, p_rhs, &zone );
     }
 
     //--------------------------------------------------------------------------
