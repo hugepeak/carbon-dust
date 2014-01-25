@@ -67,7 +67,7 @@ void
 add_default_electronic_recombination_reactions_to_net( Libnucnet__Net * );
 
 void
-add_arrhenius_rate_to_net( 
+add_arrhenius_reaction_to_net( 
   Libnucnet__Net *,
   std::string,
   std::string,
@@ -77,21 +77,8 @@ add_arrhenius_rate_to_net(
 );
 
 void
-add_arrhenius_rate_to_net( 
+add_arrhenius_reaction_to_net( 
   Libnucnet__Net *,
-  std::string,
-  std::string,
-  std::string,
-  std::string,
-  double,
-  double,
-  double
-);
-
-void
-add_arrhenius_rate_to_net( 
-  Libnucnet__Net *,
-  std::string,
   std::string,
   std::string,
   std::string,
@@ -102,7 +89,20 @@ add_arrhenius_rate_to_net(
 );
 
 void
-add_arrhenius_inverse_rate_to_net( 
+add_arrhenius_reaction_to_net( 
+  Libnucnet__Net *,
+  std::string,
+  std::string,
+  std::string,
+  std::string,
+  std::string,
+  double,
+  double,
+  double
+);
+
+void
+add_arrhenius_inverse_reaction_to_net( 
   Libnucnet__Net *,
   std::string,
   std::string,
@@ -115,7 +115,7 @@ add_arrhenius_inverse_rate_to_net(
 );
 
 void
-add_compton_electron_rate_to_net( 
+add_compton_electron_reaction_to_net( 
   Libnucnet__Net *,
   std::string,
   std::string,
@@ -126,12 +126,12 @@ add_compton_electron_rate_to_net(
 );
 
 void
-add_default_isomer_reactions_to_net(
+add_default_single_rate_reactions_to_net(
   Libnucnet__Net *
 );
 
 void
-add_isomer_reaction_to_net( 
+add_single_rate_reaction_to_net( 
   Libnucnet__Net *,
   std::string,
   std::string,

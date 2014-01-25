@@ -38,7 +38,7 @@
 #define S_CARBON_CONDENSATION_INVERSE_RATE  \
                                         "carbon condensation inverse rate"
 #define S_COMPTON_ELECTRON_RATE         "compton electron rate"
-#define S_ISOMER_RATE                   "isomer rate"
+#define S_SINGLE_RATE                   "single rate"
 #define S_YA                            "Ya"
 #define S_INVERSE_REDUCED_MASS          "inverse reduced mass"
 #define S_NUCLEON_NUMBER_PER_ATOM       "nucleon number per atom"  
@@ -83,7 +83,7 @@ double compton_electron_rate_function(
   Libnucnet__Reaction *, double, void * 
 );
 
-double isomer_rate_function( 
+double single_rate_function( 
   Libnucnet__Reaction *, double, void * 
 );
 

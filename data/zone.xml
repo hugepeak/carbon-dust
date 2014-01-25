@@ -20,17 +20,22 @@
         <nuclide name="n">
           <z>0</z>
           <a>1</a>
-          <x>0.9091</x>
+          <x>0.001</x>
         </nuclide>
         <nuclide name="h1g">
           <z>1</z>
           <a>1</a>
-          <x>0.0909</x>
+          <x>0.008</x>
+        </nuclide>
+        <nuclide name="he4g">
+          <z>2</z>
+          <a>4</a>
+          <x>0.99</x>
         </nuclide>
         <nuclide name="he4+">
           <z>2</z>
           <a>4</a>
-          <x>0.</x>
+          <x>0.001</x>
         </nuclide>
       </mass_fractions>
     </zone>

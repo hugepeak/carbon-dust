@@ -79,13 +79,13 @@ register_my_rate_functions(
   );
 
   //============================================================================
-  // Register isomer rate function(2012). 
+  // Register single rate function(2012). 
   //============================================================================
 
   Libnucnet__Reac__registerUserRateFunction(
     p_reac, 
-    S_ISOMER_RATE,
-    (Libnucnet__Reaction__userRateFunction) isomer_rate_function
+    S_SINGLE_RATE,
+    (Libnucnet__Reaction__userRateFunction) single_rate_function
   );
 
 }
@@ -648,18 +648,18 @@ compton_electron_rate_function(
 }
 
 //##############################################################################
-// isomer_rate_function()
+// single_rate_function()
 //############################################################################//
 
 double
-isomer_rate_function(
+single_rate_function(
   Libnucnet__Reaction * p_reaction,
   double d_t9,
   void *p_data
 )
 {
 
-  double d_tau;
+  double d_rate;
   const char * s_value;
 
   //============================================================================
@@ -680,21 +680,21 @@ isomer_rate_function(
 
   if( p_data )
   {
-    fprintf( stderr, "No extra data needed in isomer rate.\n" );
+    fprintf( stderr, "No extra data needed in single rate.\n" );
     exit( EXIT_FAILURE );
   }
 
   s_value =
     Libnucnet__Reaction__getUserRateFunctionProperty(
       p_reaction,
-      "tau",
+      "rate",
       NULL,
       NULL
     );
 
-  d_tau = atof( s_value );
+  d_rate = atof( s_value );
 
-  return 1. / d_tau;
+  return d_rate;
   
 }
 

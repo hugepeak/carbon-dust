@@ -42,7 +42,7 @@ add_default_reactions_to_net(
 
   add_default_co_reactions_to_net( p_net );
 
-  add_default_isomer_reactions_to_net( p_net );
+  add_default_single_rate_reactions_to_net( p_net );
 
   //add_default_carbon_condensation_reactions_to_net( p_net );
 
@@ -62,14 +62,14 @@ add_default_oxygen_reactions_to_net(
   // Add O + O -> O2 + gamma (n + n -> nn + gamma) and inverse. RA3.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "n", "n", 
     "nn", "gamma",
     1.e-19, 0., 0. 
   );
 
-  add_arrhenius_inverse_rate_to_net(
+  add_arrhenius_inverse_reaction_to_net(
     p_net,
     "nn", "gamma",
     "n", "n", 
@@ -80,7 +80,7 @@ add_default_oxygen_reactions_to_net(
   // Add O2 + e -> O + O + e (nn + electron -> n + n + electron). Clayton 2013.
   //============================================================================
  
-  add_compton_electron_rate_to_net(
+  add_compton_electron_reaction_to_net(
     p_net,
     "nn", "electron", 
     "n", "n", "electron",
@@ -103,14 +103,14 @@ add_default_co_reactions_to_net(
   // Add C + O2 -> CO + O (h1g + nn -> h2 + n) and inverse. NN56 and NN37.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h1g", "nn", 
     "h2", "n",
     2.46e-12, 1.5, -613. 
   );
 
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h2", "n",
     "h1g", "nn", 
@@ -121,7 +121,7 @@ add_default_co_reactions_to_net(
   // Add C + CO -> C2 + O (h1g + h2 -> he2c + n). NN57.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h1g", "h2", 
     "he2c", "n",
@@ -132,7 +132,7 @@ add_default_co_reactions_to_net(
   // Add CO + gamma -> C + O (h2 + gamma -> n + h1g). Inverse of RA4.
   //============================================================================
  
-  add_arrhenius_inverse_rate_to_net(
+  add_arrhenius_inverse_reaction_to_net(
     p_net,
     "h2", "gamma",
     "n", "h1g", 
@@ -144,7 +144,7 @@ add_default_co_reactions_to_net(
   //   Clayton 2012.
   //============================================================================
  
-  add_compton_electron_rate_to_net(
+  add_compton_electron_reaction_to_net(
     p_net,
     "h2", "electron", 
     "h1g", "n", "electron",
@@ -154,11 +154,11 @@ add_default_co_reactions_to_net(
 }
 
 //##############################################################################
-// add_default_isomer_reactions_to_net(). 
+// add_default_single_rate_reactions_to_net(). 
 //##############################################################################
 
 void
-add_default_isomer_reactions_to_net(
+add_default_single_rate_reactions_to_net(
   Libnucnet__Net * p_net
 )
 {
@@ -167,21 +167,21 @@ add_default_isomer_reactions_to_net(
   // Add C8c -> C8r (o8c -> o8r). Clayton 2012.
   //============================================================================
  
-  add_isomer_reaction_to_net(
+  add_single_rate_reaction_to_net(
     p_net,
     "o8c",
     "o8r",
-    10.
+    0.1 
   );
 
 }
     
 //##############################################################################
-// add_isomer_reaction_to_net().
+// add_single_rate_reaction_to_net().
 //##############################################################################
 
 void
-add_isomer_reaction_to_net(
+add_single_rate_reaction_to_net(
   Libnucnet__Net * p_net,
   std::string s_reactant,
   std::string s_product,
@@ -192,7 +192,7 @@ add_isomer_reaction_to_net(
   ReactionData reaction_data;
 
   reaction_data.sSource = "Clayton suggestion (2012)";
-  reaction_data.sUserRateFunctionKey = "isomer rate";
+  reaction_data.sUserRateFunctionKey = "single rate";
 
   reaction_data.vReactants.push_back( s_reactant );
   reaction_data.vProducts.push_back( s_product );
@@ -291,14 +291,14 @@ add_default_carbon_carbon_reactions_to_net(
   // Add C + C -> C2 + gamma (h1g + h1g -> he2c + gamma), and the inverse. C1.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h1g", "h1g", 
     "he2c", "gamma",
     4.36e-18, 0.3, 161.3
   );
 
-  add_arrhenius_inverse_rate_to_net(
+  add_arrhenius_inverse_reaction_to_net(
     p_net,
     "he2c", "gamma",
     "h1g", "h1g", 
@@ -309,14 +309,14 @@ add_default_carbon_carbon_reactions_to_net(
   // Add C + C2 -> C3 + gamma (h1g + he2c -> li3c + gamma), and the inverse. C2.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h1g", "he2c", 
     "li3c", "gamma",
     1.e-17, 0., 0.
   );
 
-  add_arrhenius_inverse_rate_to_net(
+  add_arrhenius_inverse_reaction_to_net(
     p_net,
     "li3c", "gamma",
     "h1g", "he2c", 
@@ -327,14 +327,14 @@ add_default_carbon_carbon_reactions_to_net(
   // Add C + C3 -> C4 + gamma (h1g + li3c -> be4c + gamma), and the inverse. C3.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h1g", "li3c", 
     "be4c", "gamma",
     1.e-10, 0., 0.
   );
 
-  add_arrhenius_inverse_rate_to_net(
+  add_arrhenius_inverse_reaction_to_net(
     p_net,
     "be4c", "gamma",
     "h1g", "li3c", 
@@ -345,14 +345,14 @@ add_default_carbon_carbon_reactions_to_net(
   // Add C + C4 -> C5 + gamma (h1g + be4c -> b5c + gamma), and the inverse. C4.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h1g", "be4c", 
     "b5c", "gamma",
     1.e-13, 0., 0.
   );
 
-  add_arrhenius_inverse_rate_to_net(
+  add_arrhenius_inverse_reaction_to_net(
     p_net,
     "b5c", "gamma",
     "h1g", "be4c", 
@@ -363,14 +363,14 @@ add_default_carbon_carbon_reactions_to_net(
   // Add C + C5 -> C6 + gamma (h1g + b5c -> c6c + gamma), and the inverse. C6.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h1g", "b5c", 
     "c6c", "gamma",
     1.e-10, 0., 0.
   );
 
-  add_arrhenius_inverse_rate_to_net(
+  add_arrhenius_inverse_reaction_to_net(
     p_net,
     "c6c", "gamma",
     "h1g", "b5c", 
@@ -381,14 +381,14 @@ add_default_carbon_carbon_reactions_to_net(
   // Add C + C6 -> C7 + gamma (h1g + c6c -> n7c + gamma), and the inverse. C7.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h1g", "c6c", 
     "n7c", "gamma",
     1.e-13, 0., 0.
   );
 
-  add_arrhenius_inverse_rate_to_net(
+  add_arrhenius_inverse_reaction_to_net(
     p_net,
     "n7c", "gamma",
     "h1g", "c6c", 
@@ -399,14 +399,14 @@ add_default_carbon_carbon_reactions_to_net(
   // Add C + C7 -> C8 + gamma (h1g + n7c -> o8c + gamma), and the inverse. C10.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "h1g", "n7c", 
     "o8c", "gamma",
     1.e-10, 0., 0.
   );
 
-  add_arrhenius_inverse_rate_to_net(
+  add_arrhenius_inverse_reaction_to_net(
     p_net,
     "o8c", "gamma",
     "h1g", "n7c", 
@@ -429,7 +429,7 @@ add_default_carbon_oxygen_reactions_to_net(
   // Add O + C -> CO + gamma (n + h1g -> h2 + gamma). RA4.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "n", "h1g", 
     "h2", "gamma",
@@ -440,7 +440,7 @@ add_default_carbon_oxygen_reactions_to_net(
   // Add O + C2 -> CO + C (n + he2c -> h2 + h1g). C38.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "n", "he2c", 
     "h2", "h1g",
@@ -451,7 +451,7 @@ add_default_carbon_oxygen_reactions_to_net(
   // Add O + C3 -> CO + C2 (n + li3c -> h2 + he2c). C39.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "n", "li3c", 
     "h2", "he2c",
@@ -462,7 +462,7 @@ add_default_carbon_oxygen_reactions_to_net(
   // Add O + C4 -> CO + C3 (n + be4c -> h2 + li3c). C40.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "n", "be4c", 
     "h2", "li3c",
@@ -473,7 +473,7 @@ add_default_carbon_oxygen_reactions_to_net(
   // Add O + C5 -> CO + C4 (n + b5c -> h2 + be4c). C41.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "n", "b5c", 
     "h2", "be4c",
@@ -484,7 +484,7 @@ add_default_carbon_oxygen_reactions_to_net(
   // Add O + C6 -> CO + C5 (n + c6c -> h2 + b5c). C42.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "n", "c6c", 
     "h2", "b5c",
@@ -495,7 +495,7 @@ add_default_carbon_oxygen_reactions_to_net(
   // Add O + C7 -> CO + C6 (n + n7c -> h2 + c6c). C43.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "n", "n7c", 
     "h2", "c6c",
@@ -506,7 +506,7 @@ add_default_carbon_oxygen_reactions_to_net(
   // Add O + C8 -> CO + C7 (n + o8c -> h2 + n7c). C44.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "n", "o8c", 
     "h2", "n7c",
@@ -529,7 +529,7 @@ add_default_ion_molecule_reactions_to_net(
   // Add He+ + CO -> C+ + O + He (he4+ + h2 -> h1+ + n + he4g). IM13.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_arrhenius_reaction_to_net(
     p_net,
     "he4+", "h2", 
     "h1+", "n", "he4g",
@@ -549,24 +549,25 @@ add_default_electronic_recombination_reactions_to_net(
 {
 
   //============================================================================
-  // Add C+ + electron -> C (h1+ + electron -> h1g). ER5.
+  // Just apply single rate here, not using ER5 for now.
+  // C+ + electron -> C (h1+ + electron -> h1g). ER5.
   //============================================================================
  
-  add_arrhenius_rate_to_net(
+  add_single_rate_reaction_to_net(
     p_net,
     "h1+",
     "h1g",
-    4.67e-12, -0.6, 0.
+    1.
   );
 
 }
 
 //##############################################################################
-// add_compton_electron_rate_to_net(). 
+// add_compton_electron_reaction_to_net(). 
 //##############################################################################
 
 void
-add_compton_electron_rate_to_net(
+add_compton_electron_reaction_to_net(
   Libnucnet__Net * p_net,
   std::string s_first_reactant,
   std::string s_second_reactant,
@@ -597,11 +598,11 @@ add_compton_electron_rate_to_net(
 }
   
 //##############################################################################
-// add_arrhenius_rate_to_net().
+// add_arrhenius_reaction_to_net().
 //##############################################################################
 
 void
-add_arrhenius_rate_to_net(
+add_arrhenius_reaction_to_net(
   Libnucnet__Net * p_net,
   std::string s_first_reactant,
   std::string s_first_product,
@@ -634,7 +635,7 @@ add_arrhenius_rate_to_net(
 }
 
 void
-add_arrhenius_rate_to_net(
+add_arrhenius_reaction_to_net(
   Libnucnet__Net * p_net,
   std::string s_first_reactant,
   std::string s_second_reactant,
@@ -671,7 +672,7 @@ add_arrhenius_rate_to_net(
 }
 
 void
-add_arrhenius_rate_to_net(
+add_arrhenius_reaction_to_net(
   Libnucnet__Net * p_net,
   std::string s_first_reactant,
   std::string s_second_reactant,
@@ -710,11 +711,11 @@ add_arrhenius_rate_to_net(
 }
 
 //##############################################################################
-// add_arrhenius_inverse_rate_to_net().
+// add_arrhenius_inverse_reaction_to_net().
 //##############################################################################
 
 void
-add_arrhenius_inverse_rate_to_net(
+add_arrhenius_inverse_reaction_to_net(
   Libnucnet__Net * p_net,
   std::string s_first_reactant,
   std::string s_second_reactant,
