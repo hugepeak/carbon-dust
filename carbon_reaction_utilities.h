@@ -173,3 +173,8 @@ add_reverse_generic_reactions_to_net(
   Libnucnet__Net *, unsigned int, unsigned int
 );
 
+void
+add_reverse_generic_reactions_to_net( 
+  Libnucnet__Net *, unsigned int, unsigned int, double
+);
+

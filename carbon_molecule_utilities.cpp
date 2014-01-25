@@ -34,8 +34,8 @@ add_default_molecules_to_nuc(
   // Add carbon chains and rings.
   //============================================================================
 
-  add_carbon_molecules_to_nuc( p_nuc, 2, 100, "c" );
-  add_carbon_molecules_to_nuc( p_nuc, 2, 100, "r" );
+  add_carbon_molecules_to_nuc( p_nuc, 2, 8, "c" );
+  add_carbon_molecules_to_nuc( p_nuc, 2, 8, "r" );
 
   //============================================================================
   // Add O, O2, CO.

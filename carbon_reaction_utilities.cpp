@@ -44,7 +44,7 @@ add_default_reactions_to_net(
 
   add_default_isomer_reactions_to_net( p_net );
 
-  add_default_carbon_condensation_reactions_to_net( p_net );
+  //add_default_carbon_condensation_reactions_to_net( p_net );
 
 }
 
@@ -990,6 +990,91 @@ add_reverse_generic_reactions_to_net(
     reaction_data.sUserRateFunctionKey = "carbon condensation inverse rate";
     reaction_data.vUserRateData.push_back(
       std::make_pair( "BondEnergy", "5.0" )
+    );
+
+    if( 
+      Libnucnet__Nuc__getSpeciesByZA(
+        Libnucnet__Net__getNuc( p_net ),
+        i + 1,
+        i + 1,
+        NULL 
+      )
+    ) 
+      s_element =
+        Libnucnet__Species__getName(
+          Libnucnet__Nuc__getSpeciesByZA(
+            Libnucnet__Net__getNuc( p_net ),
+            i + 1,
+            i + 1,
+            NULL 
+          )
+        );
+    else
+    {
+      std::cerr << "No number " << i << " atom in network!" << std::endl;
+      exit( EXIT_FAILURE );
+    }
+  
+    reaction_data.vReactants.push_back( s_element );
+
+    if( 
+      Libnucnet__Nuc__getSpeciesByZA(
+        Libnucnet__Net__getNuc( p_net ),
+        i,
+        i,
+        NULL 
+      )
+    ) 
+      s_element =
+        Libnucnet__Species__getName(
+          Libnucnet__Nuc__getSpeciesByZA(
+            Libnucnet__Net__getNuc( p_net ),
+            i,
+            i,
+            NULL 
+          )
+        );
+    else
+    {
+      std::cerr << "No number " << i << " atom in network!" << std::endl;
+      exit( EXIT_FAILURE );
+    }
+  
+    reaction_data.vProducts.push_back( s_element );
+
+    reaction_data.vProducts.push_back( "h1" );
+
+    add_reaction_to_net( p_net, reaction_data );
+
+    reaction_data.clear();
+    
+  }
+
+}
+
+void
+add_reverse_generic_reactions_to_net(
+  Libnucnet__Net * p_net,
+  unsigned int i_lo,
+  unsigned int i_hi,
+  double d_bond_energy
+)
+{
+
+  ReactionData reaction_data;
+
+  std::string s_element;
+
+  for( unsigned int i = i_lo; i < i_hi; i++ )
+  {
+
+    reaction_data.sSource = "Meyer notes 2013";
+    reaction_data.sUserRateFunctionKey = "carbon condensation inverse rate";
+    reaction_data.vUserRateData.push_back(
+      std::make_pair( 
+        "BondEnergy", 
+        boost::lexical_cast<std::string>( d_bond_energy )
+      )
     );
 
     if( 
