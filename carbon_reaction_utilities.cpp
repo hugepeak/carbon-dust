@@ -185,7 +185,7 @@ add_single_rate_reaction_to_net(
   Libnucnet__Net * p_net,
   std::string s_reactant,
   std::string s_product,
-  double d_tau
+  double d_rate
 )
 {
 
@@ -198,7 +198,7 @@ add_single_rate_reaction_to_net(
   reaction_data.vProducts.push_back( s_product );
 
   reaction_data.vUserRateData.push_back( 
-    std::make_pair( "tau", boost::lexical_cast<std::string>( d_tau) ) 
+    std::make_pair( "rate", boost::lexical_cast<std::string>( d_rate ) ) 
   ); 
 
   add_reaction_to_net( p_net, reaction_data );
