@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// This file was originally written by Bradley S. Meyer.
+// This file was originally written by Bradley S. Meyer and Tianhong Yu.
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@
 //##############################################################################
 
 #include "user/evolve.h"
-
-//#include "carbon_rate_functions.h"
 
 #include "my_bin_utilities.h"
 

@@ -36,9 +36,9 @@ add_default_reactions_to_net(
 
   add_default_ion_molecule_reactions_to_net( p_net );
 
-  add_default_electronic_recombination_reactions_to_net( p_net );
+  //add_default_electronic_recombination_reactions_to_net( p_net );
 
-  add_default_oxygen_reactions_to_net( p_net );
+  //add_default_o2_reactions_to_net( p_net );
 
   add_default_co_reactions_to_net( p_net );
 
@@ -49,14 +49,32 @@ add_default_reactions_to_net(
 }
 
 //##############################################################################
-// add_default_oxygen_reactions_to_net(). 
+// add_default_o2_reactions_to_net(). 
 //##############################################################################
 
 void
-add_default_oxygen_reactions_to_net(
+add_default_o2_reactions_to_net(
   Libnucnet__Net * p_net
 )
 {
+
+  //============================================================================
+  // Add C + O2 -> CO + O (h1g + nn -> h2 + n) and inverse. NN56 and NN37.
+  //============================================================================
+ 
+  add_arrhenius_reaction_to_net(
+    p_net,
+    "h1g", "nn", 
+    "h2", "n",
+    2.46e-12, 1.5, -613. 
+  );
+
+  add_arrhenius_reaction_to_net(
+    p_net,
+    "h2", "n",
+    "h1g", "nn", 
+    1.e-16, 0., 0. 
+  );
 
   //============================================================================
   // Add O + O -> O2 + gamma (n + n -> nn + gamma) and inverse. RA3.
@@ -98,24 +116,6 @@ add_default_co_reactions_to_net(
   Libnucnet__Net * p_net
 )
 {
-
-  //============================================================================
-  // Add C + O2 -> CO + O (h1g + nn -> h2 + n) and inverse. NN56 and NN37.
-  //============================================================================
- 
-  add_arrhenius_reaction_to_net(
-    p_net,
-    "h1g", "nn", 
-    "h2", "n",
-    2.46e-12, 1.5, -613. 
-  );
-
-  add_arrhenius_reaction_to_net(
-    p_net,
-    "h2", "n",
-    "h1g", "nn", 
-    1.e-16, 0., 0. 
-  );
 
   //============================================================================
   // Add C + CO -> C2 + O (h1g + h2 -> he2c + n). NN57.
@@ -167,11 +167,20 @@ add_default_single_rate_reactions_to_net(
   // Add C8c -> C8r (o8c -> o8r). Clayton 2012.
   //============================================================================
  
+/*
   add_single_rate_reaction_to_net(
     p_net,
     "o8c",
     "o8r",
     0.1 
+  );
+*/
+
+  add_arrhenius_reaction_to_net(
+    p_net,
+    "o8c", 
+    "o8r", 
+    0.1, 0., 0.
   );
 
 }
@@ -525,16 +534,73 @@ add_default_ion_molecule_reactions_to_net(
 )
 {
 
+/*
   //============================================================================
   // Add He+ + CO -> C+ + O + He (he4+ + h2 -> h1+ + n + he4g). IM13.
   //============================================================================
  
-  add_arrhenius_reaction_to_net(
-    p_net,
-    "he4+", "h2", 
-    "h1+", "n", "he4g",
-    3.e-10, 0., 1420.
-  );
+  if( 
+    Libnucnet__Nuc__getSpeciesByName(
+      Libnucnet__Net__getNuc( p_net ), "he4+"
+    )
+  ) {
+    add_arrhenius_reaction_to_net(
+      p_net,
+      "he4+", "h2", 
+      "h1+", "n", "he4g",
+      3.e-10, 0., 1420.
+    );
+  }
+*/
+
+  //============================================================================
+  // Add He+ + CO -> C+ + O + He (he4+ + h2 -> h1+ + n + he4g). Clayton.
+  //============================================================================
+ 
+  if( 
+    Libnucnet__Nuc__getSpeciesByName(
+      Libnucnet__Net__getNuc( p_net ), "he4+"
+    )
+  ) {
+    add_arrhenius_reaction_to_net(
+      p_net,
+      "he4+", "h2", 
+      "h1+", "n", "he4g",
+      1.e-9, 0., 0.
+    );
+  }
+
+  //============================================================================
+  // Add He+ + Cn -> C+ + Cn-1 + He. Clayton.
+  //============================================================================
+ 
+  std::vector<std::string> carbon_list;
+
+  carbon_list.push_back( "h1g" );
+  carbon_list.push_back( "he2c" );
+  carbon_list.push_back( "li3c" );
+  carbon_list.push_back( "be4c" );
+  carbon_list.push_back( "b5c" );
+  carbon_list.push_back( "c6c" );
+  carbon_list.push_back( "n7c" );
+  carbon_list.push_back( "o8c" );
+ 
+  if( 
+    Libnucnet__Nuc__getSpeciesByName(
+      Libnucnet__Net__getNuc( p_net ), "he4+"
+    )
+  ) {
+
+    for( size_t i = 0; i < 8 - 1; i++ ){
+      add_arrhenius_reaction_to_net(
+        p_net,
+        "he4+", carbon_list[i+1], 
+        "h1+", carbon_list[i], "he4g",
+        1.e-9, 0., 0.
+      );
+    }
+
+  }
 
 }
 

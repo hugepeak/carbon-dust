@@ -48,7 +48,11 @@ USE_SPARSE_SOLVER = no
 # Svn.
 #===============================================================================
 
-SVN_CHECKOUT := $(shell if [ ! -d $(NUCNET_TARGET) ]; then svn co $(SVNURL) $(NUCNET_TARGET); else svn update $(NUCNET_TARGET); fi )
+ifndef SVN_BIN
+  SVN_BIN = svn
+endif
+
+SVN_CHECKOUT := $(shell if [ ! -d $(NUCNET_TARGET) ]; then $(SVN_BIN) co $(SVNURL) $(NUCNET_TARGET); else $(SVN_BIN) update $(NUCNET_TARGET); fi )
 
 #===============================================================================
 # Includes.
@@ -75,7 +79,7 @@ ifdef CARBON_HYDRO_CODE
         CFLAGS += -DHYDRO_TRAJ
   endif
 else
-        CFLAGS += -DHYDRO_TRAJ
+        CFLAGS += -DHYDRO_DEFAULT
 endif
 
 #===============================================================================

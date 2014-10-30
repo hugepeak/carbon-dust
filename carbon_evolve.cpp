@@ -40,29 +40,6 @@ evolve(
   std::pair<double,double> check;
   double check_bin = 0.;
   
-  //==========================================================================
-  // Evolve NSE + weak rates, if appropriate.
-  //==========================================================================
-
-  if( zone.hasProperty( nnt::s_USE_HI_T_EQUIL ) )
-  {
-
-    if( zone.getProperty( nnt::s_USE_HI_T_EQUIL ) == "yes" )
-    {
-
-      if(
-        boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) >
-        boost::lexical_cast<double>( zone.getProperty( nnt::s_HI_T9_EQUIL ) )
-      )
-      {
-        user::evolve_nse_plus_weak_rates( zone );
-        return 1;
-      }
-
-    }
-
-  }
-
   //============================================================================
   // Get timestep. 
   //============================================================================
@@ -75,9 +52,9 @@ evolve(
 
   p_y_old = Libnucnet__Zone__getAbundances( zone.getNucnetZone() );
 
-  //==========================================================================
+  //============================================================================
   // Save the old bin abundances.
-  //==========================================================================
+  //============================================================================
     
   std::vector<double> v_bin_old;
 
@@ -120,21 +97,11 @@ evolve(
     gsl_vector_free( p_work );
 
     //--------------------------------------------------------------------------
-    // If desired, change value of specific species to prescribed value.
-    //--------------------------------------------------------------------------
-
-    if( zone.hasProperty( nnt::s_SPECIFIC_SPECIES ) )
-    {
-      user::set_specific_species( p_matrix, p_rhs, &zone );
-    }
-
-    //--------------------------------------------------------------------------
     // Update bin rates. 
     //--------------------------------------------------------------------------
 
     if( 
-      zone.hasProperty( "run bin" ) &&
-      zone.getProperty( "run bin" ) == "yes"
+      zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
     ) 
       update_bin_rates( zone, p_matrix, p_rhs );
 
@@ -167,8 +134,7 @@ evolve(
     //--------------------------------------------------------------------------
 
     if( 
-      zone.hasProperty( "run bin" ) &&
-      zone.getProperty( "run bin" ) == "yes"
+      zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
     )
     {
  
@@ -197,9 +163,6 @@ evolve(
 
   }
 
-    if( i_iter > I_ITMAX )
-      std::cout << "check " << check.first << " " << check_bin << std::endl;
-
   //==========================================================================
   // Update abundance changes.
   //==========================================================================
@@ -217,10 +180,8 @@ evolve(
   //==========================================================================
 
   if( 
-    zone.hasProperty( "run bin" ) &&
-    zone.getProperty( "run bin" ) == "yes"
-  )
-  {
+    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
+  ) {
  
     std::vector<double> v_work = get_bin_abundances( zone );
 
@@ -271,20 +232,6 @@ get_evolution_matrix_and_vector( nnt::Zone& zone )
     boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ),
     boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) )
   ); 
-
-  //--------------------------------------------------------------------------
-  // Zero out small rates.
-  //--------------------------------------------------------------------------
-
-  if( zone.hasProperty( nnt::s_SMALL_RATES_THRESHOLD ) )
-  {
-    user::zero_out_small_rates(
-      zone,
-      boost::lexical_cast<double>(
-        zone.getProperty( nnt::s_SMALL_RATES_THRESHOLD )
-      )
-    );
-  }
 
   //--------------------------------------------------------------------------
   // Get right hand side vector.

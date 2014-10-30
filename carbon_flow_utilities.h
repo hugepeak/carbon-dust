@@ -32,10 +32,7 @@
 #include "nnt/iter.h"
 #include "nnt/weak_detailed_balance.h"
 
-#include "user/flow_utilities.h"
-#include "user/coul_corr.h"
-
-std::pair<double,double>
-compute_flows_for_reaction( nnt::Zone&, Libnucnet__Reaction * );
+double
+compute_flow_for_reaction( nnt::Zone&, Libnucnet__Reaction * );
 
 #endif // CARBON_FLOW_UTILITIES_H

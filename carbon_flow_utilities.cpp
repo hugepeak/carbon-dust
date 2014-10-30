@@ -26,15 +26,14 @@
 // compute_flows_for_reaction().
 //##########################################################################//
 
-std::pair<double,double>
-compute_flows_for_reaction(
+double
+compute_flow_for_reaction(
   nnt::Zone &zone,
   Libnucnet__Reaction *p_reaction
 )
 {
 
-  double d_forward_rate, d_reverse_rate = 0.;
-  double d_f, d_r = 0.;
+  double d_forward_rate;
   size_t i_elements;
 
   d_forward_rate =
@@ -48,17 +47,6 @@ compute_flows_for_reaction(
     );
 
   //==========================================================================
-  // Modify rates for reaction.
-  //==========================================================================
-
-  user::modify_rates_for_reaction(
-    zone,
-    p_reaction,
-    d_forward_rate,
-    d_reverse_rate
-  );
-
-  //==========================================================================
   // Iterate the reactants to get the forward flow.
   //==========================================================================
 
@@ -67,8 +55,7 @@ compute_flows_for_reaction(
 
   i_elements = reactant_list.size();
 
-  d_f =
-    d_forward_rate *
+  d_forward_rate *=
     pow(
       boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) ),
       (double) i_elements - 1.
@@ -78,7 +65,7 @@ compute_flows_for_reaction(
   BOOST_FOREACH( nnt::ReactionElement reactant, reactant_list )
   {
 
-    d_f *=
+    d_forward_rate *=
       Libnucnet__Zone__getSpeciesAbundance(
 	zone.getNucnetZone(),
 	Libnucnet__Nuc__getSpeciesByName(
@@ -97,7 +84,7 @@ compute_flows_for_reaction(
   // Return the flows.
   //==========================================================================
   
-  return std::make_pair( d_f, d_r ); 
+  return d_forward_rate;
 
 }
 

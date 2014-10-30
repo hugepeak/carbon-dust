@@ -25,7 +25,6 @@
 #include "nnt/string_defs.h"
 #include "nnt/two_d_weak_rates.h"
 #include "nnt/weak_detailed_balance.h"
-#include "user/network_utilities.h"
 
 #include "carbon_flow_utilities.h"
 #include "carbon_rate_functions.h"
@@ -34,7 +33,7 @@ int main( int argc, char * argv[] ) {
 
   Libnucnet *p_my_nucnet;
   Libnucnet__NetView * p_net_view;
-  std::pair<double,double> flows;
+  double d_flow;
 
   /*============================================================================
   // Check input.
@@ -70,14 +69,6 @@ int main( int argc, char * argv[] ) {
   //============================================================================
   // Register rate functions.
   //============================================================================
-
-/*
-  user::register_my_rate_functions(
-    Libnucnet__Net__getReac(
-      Libnucnet__getNet( p_my_nucnet )
-    )
-  );
-*/
 
   register_my_rate_functions(
     Libnucnet__Net__getReac(
@@ -135,7 +126,6 @@ int main( int argc, char * argv[] ) {
   BOOST_FOREACH( nnt::Zone zone, zone_list )
   {
    
-    user::update_my_rate_functions_data( zone );
     update_my_rate_functions_data( zone );
 
     //==========================================================================
@@ -166,25 +156,18 @@ int main( int argc, char * argv[] ) {
     BOOST_FOREACH( nnt::Reaction reaction, reaction_list )
     {
 
-      flows =
-        compute_flows_for_reaction(
+      d_flow =
+        compute_flow_for_reaction(
           zone,
           reaction.getNucnetReaction()
         );
 
-      if( fabs( flows.first - flows.second ) > 1.e-50 )
-      {
-
-        fprintf(
-      	  stdout,
-	  "%-55s%12.8e%12.3e%12.3e\n",
-          Libnucnet__Reaction__getString( reaction.getNucnetReaction() ),
-          flows.first,
-          flows.second,
-          flows.first - flows.second
-        );
-
-      }
+      fprintf(
+    	stdout,
+        "%-55s%12.8e\n",
+        Libnucnet__Reaction__getString( reaction.getNucnetReaction() ),
+        d_flow
+      );
 
     }
 

@@ -26,7 +26,6 @@
 #include <Libnucnet.h>
 
 #include "nnt/write_output_xml.h"
-#include "user/remove_duplicate.h"
 
 #include "carbon_evolve.h"
 #include "carbon_rate_functions.h"
@@ -44,9 +43,12 @@
 #define D_REG_Y        0.15         // Abundance change regulator for dt update 
 #define D_Y_MIN_DT     1.e-10       // Smallest y for dt update
 #define S_SOLVER       nnt::s_ARROW // Solver type: ARROW or GSL
+#define S_ARROW_WIDTH  "1"          // Solver type: ARROW or GSL
 
-#define S_NETWORK_END  "network end"
-#define S_PHOTON_END   "photon end"
+#define S_NETWORK_END  "network end"// largest atom number in a molecule that 
+                                    // is in network
+#define S_PHOTON_END   "photon end" // largest atom number in a molecule that
+                                    // has photo dissociation reaction
 
 int
 create_generic_net( nnt::Zone & );
@@ -164,7 +166,7 @@ int main( int argc, char * argv[] ) {
 
     zone.updateProperty( nnt::s_SOLVER, nnt::s_ARROW );
 
-    zone.updateProperty( nnt::s_ARROW_WIDTH, "1" );
+    zone.updateProperty( nnt::s_ARROW_WIDTH, S_ARROW_WIDTH );
 
   }
 

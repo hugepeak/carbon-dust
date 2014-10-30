@@ -25,7 +25,6 @@
 #include <Libnucnet.h>
 
 #include "nnt/write_output_xml.h"
-#include "user/remove_duplicate.h"
 
 #include "carbon_evolve.h"
 #include "carbon_rate_functions.h"
@@ -173,12 +172,6 @@ int main( int argc, char * argv[] ) {
   );
 
   //============================================================================
-  // Limit evolution network.
-  //============================================================================
-
-  user::limit_evolution_network( zone );
-
-  //============================================================================
   // Evolve network while t < final t.
   //============================================================================
 
@@ -314,8 +307,6 @@ int main( int argc, char * argv[] ) {
       d_dt =
         boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) ) - d_t;
     }
-
-    user::limit_evolution_network( zone );
 
     i_step++;
 

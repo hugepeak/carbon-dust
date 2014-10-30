@@ -216,6 +216,10 @@ update_zone_properties( nnt::Zone& zone )
     }
   }
 
+  //============================================================================
+  // update density and temperature.
+  //============================================================================
+
   zone.updateProperty(
     nnt::s_RHO,
     boost::lexical_cast<std::string>(
@@ -235,6 +239,10 @@ update_zone_properties( nnt::Zone& zone )
       pow( d_tau / d_t, 1. )
     )
   );
+
+  //============================================================================
+  // update density and temperature if they are too small.
+  //============================================================================
 
   if(
     boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) < 1.e-10

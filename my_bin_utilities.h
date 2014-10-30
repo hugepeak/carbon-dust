@@ -32,8 +32,6 @@
 #include "nnt/string_defs.h"
 #include "nnt/math.h"
 
-#include "user/network_utilities.h"
-
 #include "carbon_rate_functions.h"
 
 #define S_BIN_EFFECTIVE_REVERSE "bin effective reverse"

@@ -55,10 +55,10 @@ void
 add_default_carbon_oxygen_reactions_to_net( Libnucnet__Net * );
 
 void
-add_default_co_reactions_to_net( Libnucnet__Net * );
+add_default_o2_reactions_to_net( Libnucnet__Net * );
 
 void
-add_default_oxygen_reactions_to_net( Libnucnet__Net * );
+add_default_co_reactions_to_net( Libnucnet__Net * );
 
 void
 add_default_ion_molecule_reactions_to_net( Libnucnet__Net * );

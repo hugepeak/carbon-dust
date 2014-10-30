@@ -1,12 +1,14 @@
-Put this small package in nucnet-tools-code/my_projects.
+Put this small package in nucnet_projects directory.
 
->cd ...my_projects/carbon-dust
+>cd carbon-dust
 
->./make all_carbon
+To make carbon executables:
+
+>make all_carbon
 
 To make carbon network data:
 
->./make carbon_data
+>make carbon_data
 
 To run the carbon oxygen netowrk:
 
@@ -14,6 +16,14 @@ To run the carbon oxygen netowrk:
 
 By default, the network is up to n=8 for carbon chain and carbon ring.
 
-To make data for idl plotting, do
+To make the plot:
 
->./make_figure_data.sh
+>cd python
+>python plot_figures.py
+
+To run the generic netowrk:
+
+>./run_generic data/generic_net.xml data/generic_zone.xml out
+
+By default, the network is up to n=8 for carbon chain and carbon ring.
+
