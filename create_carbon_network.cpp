@@ -32,7 +32,22 @@ int main()
     Libnucnet__Net__getNuc( p_net )
   );
 
-  add_default_reactions_to_net( p_net );
+
+  add_default_carbon_carbon_reactions_to_net( p_net );
+
+  add_default_carbon_oxygen_reactions_to_net( p_net );
+
+  add_default_ion_molecule_reactions_to_net( p_net );
+
+  //add_default_electronic_recombination_reactions_to_net( p_net );
+
+  //add_default_o2_reactions_to_net( p_net );
+
+  add_default_co_reactions_to_net( p_net );
+
+  add_default_single_rate_reactions_to_net( p_net );
+
+  //add_default_carbon_condensation_reactions_to_net( p_net );
 
   Libnucnet__Net__writeToXmlFile( 
     p_net,

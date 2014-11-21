@@ -40,6 +40,7 @@
 #define D_REG_Y        0.15         // Abundance change regulator for dt update 
 #define D_Y_MIN_DT     1.e-10       // Smallest y for dt update
 #define S_SOLVER       nnt::s_ARROW // Solver type: ARROW or GSL
+#define S_WIDTH        "1"          // Solver type: ARROW or GSL
 
 void
 my_print_abundances( nnt::Zone & );
@@ -148,7 +149,7 @@ int main( int argc, char * argv[] ) {
 
     zone.updateProperty( nnt::s_SOLVER, nnt::s_ARROW );
 
-    zone.updateProperty( nnt::s_ARROW_WIDTH, "1" );
+    zone.updateProperty( nnt::s_ARROW_WIDTH, S_WIDTH );
 
   }
 
@@ -257,14 +258,7 @@ int main( int argc, char * argv[] ) {
         NULL
       );
 
-      if( 
-        zone.hasProperty( "idl print" ) &&
-        zone.getProperty( "idl print" ) == "yes"
-      ) {
-        my_print_abundances( zone );
-      } else {
-        zone.printAbundances();
-      }
+      my_print_abundances( zone );
 
       zone.updateProperty(
         nnt::s_YE,
@@ -347,14 +341,20 @@ my_print_abundances(
 )
 {
 
+  if( 
+    !zone.hasProperty( "idl print" ) ||
+    zone.getProperty( "idl print" ) != "yes"
+  ) {
+    zone.printAbundances();
+    return;
+  }
+
+
   double d_t, d_dt, d_t9, d_rho;
 
   d_t = boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) );
-
   d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
-
   d_t9 = boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) );
-
   d_rho = boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) );
 
   printf(
