@@ -186,6 +186,8 @@ initialize_zone( nnt::Zone& zone, char ** argv )
     zone.getProperty( nnt::s_T9_0 )
   );
 
+  update_He_abundances( zone );
+
 }
 
 //##############################################################################
@@ -287,6 +289,64 @@ set_zone( Libnucnet * p_nucnet, nnt::Zone& zone, char ** argv )
   );
 
   return 1;
+
+}
+
+void 
+update_He_abundances( nnt::Zone& zone )
+{
+
+  //============================================================================
+  // Fix He and He+ abundances.
+  // Atomic number A for He is 4 in Libnucnet.
+  // When Libnucnet calculates the abundances, it uses mass fraction divided
+  // by A. While here the mass fraction is really atom fraction, that is
+  // the atom number in this kind of molecule divided by the total atoms number.
+  // The code is designed to only have C and/or O in the molecules.
+  // Z is C number and N is O number.
+  // A is the sum of C and O number in a molecule.
+  // So the abundance here is the atom fraction divided by the atom in the
+  // molecule, which is the number of molecule per atom.
+  // For He and He+, there is only one atom in the molecule, so we need to
+  // multiply 4 back to its abundance.
+  //============================================================================
+
+  const char * species_list[2] = {"he4g","he4+"}; 
+
+  BOOST_FOREACH( const char * species, species_list )
+  {
+ 
+    if( 
+      Libnucnet__Nuc__getSpeciesByName(
+        Libnucnet__Net__getNuc(
+          Libnucnet__Zone__getNet( zone.getNucnetZone() )
+        ),
+        species
+      )
+    ) {
+   
+      Libnucnet__Zone__updateSpeciesAbundance(
+        zone.getNucnetZone(),
+        Libnucnet__Nuc__getSpeciesByName(
+          Libnucnet__Net__getNuc(
+            Libnucnet__Zone__getNet( zone.getNucnetZone() )
+          ),
+          species
+        ),
+        Libnucnet__Zone__getSpeciesAbundance(
+          zone.getNucnetZone(),
+          Libnucnet__Nuc__getSpeciesByName(
+            Libnucnet__Net__getNuc(
+              Libnucnet__Zone__getNet( zone.getNucnetZone() )
+            ),
+            species
+          )
+        ) * 4.
+      );
+
+    }
+
+  }
 
 }
 

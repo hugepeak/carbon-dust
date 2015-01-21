@@ -60,4 +60,6 @@ int set_zone( Libnucnet *, nnt::Zone&, char ** );
 
 void get_trajectory_data( char * );
 
+void update_He_abundances( nnt::Zone & );
+
 #endif // CARBON_HYDRO
