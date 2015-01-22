@@ -786,7 +786,13 @@ carbon_compute_Ya_callback(
 
   nnt::Zone zone = *(nnt::Zone *) p_data;
 
-  double d_species_nucleon_number =
+  double d_species_nucleon_number;
+
+  //============================================================================
+  // For Carbon and Oxygen molecules.
+  //============================================================================
+
+  d_species_nucleon_number =
     (
       boost::lexical_cast<double>(
         Libnucnet__Species__getZ( p_species )
@@ -797,7 +803,19 @@ carbon_compute_Ya_callback(
         Libnucnet__Species__getZ( p_species )
       ) * 16.
     );
+
+  //============================================================================
+  // Set nucleon number in He to 4
+  //============================================================================
+
+  const char * species_list[] = {"he4g","he4+"};
  
+  BOOST_FOREACH( const char * s_species, species_list ) {
+    if( strcmp( Libnucnet__Species__getName( p_species ), s_species ) == 0 ) {
+      d_species_nucleon_number = 4.;
+    }
+  }
+
   double d_nucleon_number = 
     boost::lexical_cast<double>( 
       zone.getProperty( S_NUCLEON_NUMBER_PER_ATOM ) 
