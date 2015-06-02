@@ -25,8 +25,6 @@
 
 #include <Libnucnet.h>
 
-#include "nnt/write_output_xml.h"
-
 #include "carbon_evolve.h"
 #include "carbon_rate_functions.h"
 #include "carbon_hydro.h"
@@ -116,18 +114,18 @@ int main( int argc, char * argv[] ) {
   //============================================================================
 
   if( zone.hasProperty( nnt::s_DTIME ) )
-    d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
+    d_dt = zone.getProperty<double>( nnt::s_DTIME );
   else
   {
     d_dt = D_DT0;
     zone.updateProperty(
       nnt::s_DTIME,
-      boost::lexical_cast<std::string>( d_dt )
+      d_dt
     );
   }
 
   if( zone.hasProperty( nnt::s_TIME ) )
-    d_t = boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) );
+    d_t = zone.getProperty<double>( nnt::s_TIME );
   else
   {
     d_t = 0;
@@ -144,7 +142,8 @@ int main( int argc, char * argv[] ) {
   initialize_zone( zone, argv );
 
   if( 
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
+    zone.hasProperty( "run bin" ) &&
+    zone.getProperty<std::string>( "run bin" ) == "yes" 
   )
     initialize_bin( zone );
 
@@ -174,7 +173,7 @@ int main( int argc, char * argv[] ) {
   // Create output.
   //============================================================================
 
-  p_my_output = nnt::create_output( p_my_nucnet );
+  p_my_output = nnt::create_network_copy( p_my_nucnet );
 
   Libnucnet__setZoneCompareFunction(
     p_my_output,
@@ -201,11 +200,11 @@ int main( int argc, char * argv[] ) {
           Libnucnet__Zone__getNet( zone.getNucnetZone() )
         )
       ) +
-      boost::lexical_cast<int>( zone.getProperty( "bin number" ) )
+      zone.getProperty<int>( "bin number" )
       << std::endl;
 
   while ( 
-    d_t < boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
+    d_t < zone.getProperty<double>( nnt::s_TEND )
   )
   {
 
@@ -232,12 +231,12 @@ int main( int argc, char * argv[] ) {
     update_zone_properties( zone );
 
     if( 
-      zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
+      zone.hasProperty( "run bin" ) &&
+      zone.getProperty<std::string>( "run bin" ) == "yes" 
     )
       update_bin_properties( zone );
 
-    double d_rho = 
-      boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) );
+    double d_rho = zone.getProperty<double>( nnt::s_RHO );
 
     if( d_rho < 0. ) {
       std::cout << "rho is " << d_rho << std::endl;
@@ -256,8 +255,8 @@ int main( int argc, char * argv[] ) {
 
     if(
       i_step % 
-        boost::lexical_cast<int>( zone.getProperty( nnt::s_STEPS ) ) == 0 ||
-      d_t >= boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
+        zone.getProperty<int>( nnt::s_STEPS ) == 0 ||
+      d_t >= zone.getProperty<double>( nnt::s_TEND )
     )
     {
 
@@ -271,11 +270,11 @@ int main( int argc, char * argv[] ) {
 
       if( 
         zone.hasProperty( "idl print" ) &&
-        zone.getProperty( "idl print" ) == "yes"
+        zone.getProperty<std::string>( "idl print" ) == "yes"
       ) {
         my_print_abundances( zone );
       } else {
-        zone.printAbundances();
+        nnt::print_zone_abundances( zone );
       }
 
       zone.updateProperty(
@@ -293,7 +292,7 @@ int main( int argc, char * argv[] ) {
     // Update timestep.
     //==========================================================================
 
-    d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
+    d_dt = zone.getProperty<double>( nnt::s_DTIME );
 
     Libnucnet__Zone__updateTimeStep(
       zone.getNucnetZone(),
@@ -304,20 +303,19 @@ int main( int argc, char * argv[] ) {
     );
 
     if( 
-      zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
+      zone.hasProperty( "run bin" ) &&
+      zone.getProperty<std::string>( "run bin" ) == "yes" 
     )
       bin_update_timestep( zone, d_dt, D_REG_T, D_REG_Y, D_Y_MIN_DT );
 
-    if( boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) > 10. )
-      zone.normalizeAbundances();
+    if( zone.getProperty<double>( nnt::s_T9 ) > 10. )
+      nnt::normalize_zone_abundances( zone );
 
     if(
-      d_t + d_dt >
-        boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
+      d_t + d_dt > zone.getProperty<double>( nnt::s_TEND )
     )
     {
-      d_dt =
-        boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) ) - d_t;
+      d_dt = zone.getProperty<double>( nnt::s_TEND ) - d_t;
     }
 
     i_step++;
@@ -335,7 +333,7 @@ int main( int argc, char * argv[] ) {
 
   Libnucnet__writeToXmlFile(
     p_my_output,
-    zone.getProperty( S_OUTPUT_XML_FILE ).c_str()
+    zone.getProperty<std::string>( S_OUTPUT_XML_FILE ).c_str()
   );
 
   //============================================================================
@@ -361,13 +359,13 @@ my_print_abundances(
 
   double d_t, d_dt, d_t9, d_rho;
 
-  d_t = boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) );
+  d_t = zone.getProperty<double>( nnt::s_TIME );
 
-  d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
+  d_dt = zone.getProperty<double>( nnt::s_DTIME );
 
-  d_t9 = boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) );
+  d_t9 = zone.getProperty<double>( nnt::s_T9 );
 
-  d_rho = boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) );
+  d_rho = zone.getProperty<double>( nnt::s_RHO );
 
   printf(
     "t = %10.4e\ndt = %10.4e\nt9 = %10.4e\nrho (g/cc) = %10.4e\n\n",
@@ -396,7 +394,8 @@ my_print_abundances(
   );
 
   if( 
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
+    zone.hasProperty( "run bin" ) &&
+    zone.getProperty<std::string>( "run bin" ) == "yes" 
   ) {
 
     print_bin_abundances( zone );
@@ -531,10 +530,8 @@ create_generic_net(
   unsigned i_network_end;
   unsigned i_photon_end;
 
-  i_network_end = 
-    boost::lexical_cast<unsigned>( zone.getProperty( S_NETWORK_END ) ); 
-  i_photon_end = 
-    boost::lexical_cast<unsigned>( zone.getProperty( S_PHOTON_END ) ); 
+  i_network_end = zone.getProperty<unsigned int>( S_NETWORK_END ); 
+  i_photon_end = zone.getProperty<unsigned int>( S_PHOTON_END ); 
 
   add_generic_molecules_to_nuc(
     Libnucnet__Net__getNuc( 

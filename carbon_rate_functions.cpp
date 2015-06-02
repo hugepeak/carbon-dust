@@ -266,10 +266,9 @@ arrhenius_inverse_rate_function(
 
   double d_reduced_mass = 
     1. /
-    boost::lexical_cast<double>( 
-      zone.getProperty( S_INVERSE_REDUCED_MASS) 
-    ) * 
-    GSL_CONST_CGSM_UNIFIED_ATOMIC_MASS;
+    zone.getProperty<double>( S_INVERSE_REDUCED_MASS) 
+      * 
+      GSL_CONST_CGSM_UNIFIED_ATOMIC_MASS;
 
   d_tau *=
     pow(
@@ -307,7 +306,7 @@ compute_reduced_mass(
   nnt::Zone zone = *(nnt::Zone *) p_data;
 
   double d_inverse_reduced_mass =
-    boost::lexical_cast<double>( zone.getProperty( S_INVERSE_REDUCED_MASS ) );
+    zone.getProperty<double>( S_INVERSE_REDUCED_MASS );
 
   d_inverse_reduced_mass +=
     1. /
@@ -353,8 +352,7 @@ compute_bond_energy(
 
   nnt::Zone zone = *(nnt::Zone *) p_data;
 
-  double d_bond_energy =
-    boost::lexical_cast<double>( zone.getProperty( "bond energy" ) );
+  double d_bond_energy = zone.getProperty<double>( "bond energy" );
 
   d_bond_energy *=
     ( 
@@ -425,8 +423,7 @@ carbon_condensation_rate_function(
     p_data
   );
 
-  double d_carbon_number =
-      boost::lexical_cast<double>( zone.getProperty( S_CARBON_NUMBER ) );
+  double d_carbon_number = zone.getProperty<double>( S_CARBON_NUMBER );
  
   d_rate = 
     pow( 
@@ -478,10 +475,7 @@ carbon_number_callback(
     );
 
   if( 
-    i_Z >
-    boost::lexical_cast<unsigned int>( 
-      zone.getProperty( S_CARBON_NUMBER )
-    )
+    i_Z > zone.getProperty<unsigned int>( S_CARBON_NUMBER )
   )
     zone.updateProperty( 
       S_CARBON_NUMBER, 
@@ -541,8 +535,7 @@ carbon_condensation_inverse_rate_function(
     &zone
   );
 
-  double d_bond_energy = 
-    boost::lexical_cast<double>( zone.getProperty( "bond energy" ) );
+  double d_bond_energy = zone.getProperty<double>( "bond energy" );
 
   double d_condense_rate =
     carbon_condensation_rate_function( p_reaction, d_t9, p_data );
@@ -566,10 +559,9 @@ carbon_condensation_inverse_rate_function(
 
   double d_reduced_mass = 
     1. /
-    boost::lexical_cast<double>( 
-      zone.getProperty( S_INVERSE_REDUCED_MASS) 
-    ) * 
-    GSL_CONST_CGSM_UNIFIED_ATOMIC_MASS;
+    zone.getProperty<double>( S_INVERSE_REDUCED_MASS) 
+      * 
+      GSL_CONST_CGSM_UNIFIED_ATOMIC_MASS;
 
   d_tau *=
     pow(
@@ -637,7 +629,7 @@ compton_electron_rate_function(
     atof( s_value ) *
     exp(
       (
-        boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) ) -
+        zone.getProperty<double>( nnt::s_TIME ) -
         1.e6
       ) /
       9.59e6 
@@ -751,7 +743,7 @@ carbon_compute_Ya(
 {
 
   if( zone.hasProperty( S_YA ) )
-    return boost::lexical_cast<double>( zone.getProperty( S_YA ) );
+    return zone.getProperty<double>( S_YA );
 
   zone.updateProperty( S_NUCLEON_NUMBER_PER_ATOM, "0" );
 
@@ -763,9 +755,7 @@ carbon_compute_Ya(
 
   double d_ya =
     1. / 
-    boost::lexical_cast<double>( 
-      zone.getProperty( S_NUCLEON_NUMBER_PER_ATOM ) 
-    ); 
+      zone.getProperty<double>( S_NUCLEON_NUMBER_PER_ATOM ); 
 
   zone.updateProperty( S_YA, boost::lexical_cast<std::string>( d_ya ) );
 
@@ -817,9 +807,7 @@ carbon_compute_Ya_callback(
   }
 
   double d_nucleon_number = 
-    boost::lexical_cast<double>( 
-      zone.getProperty( S_NUCLEON_NUMBER_PER_ATOM ) 
-    );
+      zone.getProperty<double>( S_NUCLEON_NUMBER_PER_ATOM );
 
   d_nucleon_number +=
     Libnucnet__Zone__getSpeciesAbundance(

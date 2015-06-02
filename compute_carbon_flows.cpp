@@ -24,7 +24,6 @@
 #include "nnt/iter.h"
 #include "nnt/string_defs.h"
 #include "nnt/two_d_weak_rates.h"
-#include "nnt/weak_detailed_balance.h"
 
 #include "carbon_flow_utilities.h"
 #include "carbon_rate_functions.h"
@@ -134,14 +133,14 @@ int main( int argc, char * argv[] ) {
 
     if( zone.hasProperty( nnt::s_TIME ) )
       std::cout <<
-        "time(s) = " << zone.getProperty( nnt::s_TIME ) << " " <<
-        "t9 = " << zone.getProperty( nnt::s_T9 ) << " " <<
-        "rho(g/cc) = " << zone.getProperty( nnt::s_RHO ) << " " <<
+        "time(s) = " << zone.getProperty<std::string>( nnt::s_TIME ) << " " <<
+        "t9 = " << zone.getProperty<std::string>( nnt::s_T9 ) << " " <<
+        "rho(g/cc) = " << zone.getProperty<std::string>( nnt::s_RHO ) << " " <<
         std::endl;
     else
       std::cout <<
-        "t9 = " << zone.getProperty( nnt::s_T9 ) << " " <<
-        "rho(g/cc) = " << zone.getProperty( nnt::s_RHO ) << " " <<
+        "t9 = " << zone.getProperty<std::string>( nnt::s_T9 ) << " " <<
+        "rho(g/cc) = " << zone.getProperty<std::string>( nnt::s_RHO ) << " " <<
         std::endl;
 
     fprintf( stdout, "\n\t\t\tReaction\t\t\t  Forward     Reverse     Net\n" );

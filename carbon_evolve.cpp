@@ -44,7 +44,7 @@ evolve(
   // Get timestep. 
   //============================================================================
 
-  d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
+  d_dt = zone.getProperty<double>( nnt::s_DTIME );
 
   //============================================================================
   // Save the old abundances.
@@ -59,7 +59,8 @@ evolve(
   std::vector<double> v_bin_old;
 
   if( 
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
+    zone.hasProperty( "run bin" ) &&
+    zone.getProperty<std::string>( "run bin" ) == "yes"
   )
     v_bin_old = get_bin_abundances( zone );
 
@@ -82,7 +83,7 @@ evolve(
 
     WnMatrix__addValueToDiagonals(
       p_matrix,
-      1.0 / boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+      1.0 / zone.getProperty<double>( nnt::s_DTIME )
     );
 
     //--------------------------------------------------------------------------
@@ -101,7 +102,8 @@ evolve(
     //--------------------------------------------------------------------------
 
     if( 
-      zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
+      zone.hasProperty( "run bin" ) &&
+      zone.getProperty<std::string>( "run bin" ) == "yes"
     ) 
       update_bin_rates( zone, p_matrix, p_rhs );
 
@@ -134,7 +136,8 @@ evolve(
     //--------------------------------------------------------------------------
 
     if( 
-      zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
+      zone.hasProperty( "run bin" ) &&
+      zone.getProperty<std::string>( "run bin" ) == "yes"
     )
     {
  
@@ -180,14 +183,15 @@ evolve(
   //==========================================================================
 
   if( 
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes"
+    zone.hasProperty( "run bin" ) &&
+    zone.getProperty<std::string>( "run bin" ) == "yes"
   ) {
  
     std::vector<double> v_work = get_bin_abundances( zone );
 
     for( 
       size_t i = 1; 
-      i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) );
+      i <= zone.getProperty<size_t>( "bin number" );
       i++ 
     ) 
     {
@@ -229,8 +233,8 @@ get_evolution_matrix_and_vector( nnt::Zone& zone )
 
   Libnucnet__Zone__computeRates(
     zone.getNucnetZone(),
-    boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ),
-    boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) )
+    zone.getProperty<double>( nnt::s_T9 ),
+    zone.getProperty<double>( nnt::s_RHO )
   ); 
 
   //--------------------------------------------------------------------------

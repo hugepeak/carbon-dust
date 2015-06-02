@@ -1,12 +1,14 @@
   <zone_data>
     <zone>
       <optional_properties>
-        <property name="tend">3.e8</property>
+        <property name="tend">3.e9</property>
         <property name="tau">5.472e6</property>
+<!--        <property name="tau">7.e7</property>  -->
         <property name="time">5.472e6</property>
         <property name="dt">1.e-2</property>
         <property name="t9_0">6.e-6</property>
-        <property name="rho_0">2.857e-13</property>
+<!--        <property name="rho_0">2.857e-13</property> -->
+        <property name="rho_0">4.857e-12</property>
         <property name="steps">1</property>
         <property name="munuekT">-inf</property>
         <property name="idl print">no</property>
@@ -15,6 +17,8 @@
         <property name="photon end">8</property>
         <property name="bin factor">2</property>
         <property name="bin number">50</property>
+        <property name="total atom number">1.e18</property>
+        <property name="sigma v">1.e-10</property>
       </optional_properties>
       <mass_fractions>
         <nuclide name="n">

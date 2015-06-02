@@ -30,7 +30,6 @@
 #include "nnt/auxiliary.h"
 #include "nnt/string_defs.h"
 #include "nnt/iter.h"
-#include "nnt/weak_detailed_balance.h"
 
 double
 compute_flow_for_reaction( nnt::Zone&, Libnucnet__Reaction * );

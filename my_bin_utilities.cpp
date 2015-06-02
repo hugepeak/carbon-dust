@@ -32,7 +32,7 @@ update_bin_rates(
 )
 {
 
-  if( zone.getProperty( nnt::s_SOLVER ) != nnt::s_ARROW ) {
+  if( zone.getProperty<std::string>( nnt::s_SOLVER ) != nnt::s_ARROW ) {
     std::cerr << "Only work for arrow solver for now" << std::endl;
     exit( EXIT_FAILURE );
   }
@@ -44,12 +44,9 @@ update_bin_rates(
   // Get parameters.
   //==========================================================================
     
-  size_t i_bin_start =
-    boost::lexical_cast<size_t>( zone.getProperty( "network end" ) ); 
-  size_t i_bin_size = 
-    boost::lexical_cast<size_t>( zone.getProperty( "bin factor" ) ); 
-  size_t i_bin_number =
-    boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) ); 
+  size_t i_bin_start = zone.getProperty<size_t>( "network end" ); 
+  size_t i_bin_size = zone.getProperty<size_t>( "bin factor" ); 
+  size_t i_bin_number = zone.getProperty<size_t>( "bin number" ); 
 
   if( i_bin_number == 0 )
     return;
@@ -61,7 +58,7 @@ update_bin_rates(
 
   double d_na =
     carbon_compute_Ya( zone ) *
-    boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) ) *
+    zone.getProperty<double>( nnt::s_RHO ) *
     GSL_CONST_NUM_AVOGADRO;
 
   size_t i_size = WnMatrix__get_gsl_vector_size( p_rhs );
@@ -159,10 +156,8 @@ update_bin_rates(
       i_size,
       i_size,
       d_rate * 
-        boost::lexical_cast<double>(
-          zone.getProperty( 
-            "bin abundance", boost::lexical_cast<std::string>( i ) 
-          )
+        zone.getProperty<double>( 
+          "bin abundance", boost::lexical_cast<std::string>( i ) 
         ) *
         ( d_end - d_begin )
     );
@@ -172,10 +167,8 @@ update_bin_rates(
       i_size - 1,
       gsl_vector_get( p_rhs, i_size - 1 ) -
         d_rate *
-        boost::lexical_cast<double>(
-          zone.getProperty( 
-            "bin abundance", boost::lexical_cast<std::string>( i ) 
-          )
+        zone.getProperty<double>( 
+          "bin abundance", boost::lexical_cast<std::string>( i ) 
         ) *
         gsl_vector_get( p_abunds, i_size - 1 ) *
         ( d_end - d_begin )
@@ -206,7 +199,7 @@ compute_effective_rate(
 
   if( 
     zone.hasProperty( S_BIN_EFFECTIVE_REVERSE ) &&
-    ( zone.getProperty( S_BIN_EFFECTIVE_REVERSE ) == "yes" )
+    ( zone.getProperty<std::string>( S_BIN_EFFECTIVE_REVERSE ) == "yes" )
   )
   {
 
@@ -236,7 +229,7 @@ compute_effective_rate(
         (
           2. * M_PI * d_reduced_mass *
           GSL_CONST_CGSM_BOLTZMANN *
-          boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) *
+          zone.getProperty<double>( nnt::s_T9 ) *
           GSL_CONST_NUM_GIGA
         ),
         -1.5
@@ -245,7 +238,7 @@ compute_effective_rate(
         -5. * GSL_CONST_CGSM_ELECTRON_VOLT /
         (
           GSL_CONST_CGSM_BOLTZMANN *
-          boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) *
+          zone.getProperty<double>( nnt::s_T9 ) *
           GSL_CONST_NUM_GIGA
         )
       );
@@ -264,7 +257,7 @@ compute_effective_rate(
     if( zone.hasProperty( "k1" ) ) {
   
       return
-        boost::lexical_cast<double>( zone.getProperty( "k1" ) ) /
+        zone.getProperty<double>( "k1" ) /
         (
           3. *
           ( pow( d_end, 1./3. ) - pow( d_begin, 1./3. ) )
@@ -296,19 +289,16 @@ evolve_bin(
 )
 {
 
-  if( zone.getProperty( nnt::s_SOLVER ) != nnt::s_ARROW ) {
+  if( zone.getProperty<std::string>( nnt::s_SOLVER ) != nnt::s_ARROW ) {
     std::cerr << "Only work for arrow solver for now" << std::endl;
     exit( EXIT_FAILURE );
   }
 
   double d_begin, d_end, d_rate_last;
 
-  size_t i_bin_start =
-    boost::lexical_cast<size_t>( zone.getProperty( "network end" ) ); 
-  size_t i_bin_size = 
-    boost::lexical_cast<size_t>( zone.getProperty( "bin factor" ) ); 
-  size_t i_bin_number =
-    boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) ); 
+  size_t i_bin_start = zone.getProperty<size_t>( "network end" ); 
+  size_t i_bin_size = zone.getProperty<size_t>( "bin factor" ); 
+  size_t i_bin_number = zone.getProperty<size_t>( "bin number" ); 
 
   if( i_bin_number == 0 )
     return;
@@ -318,7 +308,7 @@ evolve_bin(
 
   double d_na =
     carbon_compute_Ya( zone ) *
-    boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) ) *
+    zone.getProperty<double>( nnt::s_RHO ) *
     GSL_CONST_NUM_AVOGADRO;
 
   size_t i_size = WnMatrix__get_gsl_vector_size( p_abunds );
@@ -364,7 +354,7 @@ evolve_bin(
       d_rate_last *
       gsl_vector_get( p_abunds, i_size - 2 ) *
       gsl_vector_get( p_abunds, i_size - 1 ) *
-      boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+      zone.getProperty<double>( nnt::s_DTIME )
       +
       v_bin_old[0];
 
@@ -375,7 +365,7 @@ evolve_bin(
         d_rate_last *
         gsl_vector_get( p_abunds, i_size - 2 ) *
         gsl_vector_get( p_abunds, i_size - 1 ) *
-        boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+        zone.getProperty<double>( nnt::s_DTIME )
         +
         v_bin_old[0]
       )
@@ -384,7 +374,7 @@ evolve_bin(
         1. +
         v_rates[0] *     
         gsl_vector_get( p_abunds, i_size - 1 ) *
-        boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+        zone.getProperty<double>( nnt::s_DTIME )
       );
       
     for( size_t i = 1; i < i_bin_number - 1; i++ ) {
@@ -394,7 +384,7 @@ evolve_bin(
           v_rates[i-1] *
           v_new[i-1] *
           gsl_vector_get( p_abunds, i_size - 1 ) *
-          boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+          zone.getProperty<double>( nnt::s_DTIME )
           +
           v_bin_old[i]
         )
@@ -403,7 +393,7 @@ evolve_bin(
           1. +
           v_rates[i] *     
           gsl_vector_get( p_abunds, i_size - 1 ) *
-          boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+          zone.getProperty<double>( nnt::s_DTIME )
         );
     
     }
@@ -412,7 +402,7 @@ evolve_bin(
       v_rates[i_bin_number - 2] *
       v_new[i_bin_number - 2] *
       gsl_vector_get( p_abunds, i_size - 1 ) *
-      boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) )
+      zone.getProperty<double>( nnt::s_DTIME )
       +
       v_bin_old[i_bin_number - 1];
 
@@ -463,33 +453,27 @@ check_bin_change(
 
   for(
     size_t i = 1;
-    i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) );
+    i <= zone.getProperty<size_t>( "bin number" );
     i++
   )
   {
 
     if(
-      boost::lexical_cast<double>( 
-        zone.getProperty( 
-          "bin abundance", boost::lexical_cast<std::string>( i ) 
-        )
+      zone.getProperty<double>( 
+        "bin abundance", boost::lexical_cast<std::string>( i ) 
       ) > 1.e-10
     )
     {
 
       d_checkT = 
         fabs(
-          boost::lexical_cast<double>( 
-            zone.getProperty( 
-              "bin abundance change", 
-              boost::lexical_cast<std::string>( i ) 
-            )
+          zone.getProperty<double>( 
+            "bin abundance change", 
+            boost::lexical_cast<std::string>( i ) 
           ) /   
-          boost::lexical_cast<double>( 
-            zone.getProperty( 
-              "bin abundance", 
-              boost::lexical_cast<std::string>( i ) 
-            )
+          zone.getProperty<double>( 
+            "bin abundance", 
+            boost::lexical_cast<std::string>( i ) 
           ) 
         ); 
 
@@ -516,7 +500,7 @@ initialize_bin(
 
   for(
     unsigned i = 1;
-    i <= boost::lexical_cast<unsigned>( zone.getProperty( "bin number" ) );
+    i <= zone.getProperty<unsigned int>( "bin number" );
     i++
   )
   {
@@ -574,7 +558,7 @@ compute_k1(
     sqrt(
       3. *
       GSL_CONST_CGSM_BOLTZMANN *
-      boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) *
+      zone.getProperty<double>( nnt::s_T9 ) *
       GSL_CONST_NUM_GIGA /
       (
         d_A / GSL_CONST_NUM_AVOGADRO
@@ -633,21 +617,19 @@ compute_bin_sum(
 
   for(
     size_t i = 1;
-    i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) );
+    i <= zone.getProperty<size_t>( "bin number" );
     i++
   )
   {
 
     d_result +=
-      boost::lexical_cast<double>( zone.getProperty( "network end" ) ) *
+      zone.getProperty<double>( "network end" ) *
       pow(
-        boost::lexical_cast<double>( zone.getProperty( "bin factor" ) ),
+        zone.getProperty<double>( "bin factor" ),
         (double) i
       ) *
-      boost::lexical_cast<double>( 
-        zone.getProperty( 
-          "bin abundance", boost::lexical_cast<std::string>( i ) 
-        )
+      zone.getProperty<double>( 
+        "bin abundance", boost::lexical_cast<std::string>( i ) 
       );
 
   }
@@ -668,39 +650,35 @@ print_bin_abundances(
 
   for(
     size_t i = 1;
-    i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) );
+    i <= zone.getProperty<size_t>( "bin number" );
     i++
   )
   {
 
     printf( "%20lu%20lu%16.6e%16.6e\n",
       (unsigned long)( 
-        boost::lexical_cast<double>( zone.getProperty( "network end" ) ) *
+        zone.getProperty<double>( "network end" ) *
         pow(
-          boost::lexical_cast<double>( zone.getProperty( "bin factor" ) ),
+          zone.getProperty<double>( "bin factor" ),
           (double) i - 1.
         ) + 1.
       ),
       (unsigned long)(
-        boost::lexical_cast<double>( zone.getProperty( "network end" ) ) *
+        zone.getProperty<double>( "network end" ) *
         pow(
-          boost::lexical_cast<double>( zone.getProperty( "bin factor" ) ),
+          zone.getProperty<double>( "bin factor" ),
           (double) i
         )
       ),
-      boost::lexical_cast<double>( 
-        zone.getProperty( 
-          "bin abundance", boost::lexical_cast<std::string>( i ) 
-        )
+      zone.getProperty<double>( 
+        "bin abundance", boost::lexical_cast<std::string>( i ) 
       ),
-      boost::lexical_cast<double>( 
-        zone.getProperty( 
-          "bin abundance", boost::lexical_cast<std::string>( i ) 
-        )
+      zone.getProperty<double>( 
+        "bin abundance", boost::lexical_cast<std::string>( i ) 
       ) *
-        boost::lexical_cast<double>( zone.getProperty( "network end" ) ) *
+        zone.getProperty<double>( "network end" ) *
         pow(
-          boost::lexical_cast<double>( zone.getProperty( "bin factor" ) ),
+          zone.getProperty<double>( "bin factor" ),
           (double) i
         )
     );
@@ -725,17 +703,15 @@ get_bin_abundances(
 
   for( 
     size_t i = 1; 
-    i <= boost::lexical_cast<size_t>( zone.getProperty( "bin number" ) ); 
+    i <= zone.getProperty<size_t>( "bin number" ); 
     i++ 
   ) 
   {
 
     v_abunds.push_back( 
-      boost::lexical_cast<double>(
-        zone.getProperty( 
-          "bin abundance", 
-          boost::lexical_cast<std::string>( i ) 
-        )
+      zone.getProperty<double>( 
+        "bin abundance", 
+        boost::lexical_cast<std::string>( i ) 
       )
     );
 

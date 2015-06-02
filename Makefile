@@ -27,7 +27,7 @@
 #//!
 #///////////////////////////////////////////////////////////////////////////////
 
-SVNURL = http://svn.code.sf.net/p/nucnet-tools/code/trunk
+SVNURL = http://svn.code.sf.net/p/nucnet-tools/code/branches/string-branch
 
 NUCNET_TARGET = ../nucnet-tools-code
 VENDORDIR = $(NUCNET_TARGET)/vendor
@@ -39,6 +39,8 @@ MY_USER_DIR = $(NUCNET_TARGET)/my_user
 BUILD_DIR = $(NUCNET_TARGET)/build
 
 USE_SPARSE_SOLVER = no
+
+GC=h5c++
 
 #///////////////////////////////////////////////////////////////////////////////
 # End of lines to be edited.
@@ -116,6 +118,7 @@ $(CARBON_OBJ): $(OBJDIR)/%.o: %.cpp
 CARBON_OBJS = $(WN_OBJ)		\
                $(NNT_OBJ)	\
                $(SOLVE_OBJ)	\
+               $(HD5_OBJ)       \
                $(CARBON_OBJ)	\
                $(USER_OBJ)
 

@@ -24,12 +24,11 @@
 
 #include <Libnucnet.h>
 
-#include "nnt/write_output_xml.h"
+#include "user/hdf5_routines.h"
 
 #include "carbon_evolve.h"
 #include "carbon_rate_functions.h"
 #include "carbon_hydro.h"
-#include "my_bin_utilities.h"
 
 //##############################################################################
 // Define some parameters.
@@ -42,410 +41,149 @@
 #define S_SOLVER       nnt::s_ARROW // Solver type: ARROW or GSL
 #define S_WIDTH        "1"          // Solver type: ARROW or GSL
 
-void
-my_print_abundances( nnt::Zone & );
+#define S_TOTAL_ATOM_NUMBER    "total atom number"
+#define S_XSEC                 "sigma v"
+#define S_NUMBER_GRAINS        "number of grains"
 
-int
-print_abundance( Libnucnet__Species *, Libnucnet__Zone * );
-
-int
-my_species_sort_function(
-  const Libnucnet__Species *, const Libnucnet__Species *
-);
+#define I_MAX          8
 
 //##############################################################################
-// main().
+// The grain.
 //##############################################################################
 
-int main( int argc, char * argv[] ) {
+struct Grain
+{
 
-  int i_step, i_label = 0;
-  double d_t, d_dt;
-  Libnucnet *p_my_nucnet = NULL, *p_my_output;
-  nnt::Zone zone;
+  double Nprev, Nnext;
+  double FormationTime;
 
-  //============================================================================
-  // Get the nucnet.
-  //============================================================================
+  Grain( double _t, double _N ) :
+    Nprev( _N ), Nnext( _N ), FormationTime( _t ) {}
 
-  p_my_nucnet = get_nucnet( argc, argv );
+};
 
-  //============================================================================
-  // Get the zone.
-  //============================================================================
-
-  if( !set_zone( p_my_nucnet, zone, argv ) )
-  {
-    std::cerr << "Couldn't set zone."  << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  //============================================================================
-  // Register rate functions.
-  //============================================================================
-
-  register_my_rate_functions(
-    Libnucnet__Net__getReac( Libnucnet__getNet( p_my_nucnet ) )
-  );
-
-  //============================================================================
-  // Update user rate data. 
-  //============================================================================
-
-  update_my_rate_functions_data( zone );
-
-  //============================================================================
-  // Initialize time.
-  //============================================================================
-
-  if( zone.hasProperty( nnt::s_DTIME ) )
-    d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
-  else
-  {
-    d_dt = D_DT0;
-    zone.updateProperty(
-      nnt::s_DTIME,
-      boost::lexical_cast<std::string>( d_dt )
-    );
-  }
-
-  if( zone.hasProperty( nnt::s_TIME ) )
-    d_t = boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) );
-  else
-  {
-    d_t = 0;
-    zone.updateProperty(
-      nnt::s_TIME,
-      boost::lexical_cast<std::string>( d_t )
-    );
-  }
-
-  //============================================================================
-  // Initialize zone.
-  //============================================================================
-
-  initialize_zone( zone, argv );
-
-  if( 
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
-  )
-    initialize_bin( zone );
-
-  //============================================================================
-  // Sort the nuclei if using the arrow solver.
-  //============================================================================
-
-  if( S_SOLVER == nnt::s_ARROW )
-  {
-
-    Libnucnet__Nuc__setSpeciesCompareFunction(
-      Libnucnet__Net__getNuc( Libnucnet__getNet( p_my_nucnet ) ),
-      (Libnucnet__Species__compare_function) my_species_sort_function
-    );
-
-    Libnucnet__Nuc__sortSpecies(
-      Libnucnet__Net__getNuc( Libnucnet__getNet( p_my_nucnet ) ) 
-    );
-
-    zone.updateProperty( nnt::s_SOLVER, nnt::s_ARROW );
-
-    zone.updateProperty( nnt::s_ARROW_WIDTH, S_WIDTH );
-
-  }
-
-  //============================================================================
-  // Create output.
-  //============================================================================
-
-  p_my_output = nnt::create_output( p_my_nucnet );
-
-  Libnucnet__setZoneCompareFunction(
-    p_my_output,
-    (Libnucnet__Zone__compare_function) nnt::zone_compare_by_first_label
-  );
-
-  //============================================================================
-  // Toggle off the reverse rates for reactions from detailed balance. 
-  //============================================================================
-
-  Libnucnet__Zone__toggleReverseRateDetailedBalance(
-    zone.getNucnetZone(), "off"
-  );
-
-  //============================================================================
-  // Evolve network while t < final t.
-  //============================================================================
-
-  i_step = 0;
-
-  if( 
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
-  ) {
-
-    std::cout << "species number = " <<
-      Libnucnet__Nuc__getNumberOfSpecies(
-        Libnucnet__Net__getNuc(
-          Libnucnet__Zone__getNet( zone.getNucnetZone() )
-        )
-      ) +
-      boost::lexical_cast<int>( zone.getProperty( "bin number" ) )
-      << std::endl;
-
-  }
-
-  while ( 
-    d_t < boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
-  )
-  {
-
-    d_t += d_dt;
-
-    //==========================================================================
-    // Set dt and t.
-    //==========================================================================
-
-    zone.updateProperty(
-      nnt::s_DTIME,
-      boost::lexical_cast<std::string>( d_dt )
-    );
-
-    zone.updateProperty(
-      nnt::s_TIME,
-      boost::lexical_cast<std::string>( d_t )
-    );
-
-    //==========================================================================
-    // Update temperature and density.
-    //==========================================================================
-
-    update_zone_properties( zone );
-
-    if( 
-      zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
-    )
-      update_bin_properties( zone );
-
-    double d_rho = 
-      boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) );
-
-    if( d_rho < 0. ) {
-      std::cout << "rho is " << d_rho << std::endl;
-      exit(EXIT_FAILURE);
-    }
-
-    //==========================================================================
-    // Evolve abundances.
-    //==========================================================================
-
-    evolve( zone );
-
-    //==========================================================================
-    // Print out abundances.
-    //==========================================================================
-
-    if(
-      i_step % 
-        boost::lexical_cast<int>( zone.getProperty( nnt::s_STEPS ) ) == 0 ||
-      d_t >= boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
-    )
-    {
-
-      Libnucnet__relabelZone(
-        p_my_nucnet,
-        zone.getNucnetZone(),
-        ( boost::lexical_cast<std::string>( ++i_label ) ).c_str(),
-        NULL,
-        NULL
-      );
-
-      my_print_abundances( zone );
-
-      zone.updateProperty(
-        nnt::s_YE,
-        boost::lexical_cast<std::string>(
-          Libnucnet__Zone__computeZMoment( zone.getNucnetZone(), 1 )
-        )
-      );
-
-      nnt::write_xml( p_my_output, zone.getNucnetZone() );
-
-    }
-
-    //==========================================================================
-    // Update timestep.
-    //==========================================================================
-
-    d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
-
-    Libnucnet__Zone__updateTimeStep(
-      zone.getNucnetZone(),
-      &d_dt,
-      D_REG_T,
-      D_REG_Y,
-      D_Y_MIN_DT
-    );
-
-    if( 
-      zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
-    )
-      bin_update_timestep( zone, d_dt, D_REG_T, D_REG_Y, D_Y_MIN_DT );
-
-    if( boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) > 10. )
-      zone.normalizeAbundances();
-
-    if(
-      d_t + d_dt >
-        boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) )
-    )
-    {
-      d_dt =
-        boost::lexical_cast<double>( zone.getProperty( nnt::s_TEND ) ) - d_t;
-    }
-
-    i_step++;
-
-  }  
-
-  //============================================================================
-  // Write output.
-  //============================================================================
-
-  Libnucnet__updateZoneXmlMassFractionFormat(
-    p_my_output,
-    "%.15e"
-  );
-
-  Libnucnet__writeToXmlFile(
-    p_my_output,
-    zone.getProperty( S_OUTPUT_XML_FILE ).c_str()
-  );
-
-  //============================================================================
-  // Clean up and exit.
-  //============================================================================
-
-  Libnucnet__free( p_my_nucnet );
-  Libnucnet__free( p_my_output );
-
-  return EXIT_SUCCESS;
-
-}
-
-//############################################################################
-// my_print_abundances()
-//############################################################################
+//##############################################################################
+// grain_function().
+//##############################################################################
 
 void
-my_print_abundances(
-  nnt::Zone & zone
+grain_function(
+  nnt::Zone& zone,
+  std::vector<Grain>& grains,
+  WnMatrix * p_matrix,
+  gsl_vector * p_rhs
 )
 {
 
-  if( 
-    !zone.hasProperty( "idl print" ) ||
-    zone.getProperty( "idl print" ) != "yes"
-  ) {
-    zone.printAbundances();
-    return;
-  }
+  Libnucnet__Species * p_atom =
+    Libnucnet__Nuc__getSpeciesByZA(
+      Libnucnet__Net__getNuc(
+        Libnucnet__Zone__getNet( zone.getNucnetZone() )
+      ),
+      1,
+      1,
+      "g"
+    );
 
+  size_t i_index = Libnucnet__Species__getIndex( p_atom );
 
-  double d_t, d_dt, d_t9, d_rho;
+  for( size_t i = 0; i < grains.size(); i++ )
+  {
 
-  d_t = boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) );
-  d_dt = boost::lexical_cast<double>( zone.getProperty( nnt::s_DTIME ) );
-  d_t9 = boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) );
-  d_rho = boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) );
+    double delta_t =
+      GSL_MIN(
+        zone.getProperty<double>( nnt::s_DTIME ),
+        zone.getProperty<double>( nnt::s_TIME )
+        -
+        grains[i].FormationTime
+      );
 
-  printf(
-    "t = %10.4e\ndt = %10.4e\nt9 = %10.4e\nrho (g/cc) = %10.4e\n\n",
-    d_t, d_dt, d_t9, d_rho
-  );
+    grains[i].Nnext =
+      pow(
+        pow( grains[i].Nprev, 1. / 3. )
+        +
+        3. * zone.getProperty<double>( nnt::s_RHO ) * GSL_CONST_NUM_AVOGADRO *
+        Libnucnet__Zone__getSpeciesAbundance(
+          zone.getNucnetZone(),
+          p_atom
+        )
+        *
+        zone.getProperty<double>( S_XSEC )
+        *
+        delta_t,
+        3.
+      );
 
-  Libnucnet__Nuc__setSpeciesCompareFunction(
-    Libnucnet__Net__getNuc( 
-      Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
-    ),
-    (Libnucnet__Species__compare_function) nnt::species_sort_by_z_then_a
-  );
-
-  Libnucnet__Nuc__sortSpecies(
-    Libnucnet__Net__getNuc( 
-      Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
-    ) 
-  );
-
-  Libnucnet__Nuc__iterateSpecies(
-    Libnucnet__Net__getNuc(
-      Libnucnet__Zone__getNet( zone.getNucnetZone() )
-    ),
-    (Libnucnet__Species__iterateFunction) print_abundance,
-    zone.getNucnetZone()
-  );
-
-  if( 
-    zone.hasProperty( "run bin" ) && zone.getProperty( "run bin" ) == "yes" 
-  ) {
-
-    print_bin_abundances( zone );
-
-    std::cout << "1 - Xsum = " <<
-      1. - 
-      Libnucnet__Zone__computeAMoment( zone.getNucnetZone(), 1 ) -
-      compute_bin_sum( zone ) <<
-      std::endl << std::endl;
-
-  } else {
-
-    std::cout << "1 - Xsum = " <<
-      1. - 
-      Libnucnet__Zone__computeAMoment( zone.getNucnetZone(), 1 ) <<
-      std::endl << std::endl;
+    gsl_vector_set(
+      p_rhs,
+      i_index,
+      gsl_vector_get( p_rhs, i_index )
+      -
+      ( grains[i].Nnext - grains[i].Nprev ) /
+      (
+        zone.getProperty<double>( S_TOTAL_ATOM_NUMBER ) *
+        zone.getProperty<double>( nnt::s_DTIME )
+      )
+    );
 
   }
 
-  Libnucnet__Nuc__setSpeciesCompareFunction(
-    Libnucnet__Net__getNuc( 
-      Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
-    ),
-    (Libnucnet__Species__compare_function) my_species_sort_function
-  );
+}
 
-  Libnucnet__Nuc__sortSpecies(
-    Libnucnet__Net__getNuc( 
-      Libnucnet__Zone__getNet( zone.getNucnetZone() ) 
-    ) 
-  );
+//##############################################################################
+// Xsum_eff().
+//##############################################################################
+
+double
+Xsum_eff( nnt::Zone& zone, std::vector<Grain>& grains )
+{
+
+  double d_xsum_eff = 0;
+  for( size_t i = 0; i < grains.size(); i++ )
+  {
+    d_xsum_eff += grains[i].Nnext /
+      zone.getProperty<double>( S_TOTAL_ATOM_NUMBER );
+  }
+  d_xsum_eff +=  Libnucnet__Zone__computeAMoment( zone.getNucnetZone(), 1 );
+
+  return d_xsum_eff;
+
+}
+
+//##############################################################################
+// Xsum_check().
+//##############################################################################
+
+bool
+Xsum_check( nnt::Zone& zone, std::vector<Grain>& grains )
+{
+
+  if( fabs( 1 - Xsum_eff( zone, grains ) ) < 1.e-12 )
+    return true;
+  else
+    return false;
 
 }
 
 //############################################################################
-// print_abundance()
+// compute_number_of_new_grains().
 //############################################################################
 
-int
-print_abundance(
-  Libnucnet__Species *p_species,
-  Libnucnet__Zone *p_zone
+size_t
+compute_number_of_new_grains(
+  nnt::Zone& zone,
+  Libnucnet__Species * p_last
 )
 {
 
-  double d_abund;
-
-  d_abund =
-    Libnucnet__Zone__getSpeciesAbundance( p_zone, p_species );
-
-  printf( "%20lu%20lu%16.6e%16.6e\n",
-    (unsigned long) Libnucnet__Species__getZ( p_species ),
-    (unsigned long) Libnucnet__Species__getA( p_species ),
-    d_abund,
-    d_abund *
-      boost::lexical_cast<double>( Libnucnet__Species__getA( p_species ) )
-  );
-
-  return 1;
+  return
+    static_cast<size_t>(
+      Libnucnet__Zone__getSpeciesAbundance( zone.getNucnetZone(), p_last ) *
+      zone.getProperty<double>( S_TOTAL_ATOM_NUMBER )
+    );
 
 }
+    
 
 //############################################################################
 // my_species_sort_function()
@@ -503,6 +241,305 @@ my_species_sort_function(
   } else {
     return GSL_SIGN( i );
   }
+
+}
+//##############################################################################
+// main().
+//##############################################################################
+
+int main( int argc, char * argv[] ) {
+
+  int i_step;
+  double d_t, d_dt;
+  Libnucnet *p_my_nucnet = NULL;
+  nnt::Zone zone;
+  std::vector<Grain> grains;
+
+  //============================================================================
+  // Get the nucnet.
+  //============================================================================
+
+  p_my_nucnet = get_nucnet( argc, argv );
+
+  //============================================================================
+  // Get the zone.
+  //============================================================================
+
+  if( !set_zone( p_my_nucnet, zone, argv ) )
+  {
+    std::cerr << "Couldn't set zone."  << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  //============================================================================
+  // Register rate functions.
+  //============================================================================
+
+  register_my_rate_functions(
+    Libnucnet__Net__getReac( Libnucnet__getNet( p_my_nucnet ) )
+  );
+
+  //============================================================================
+  // Update user rate data. 
+  //============================================================================
+
+  update_my_rate_functions_data( zone );
+
+  //============================================================================
+  // Initialize time.
+  //============================================================================
+
+  if( zone.hasProperty( nnt::s_DTIME ) )
+    d_dt = zone.getProperty<double>( nnt::s_DTIME );
+  else
+  {
+    d_dt = D_DT0;
+    zone.updateProperty(
+      nnt::s_DTIME,
+      d_dt
+    );
+  }
+
+  if( zone.hasProperty( nnt::s_TIME ) )
+    d_t = zone.getProperty<double>( nnt::s_TIME );
+  else
+  {
+    d_t = 0;
+    zone.updateProperty(
+      nnt::s_TIME,
+      d_t
+    );
+  }
+
+  //============================================================================
+  // Initialize zone.
+  //============================================================================
+
+  initialize_zone( zone, argv );
+
+  //============================================================================
+  // Sort the nuclei if using the arrow solver.
+  //============================================================================
+
+  if( S_SOLVER == nnt::s_ARROW )
+  {
+
+    Libnucnet__Nuc__setSpeciesCompareFunction(
+      Libnucnet__Net__getNuc( Libnucnet__getNet( p_my_nucnet ) ),
+      (Libnucnet__Species__compare_function) my_species_sort_function
+    );
+
+    Libnucnet__Nuc__sortSpecies(
+      Libnucnet__Net__getNuc( Libnucnet__getNet( p_my_nucnet ) ) 
+    );
+
+    zone.updateProperty( nnt::s_SOLVER, nnt::s_ARROW );
+
+    zone.updateProperty( nnt::s_ARROW_WIDTH, S_WIDTH );
+
+  }
+
+  //============================================================================
+  // Create the output hdf5 file.  Do this after nuclide sort.
+  //============================================================================
+
+  user::hdf5::create_output(
+    argv[3],
+    p_my_nucnet
+  );
+
+  //============================================================================
+  // Toggle off the reverse rates for reactions from detailed balance. 
+  //============================================================================
+
+  Libnucnet__Zone__toggleReverseRateDetailedBalance(
+    zone.getNucnetZone(), "off"
+  );
+
+  //============================================================================
+  // Functions.
+  //============================================================================
+
+  zone.updateFunction(
+    nnt::s_MATRIX_MODIFICATION_FUNCTION,
+    static_cast<boost::function<void( WnMatrix *, gsl_vector * )> >(
+      boost::bind(
+        grain_function,
+        boost::ref( zone ),
+        boost::ref( grains ),
+        _1,
+        _2
+      )
+    )
+  );
+
+  zone.updateFunction(
+    nnt::s_SAFE_EVOLVE_CHECK_FUNCTION,
+    static_cast<boost::function<bool()> >(
+      boost::bind(
+        Xsum_check, 
+        boost::ref( zone ),
+        boost::ref( grains )
+      )
+    )
+  );
+
+  //============================================================================
+  // Evolve network while t < final t.
+  //============================================================================
+
+  i_step = 0;
+
+  while ( 
+    d_t < zone.getProperty<double>( nnt::s_TEND )
+  )
+  {
+
+    d_t += d_dt;
+
+    //==========================================================================
+    // Set dt and t.
+    //==========================================================================
+
+    zone.updateProperty(
+      nnt::s_DTIME,
+      d_dt
+    );
+
+    zone.updateProperty(
+      nnt::s_TIME,
+      d_t
+    );
+
+    //==========================================================================
+    // Update temperature and density.
+    //==========================================================================
+
+    update_zone_properties( zone );
+
+    double d_rho = zone.getProperty<double>( nnt::s_RHO );
+
+    if( d_rho < 0. ) {
+      std::cout << "rho is " << d_rho << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
+    //==========================================================================
+    // Evolve abundances.
+    //==========================================================================
+
+    user::safe_evolve( zone, d_dt, d_dt );
+
+    //==========================================================================
+    // Print out abundances.
+    //==========================================================================
+
+    if(
+       (
+         i_step % zone.getProperty<int>( nnt::s_STEPS ) == 0 ||
+         d_t >= zone.getProperty<double>( nnt::s_TEND )
+       )
+    )
+    {
+      user::hdf5::append_zones(
+        argv[3],
+        p_my_nucnet
+      );
+      nnt::print_zone_abundances( zone );
+      std::cout << "1 - Xsum_eff = " <<
+        1 - Xsum_eff( zone, grains ) << std::endl;
+    }
+
+    //==========================================================================
+    // Update old grains.
+    //==========================================================================
+
+    for( size_t i = 0; i < grains.size(); i++ )
+    {
+      grains[i].Nprev = grains[i].Nnext;
+    }
+
+    //==========================================================================
+    // Add new grains.
+    //==========================================================================
+
+    Libnucnet__Species * p_last =
+      Libnucnet__Nuc__getSpeciesByZA(
+	Libnucnet__Net__getNuc( Libnucnet__getNet( p_my_nucnet ) ),
+	I_MAX,
+	I_MAX,
+	"r"
+      );
+
+    size_t i_new = compute_number_of_new_grains( zone, p_last );
+
+    for( size_t i = 0; i < i_new; i++ )
+    {
+      grains.push_back( Grain( d_t, I_MAX ) );
+    }
+
+
+    Libnucnet__Zone__updateSpeciesAbundance(
+      zone.getNucnetZone(),
+      p_last,
+      Libnucnet__Zone__getSpeciesAbundance(
+	zone.getNucnetZone(),
+	p_last
+      ) -
+      static_cast<double>( i_new ) /
+	zone.getProperty<double>( S_TOTAL_ATOM_NUMBER )
+    );
+
+    zone.updateProperty(
+      S_NUMBER_GRAINS,
+      grains.size()
+    );
+      
+    //==========================================================================
+    // Update timestep.
+    //==========================================================================
+
+    d_dt = zone.getProperty<double>( nnt::s_DTIME );
+
+    Libnucnet__Zone__updateTimeStep(
+      zone.getNucnetZone(),
+      &d_dt,
+      D_REG_T,
+      D_REG_Y,
+      D_Y_MIN_DT
+    );
+
+    if( zone.getProperty<double>( nnt::s_T9 ) > 10. )
+      nnt::normalize_zone_abundances( zone );
+
+    if(
+      d_t + d_dt > zone.getProperty<double>( nnt::s_TEND )
+    )
+    {
+      d_dt = zone.getProperty<double>( nnt::s_TEND ) - d_t;
+    }
+
+    i_step++;
+
+  }  
+
+  //============================================================================
+  // Print out grains.
+  //============================================================================
+
+  for( size_t i = 0; i < grains.size(); i++ )
+  {
+    std::cout << i << "  " << grains[i].FormationTime <<
+      "  " << grains[i].Nnext << std::endl;
+  }
+
+  //============================================================================
+  // Clean up and exit.
+  //============================================================================
+
+  Libnucnet__free( p_my_nucnet );
+
+  return EXIT_SUCCESS;
 
 }
 

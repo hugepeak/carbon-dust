@@ -76,7 +76,7 @@ get_nucnet( int argc, char **argv )
       stderr, "  zone_file = input single zone data xml filename\n\n"
     );
     fprintf(
-      stderr, "  out_file = output data xml filename\n\n"
+      stderr, "  out_file = output data hdf5 filename\n\n"
     );
     fprintf(
       stderr,
@@ -178,12 +178,12 @@ initialize_zone( nnt::Zone& zone, char ** argv )
 
   zone.updateProperty(
     nnt::s_RHO,
-    zone.getProperty( nnt::s_RHO_0 )
+    zone.getProperty<std::string>( nnt::s_RHO_0 )
   );
 
   zone.updateProperty(
     nnt::s_T9,
-    zone.getProperty( nnt::s_T9_0 )
+    zone.getProperty<std::string>( nnt::s_T9_0 )
   );
 
   update_He_abundances( zone );
@@ -200,15 +200,15 @@ update_zone_properties( nnt::Zone& zone )
 
   double d_t, d_tau;
 
-  d_t = boost::lexical_cast<double>( zone.getProperty( nnt::s_TIME ) );
+  d_t = zone.getProperty<double>( nnt::s_TIME );
 
   try
   {
-    d_tau = boost::lexical_cast<double>( zone.getProperty( nnt::s_TAU ) );
+    d_tau = zone.getProperty<double>( nnt::s_TAU );
   }
   catch( const boost::bad_lexical_cast& e )
   {
-    if( zone.getProperty( nnt::s_TAU ) == "inf" )
+    if( zone.getProperty<std::string>( nnt::s_TAU ) == "inf" )
     {
       return;
     }
@@ -224,22 +224,16 @@ update_zone_properties( nnt::Zone& zone )
 
   zone.updateProperty(
     nnt::s_RHO,
-    boost::lexical_cast<std::string>(
-      boost::lexical_cast<double>(
-        zone.getProperty( nnt::s_RHO_0 ) 
-      ) * 
+    zone.getProperty<double>( nnt::s_RHO_0 ) 
+      * 
       pow( d_tau / d_t, 3. )
-    )
   );
 
   zone.updateProperty(
     nnt::s_T9,
-    boost::lexical_cast<std::string>(
-      boost::lexical_cast<double>(
-        zone.getProperty( nnt::s_T9_0 ) 
-      ) * 
+    zone.getProperty<double>( nnt::s_T9_0 ) 
+      * 
       pow( d_tau / d_t, 1. )
-    )
   );
 
   //============================================================================
@@ -247,7 +241,7 @@ update_zone_properties( nnt::Zone& zone )
   //============================================================================
 
   if(
-    boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ) < 1.e-10
+    zone.getProperty<double>( nnt::s_T9 ) < 1.e-10
   )
     zone.updateProperty(
       nnt::s_T9,
@@ -255,7 +249,7 @@ update_zone_properties( nnt::Zone& zone )
     );
 
   if(
-    boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) ) < 1.e-30
+    zone.getProperty<double>( nnt::s_RHO ) < 1.e-30
   )
     zone.updateProperty(
       nnt::s_RHO,

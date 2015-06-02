@@ -26,7 +26,7 @@
 #include <Libnucnet.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
-#include <nnt/wrappers.h>
+#include <nnt/wrappers.hpp>
 #include <nnt/string_defs.h>
 
 //##############################################################################

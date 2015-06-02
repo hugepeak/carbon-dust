@@ -39,7 +39,7 @@ compute_flow_for_reaction(
   d_forward_rate =
     Libnucnet__Reaction__computeRate(
       p_reaction,
-      boost::lexical_cast<double>( zone.getProperty( nnt::s_T9 ) ),
+      zone.getProperty<double>( nnt::s_T9 ),
       Libnucnet__Zone__getDataForUserRateFunction(
         zone.getNucnetZone(),
         Libnucnet__Reaction__getRateFunctionKey( p_reaction )
@@ -57,7 +57,7 @@ compute_flow_for_reaction(
 
   d_forward_rate *=
     pow(
-      boost::lexical_cast<double>( zone.getProperty( nnt::s_RHO ) ),
+      zone.getProperty<double>( nnt::s_RHO ),
       (double) i_elements - 1.
     ) /
       Libnucnet__Reaction__getDuplicateReactantFactor( p_reaction );

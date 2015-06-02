@@ -24,7 +24,6 @@
 #include "nnt/iter.h"
 #include "nnt/string_defs.h"
 #include "nnt/two_d_weak_rates.h"
-#include "nnt/weak_detailed_balance.h"
 
 #include "carbon_flow_utilities.h"
 #include "carbon_rate_functions.h"
@@ -132,8 +131,8 @@ int main( int argc, char * argv[] ) {
     // Print conditions.
     //==========================================================================
 
-    std::cout << zone.getProperty( nnt::s_TIME ) << " " <<
-      zone.getProperty( nnt::s_T9 ) << " ";
+    std::cout << zone.getProperty<std::string>( nnt::s_TIME ) << " " <<
+      zone.getProperty<std::string>( nnt::s_T9 ) << " ";
 
     //==========================================================================
     // Print flows.
